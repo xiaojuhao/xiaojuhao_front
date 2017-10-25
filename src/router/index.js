@@ -10,7 +10,11 @@ export default new Router({
             redirect: '/login'
         },
         {
-            path: '/readme',
+            path: '/login',
+            component: resolve => require(['../components/page/Login.vue'], resolve)
+        },
+        {
+            path: '/home',
             component: resolve => require(['../components/common/Home.vue'], resolve),
             children:[
                 {
@@ -66,10 +70,6 @@ export default new Router({
                     component: resolve => require(['../components/page/IndexInfo.vue'], resolve)    // 拖拽列表组件
                 }
             ]
-        },
-        {
-            path: '/login',
-            component: resolve => require(['../components/page/Login.vue'], resolve)
-        },
+        }
     ]
 })
