@@ -37,6 +37,7 @@
 </template>
 
 <script>
+    var globalcf = require("../../global.json")
     export default {
         data: function(){
             return {
@@ -56,6 +57,9 @@
             onSubmit() {
                 this.$message.success('提交成功！');
             }
+        },
+        created(){
+            console.log(globalcf)
         }
     }
 </script>
