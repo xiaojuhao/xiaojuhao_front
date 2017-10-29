@@ -20,6 +20,8 @@
 </template>
 
 <script>
+    import axios from 'axios'
+
     export default {
         data() {
             return {
@@ -107,6 +109,16 @@
                     }
                 ]
             }
+        },
+        created: function(){
+            // var jsonp = require('jsonp');
+            // var datax = this;
+            // jsonp('http://localhost:8080/menu',null,function(err,data){
+            //     console.log(data.value)
+            //     console.log(datax.items)
+            //     datax.items = data.value
+            //     console.log(datax.$router)
+            // })
         },
         computed:{
             onRoutes(){
