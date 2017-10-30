@@ -7,7 +7,7 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form" :inline="true" :model="formInline" label-width="80px">
+            <el-form ref="form" :inline="true" label-width="80px">
                 <el-form-item label="原料名称">
                     <el-input readonly v-model="item.materialName" ></el-input>
                 </el-form-item>
@@ -34,7 +34,7 @@
                 	<el-col>
 		                <el-form-item inline="false">
 		                    <el-button type="primary" @click="onSubmit">提交</el-button>
-		                    <el-button>取消</el-button>
+		                    <el-button @click="onBack">取消</el-button>
 		                </el-form-item>
                 	</el-col>
             	</el-row>
@@ -48,16 +48,6 @@
     export default {
         data: function(){
             return {
-                form: {
-                    name: '',
-                    region: '',
-                    date1: '',
-                    date2: '',
-                    delivery: true,
-                    type: ['步步高'],
-                    resource: '小天才',
-                    desc: ''
-                },
                 item:{},
                 outStockAmt:0
             }
@@ -67,11 +57,15 @@
                 //this.$message.success('提交成功！');
                 this.$router.go(-1)
             },
+            onBack(){
+                this.$router.go(-1)
+            },
             initData() {
             	var jsonp = require('jsonp')
             	var $data = this;
-            	jsonp(config.server+"/queryMaterialsStockById?id=1",null,function(err,data){
-            		// console.log(data)
+                //console.log($data)
+            	jsonp(config.server+"/queryMaterialsStockById?id="+this.$route.query.stockId,null,function(err,data){
+            		//console.log(data)
             		$data.item = data.value;
             	})
             }
@@ -86,7 +80,11 @@
         	}
         },
         mounted(){
-        	this.initData();
+        	
+        },
+        activated(){
+            //console.log(this.$route.query)
+            this.initData();
         }
     }
 </script>

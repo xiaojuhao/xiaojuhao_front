@@ -63,17 +63,21 @@
                 del_list: [],
                 is_search: false,
                 query:{
-                	code:'0001',
-                	name:'鱼头'
+                	code:'',
+                	name:''
                 },
                 showOutStock:false
             }
         },
         created(){
-            
+            console.log('created......')
         },
         mounted(){
+            console.log('mounnted......')
 			this.getData();
+        },
+        activated(){
+            console.log("activated......");
         },
         computed: {
             data(){
@@ -114,7 +118,8 @@
                 });
             },
             search(){
-                this.is_search = true;
+                this.tableData = [];
+                this.getData();
             },
             formatStockType(row, column) {
                 return row.stockType==1?"总库":"分库";
