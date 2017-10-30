@@ -4,7 +4,7 @@
         <v-sidebar></v-sidebar>
         <div class="content">
             <transition name="move" mode="out-in">
-                <keep-alive><router-view></router-view></keep-alive>
+                <router-view></router-view>
             </transition>
         </div>
     </div>
