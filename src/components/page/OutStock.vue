@@ -33,7 +33,7 @@
                 <el-row>
                 	<el-col>
 		                <el-form-item inline="false">
-		                    <el-button type="primary" @click="onSubmit">提交</el-button>
+		                    <el-button type="primary" @click="onSubmit">提交22</el-button>
 		                    <el-button @click="onBack">取消</el-button>
 		                </el-form-item>
                 	</el-col>
@@ -54,7 +54,15 @@
         },
         methods: {
             onSubmit() {
+                console.log('dfsfdas')
                 //this.$message.success('提交成功！');
+                var jsonp = require('jsonp')
+                var $data = this;
+                //console.log($data)
+                var url = config.server+"/outstock?id="+this.$route.query.stockId+"&outstockAmt="+$data.outStockAmt;
+                jsonp(url,null,function(err,data){
+                    console.log(data)
+                })
                 this.$router.go(-1)
             },
             onBack(){
@@ -63,7 +71,6 @@
             initData() {
             	var jsonp = require('jsonp')
             	var $data = this;
-                //console.log($data)
             	jsonp(config.server+"/queryMaterialsStockById?id="+this.$route.query.stockId,null,function(err,data){
             		//console.log(data)
             		$data.item = data.value;
