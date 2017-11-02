@@ -18,7 +18,8 @@
     export default {
         data() {
             return {
-                name: 'unknown'
+                name: 'unknown',
+                sideBarOppened:false
             }
         },
         computed:{
