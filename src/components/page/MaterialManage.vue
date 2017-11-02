@@ -37,7 +37,7 @@
 </template>
 
 <script>
-    var globalcf = require("../../global.json")
+    import config from '../common/config.vue'
     export default {
         data: function(){
             return {
@@ -55,11 +55,18 @@
         },
         methods: {
             onSubmit() {
-                this.$message.success('提交成功！');
+                //this.$message.success('提交成功！');
+                let self = this;
+                var jsonp = require('jsonp')
+                jsonp(config.server+'/addMaterials?canSplit=N&materialName='+this.$data.form.name,
+                null,
+                function(err,resp){
+                    console.log(resp)
+                });
             }
         },
         created(){
-            console.log(globalcf)
+            
         }
     }
 </script>

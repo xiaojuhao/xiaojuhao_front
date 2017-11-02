@@ -43,6 +43,7 @@
                 const self = this;
                 self.$refs[formName].validate((valid) => {
                     if (valid) {
+                        self.$data.tips = "登录中.....";
                         var jsonp = require('jsonp')
                         var url = config.server+'/user/login?userCode='+self.$data.ruleForm.username;
                         url += "&password="+self.$data.ruleForm.password;
@@ -51,6 +52,7 @@
                             if(resp.code != 200){
                                 self.$data.tips = resp.message;
                             }else{
+                                self.$data.tips = "登录成功";
                                 var userinfo = resp.value;
                                 localStorage.setItem('ms_username',userinfo.userName);
                                 self.$router.push('/home');

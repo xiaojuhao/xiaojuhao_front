@@ -15,6 +15,7 @@
     </div>
 </template>
 <script>
+    import config from '../common/config.vue'
     export default {
         data() {
             return {
@@ -31,6 +32,9 @@
         methods:{
             handleCommand(command) {
                 if(command == 'loginout'){
+                    var jsonp = require('jsonp')
+                        var url = config.server+'/user/logout';
+                        jsonp(url,null,function(err,resp){});
                     localStorage.removeItem('ms_username')
                     this.$router.push('/login');
                 }
