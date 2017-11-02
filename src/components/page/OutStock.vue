@@ -80,11 +80,10 @@
         	}
         },
         mounted(){
-        	
+        	this.initData();
         },
         activated(){
-            //console.log(this.$route.query)
-            this.initData();
+            
         }
     }
 </script>
