@@ -1,15 +1,22 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-autocomplete class="inline-input" v-model="query.name"
-      			:fetch-suggestions="querySearch" placeholder="原料名称"
+            <el-autocomplete class="inline-input" v-model="query.materialCode"
+      			:fetch-suggestions="querySearch" placeholder="原料编码"
       			:trigger-on-focus="false"
       			@select="handleSelect">
       		</el-autocomplete>
-            <el-input v-model="query.code" placeholder="原料编码" class="handle-input mr5" style="width:150px"></el-input>
-            <el-select v-model="select_cate" placeholder="库存类型" class="handle-select mr10">
+            <el-select v-model="query.stockType" clearable placeholder="库存类型" class="handle-select mr10">
                 <el-option key="1" label="总库" value="1"></el-option>
                 <el-option key="2" label="分库" value="2"></el-option>
+            </el-select>
+            <el-select v-model="query.storeCode" clearable placeholder="仓库">
+                <el-option
+                    v-for="item in storeSelection"
+                    :key="item.storeCode"
+                    :label="item.storeName"
+                    :value="item.storeCode">
+                </el-option>
             </el-select>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
@@ -71,9 +78,11 @@
                 del_list: [],
                 is_search: false,
                 query:{
-                	code:'',
-                	name:''
+                	materialCode:'',
+                    stockType:'',
+                    storeCode:''
                 },
+                storeSelection:[],
                 showOutStock:false
             }
         },
@@ -81,8 +90,15 @@
             console.log('created......')
         },
         mounted(){
-            console.log('mounnted......')
 			this.getData();
+            var $this = this;
+            jquery.ajax({
+                url:config.server+"/store/getAllStore",
+                dataType:'jsonp'
+            }).then((resp)=>{
+                console.log(resp)
+                $this.storeSelection = resp.value.values;
+            })
         },
         activated(){
             console.log("activated......");
@@ -107,7 +123,10 @@
                     url:config.server+'/busi/queryMaterialsStock',
                     data:{
                         pageSize:self.$data.pageSize,
-                        pageNo:self.$data.cur_page
+                        pageNo:self.$data.cur_page,
+                        materialCode:self.$data.query.materialCode,
+                        storeCode:self.$data.query.storeCode,
+                        stockType:self.$data.query.stockType
                     },
                     dataType: 'jsonp'
                 }).then(function(resp){
