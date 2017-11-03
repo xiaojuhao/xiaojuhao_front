@@ -2,10 +2,10 @@
     <div class="table">
         <div class="handle-box">
             <el-autocomplete class="inline-input" v-model="query.name"
-      			:fetch-suggestions="querySearch" placeholder="原料名称"
-      			:trigger-on-focus="false"
-      			@select="handleSelect">
-      		</el-autocomplete>
+                :fetch-suggestions="querySearch" placeholder="原料名称"
+                :trigger-on-focus="false"
+                @select="handleSelect">
+            </el-autocomplete>
             <el-input v-model="query.code" placeholder="原料编码" class="handle-input mr5" style="width:150px"></el-input>
             <el-select v-model="select_cate" placeholder="库存类型" class="handle-select mr10">
                 <el-option key="1" label="总库" value="1"></el-option>
@@ -13,7 +13,12 @@
             </el-select>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
-        <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+        <el-table :data="data" border style="width: 100%"
+            v-loading="loadingState"
+            element-loading-text="拼命加载中"
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="rgb(0, 0, 0, 0.8)">
+            
             <el-table-column prop="id" label="ID" sortable width="100">
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="120">
@@ -32,68 +37,61 @@
             </el-table-column>
             <el-table-column label="操作"fixed="right" width="150">
                 <template scope="scope">
-                	<el-button size="small" type="primary" @click="outstock(scope.$index, scope.row)">盘点库存</el-button>
+                    <el-button size="small" type="primary" @click="correctStock(scope.$index, scope.row)">盘点库存</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="pagination">
             <el-pagination
                     @current-change ="handleCurrentChange"
+                    :current-page.sync="cur_page"
                     layout="prev, pager, next"
-                    :total="512">
+                    :total="totalRows" :page-size="pageSize">
             </el-pagination>
         </div>
     </div>
 </template>
 
 <script>
-	import config from '../common/config.vue'
-	import OutStock from './OutStock.vue'
+    import config from '../common/config.vue'
+    import OutStock from './OutStock.vue'
+    import jquery from 'jquery'
     export default {
         data() {
             return {
                 url: './static/vuetable.json',
                 tableData: [],
                 cur_page: 1,
+                pageSize:5,
+                totalRows:0,
                 multipleSelection: [],
                 select_cate: '',
                 select_word: '',
+                loadingState: false,
                 del_list: [],
                 is_search: false,
                 query:{
-                	code:'0001',
-                	name:'鱼头'
+                    code:'',
+                    name:''
                 },
                 showOutStock:false
             }
         },
         created(){
-            
+            console.log('created......')
         },
         mounted(){
-			this.getData();
+            console.log('mounnted......')
+            this.getData();
+        },
+        activated(){
+            console.log("activated......");
         },
         computed: {
             data(){
                 const self = this;
                 return self.tableData.filter(function(d){
-                	//console.log(d)
-                	return d;
-                    // let is_del = false;
-                    // for (let i = 0; i < self.del_list.length; i++) {
-                    //     if(d.name === self.del_list[i].name){
-                    //         is_del = true;
-                    //         break;
-                    //     }
-                    // }
-                    // if(!is_del){
-                    //     if(d.address.indexOf(self.select_cate) > -1 && 
-                    //         (d.name.indexOf(self.select_word) > -1 ||
-                    //         d.address.indexOf(self.select_word) > -1)
-                    //     ){
-                    //         return d;
-                    //     }
-                    // }
+                    return d;
                 })
             }
         },
@@ -104,15 +102,39 @@
             },
             getData(){
                 let self = this;
-                var jsonp = require('jsonp')
-                jsonp(config.server+'/queryMaterialsStock',null,function(err,resp){
-                	//console.log('load data success!!!!!!!!!!')
-                	//console.log(data.value)
-                	self.tableData = resp.value;
-                });
+                self.$data.loadingState = true;
+                jquery.ajax({
+                    url:config.server+'/busi/queryMaterialsStock',
+                    data:{
+                        pageSize:self.$data.pageSize,
+                        pageNo:self.$data.cur_page
+                    },
+                    dataType: 'jsonp'
+                }).then(function(resp){
+                    if(resp.code!=200){
+                        self.$message.error(resp.message)
+                        return;
+                    }
+                    var value = resp.value;
+                    if(!value){
+                       self.$message.error("服务端没有返回数据")
+                       return;
+                    }
+                    self.tableData = value.values;
+                    self.totalRows = value.totalRows;
+                }).fail(function(resp){
+                    self.$message.error("请求出错")
+                }).done(function(resp){
+                    // self.$notify({
+                    //     title:'请求数据',message:'请求完成',duration:1000,position: 'bottom-right'
+                    // });
+                    self.$data.loadingState = false;
+                })
             },
             search(){
-                this.is_search = true;
+                this.cur_page = 1;
+                this.tableData = [];
+                this.getData();
             },
             formatStockType(row, column) {
                 return row.stockType==1?"总库":"分库";
@@ -120,11 +142,30 @@
             filterTag(value, row) {
                 return row.tag === value;
             },
-            outstock(index, item) {
-                // this.$message('编辑第'+(index+1)+'行');
-                //console.log(row)
-                this.$router.push({path:"/outStock",query:{stockId:item.id}})
-               // this.$data.showOutStock=true;
+            correctStock(index, item) {
+                this.$prompt('盘点库存', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  inputPattern: /^\d+(\.\d{1,2})?$/,
+                  inputErrorMessage: '库存数字不正确'
+                }).then(({ value }) => {
+                    jquery.ajax({
+                        url:config.server+"/busi/correctStock",
+                        data:{
+                            id:item.id,
+                            materialCode:item.materialCode,
+                            realStock:value
+                        },
+                        dataType:'jsonp'
+                    }).then((resp)=>{
+                        item.currStock = resp.value.currStock;
+                        this.$message({type:'success',message:"库存盘点成功"})
+                    }).fail((resp)=>{
+                        console.log('fails')
+                    })
+                }).catch(() => {
+                  //取消操作     
+                });
             },
             instock(index, item) {
                 this.$router.push({path:"/inStock",query:{stockId:item.id}})
@@ -150,15 +191,15 @@
                 this.multipleSelection = val;
             },
             handleSelect(item){
-            	this.$data.query.name=item.value;
+                this.$data.query.name=item.value;
             },
             querySearch(queryString,cb){
-            	var data = [];
-            	data.push({id:1,value:'aaaaa'})
-            	data.push({id:2,value:'bbbbb'})
-            	data.push({id:3,value:'ccccc'})
-            	console.log(this.$data.query)
-            	cb(data)
+                var data = [];
+                data.push({id:1,value:'aaaaa'})
+                data.push({id:2,value:'bbbbb'})
+                data.push({id:3,value:'ccccc'})
+                console.log(this.$data.query)
+                cb(data)
             }
         }
     }

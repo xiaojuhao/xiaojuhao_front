@@ -7,37 +7,30 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form" :inline="true" label-width="80px">
+            <el-form ref="form" :inline="true" label-width="80px" class="table-simple">
                 <el-form-item label="原料名称">
-                    <el-input readonly v-model="item.materialName" ></el-input>
+                    <span>{{item.materialName}}</span>
                 </el-form-item>
                 <el-form-item label="原料编码">
-                    <el-input readonly v-model="item.materialCode"></el-input>
+                    <span>{{item.materialCode}}</span>
                 </el-form-item>
                 <el-form-item label="当前库存">
-                    <el-input readonly v-model="item.currStock"></el-input>
+                    <span>{{item.currStock}}</span>
                 </el-form-item>
                 <el-form-item label="已用数量">
-                    <el-input readonly v-model="item.usedStock"></el-input>
+                    <span>{{item.usedStock}}</span>
                 </el-form-item>
                 <el-form-item label="库存类型">
-                    <el-input readonly v-model="stockTypeName"></el-input>
+                    <span>{{stockTypeName}}</span>
                 </el-form-item>
-                <el-row>
-                	<el-col>
-                		<el-form-item label="出库数量">
-                    		<el-input v-model="outStockAmt"></el-input>
-                		</el-form-item>
-                	</el-col>
-                </el-row>
-                <el-row>
-                	<el-col>
-		                <el-form-item inline="false">
-		                    <el-button type="primary" @click="onSubmit">提交22</el-button>
-		                    <el-button @click="onBack">取消</el-button>
-		                </el-form-item>
-                	</el-col>
-            	</el-row>
+                <el-form-item label="出库数量" class="el-form-item2">
+                     <el-input v-model="outStockAmt"></el-input>
+                </el-form-item>
+                <el-form-item class="el-form-item-button">
+                      <el-button type="primary" @click="onSubmit">提交</el-button>
+                      <span style="margin-right:20px"></span>
+                      <el-button @click="onBack">取消</el-button>
+                 </el-form-item>
             </el-form>
         </div>
     </div>
@@ -54,12 +47,11 @@
         },
         methods: {
             onSubmit() {
-                console.log('dfsfdas')
                 //this.$message.success('提交成功！');
                 var jsonp = require('jsonp')
                 var $data = this;
                 //console.log($data)
-                var url = config.server+"/outstock?id="+this.$route.query.stockId+"&outstockAmt="+$data.outStockAmt;
+                var url = config.server+"/busi/outstock?id="+this.$route.query.stockId+"&outstockAmt="+$data.outStockAmt;
                 jsonp(url,null,function(err,data){
                     console.log(data)
                 })
@@ -71,7 +63,7 @@
             initData() {
             	var jsonp = require('jsonp')
             	var $data = this;
-            	jsonp(config.server+"/queryMaterialsStockById?id="+this.$route.query.stockId,null,function(err,data){
+            	jsonp(config.server+"/busi/queryMaterialsStockById?id="+this.$route.query.stockId,null,function(err,data){
             		//console.log(data)
             		$data.item = data.value;
             	})
@@ -94,11 +86,27 @@
         }
     }
 </script>
-<style>
-.noborder {
-	border-left:0px;
-	border-top:0px;
-	border-right:0px;
-	border-bottom:1px;
-}
+<style scoped>
+  .table-simple {
+    font-size: 0;
+  }
+  .table-simple label {
+    width: 90px;
+    color: #99a9bf;
+    background-color: red;
+
+  }
+  .table-simple .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+  .table-simple .el-form-item2 {
+    width: 90%;
+  }
+  .el-form-item-button {
+    margin-top: 10px;
+    margin-left: 20%;
+    width: 90%;
+  }
 </style>

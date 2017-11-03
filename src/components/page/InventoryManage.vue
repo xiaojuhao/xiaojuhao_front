@@ -13,8 +13,12 @@
             </el-select>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
-        <el-table :data="data" border style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55"></el-table-column>
+        <el-table :data="data" border style="width: 100%"
+            v-loading="loadingState"
+            element-loading-text="拼命加载中"
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="rgb(0, 0, 0, 0.8)">
+            
             <el-table-column prop="id" label="ID" sortable width="100">
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="120">
@@ -42,7 +46,7 @@
             <el-pagination
                     @current-change ="handleCurrentChange"
                     layout="prev, pager, next"
-                    :total="512">
+                    :total="totalRows" :page-size="pageSize">
             </el-pagination>
         </div>
     </div>
@@ -51,15 +55,19 @@
 <script>
 	import config from '../common/config.vue'
 	import OutStock from './OutStock.vue'
+    import jquery from 'jquery'
     export default {
         data() {
             return {
                 url: './static/vuetable.json',
                 tableData: [],
                 cur_page: 1,
+                pageSize:5,
+                totalRows:0,
                 multipleSelection: [],
                 select_cate: '',
                 select_word: '',
+                loadingState: false,
                 del_list: [],
                 is_search: false,
                 query:{
@@ -110,12 +118,34 @@
             },
             getData(){
                 let self = this;
-                var jsonp = require('jsonp')
-                jsonp(config.server+'/queryMaterialsStock',null,function(err,resp){
-                	//console.log('load data success!!!!!!!!!!')
-                	//console.log(data.value)
-                	self.tableData = resp.value;
-                });
+                self.$data.loadingState = true;
+                jquery.ajax({
+                    url:config.server+'/busi/queryMaterialsStock',
+                    data:{
+                        pageSize:self.$data.pageSize,
+                        pageNo:self.$data.cur_page
+                    },
+                    dataType: 'jsonp'
+                }).then(function(resp){
+                    if(resp.code!=200){
+                        self.$message.error(resp.message)
+                        return;
+                    }
+                    var value = resp.value;
+                    if(!value){
+                       self.$message.error("服务端没有返回数据")
+                       return;
+                    }
+                    self.tableData = value.values;
+                    self.totalRows = value.totalRows;
+                }).fail(function(resp){
+                    self.$message.error("请求出错")
+                }).done(function(resp){
+                    // self.$notify({
+                    //     title:'请求数据',message:'请求完成',duration:1000,position: 'bottom-right'
+                    // });
+                    self.$data.loadingState = false;
+                })
             },
             search(){
                 this.tableData = [];

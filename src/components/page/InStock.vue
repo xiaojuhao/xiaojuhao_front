@@ -7,94 +7,113 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form" :inline="true" :model="formInline" label-width="80px">
+            <el-form ref="form" :inline="true" label-width="80px" class="table-simple">
                 <el-form-item label="原料名称">
-                    <el-input readonly v-model="item.materialName" ></el-input>
+                    <span>{{item.materialName}}</span>
                 </el-form-item>
                 <el-form-item label="原料编码">
-                    <el-input readonly v-model="item.materialCode"></el-input>
+                    <span>{{item.materialCode}}</span>
                 </el-form-item>
                 <el-form-item label="当前库存">
-                    <el-input readonly v-model="item.currStock"></el-input>
+                    <span>{{item.currStock}}</span>
                 </el-form-item>
                 <el-form-item label="已用数量">
-                    <el-input readonly v-model="item.usedStock"></el-input>
+                    <span>{{item.usedStock}}</span>
                 </el-form-item>
                 <el-form-item label="库存类型">
-                    <el-input readonly v-model="stockTypeName"></el-input>
+                    <span>{{stockTypeName}}</span>
                 </el-form-item>
-                <el-row>
-                	<el-col>
-                		<el-form-item label="入库数量">
-                    		<el-input v-model="outStockAmt"></el-input>
-                		</el-form-item>
-                	</el-col>
-                </el-row>
-                <el-row>
-                	<el-col>
-		                <el-form-item inline="false">
-		                    <el-button type="primary" @click="onSubmit">提交</el-button>
-		                    <el-button>取消</el-button>
-		                </el-form-item>
-                	</el-col>
-            	</el-row>
+                <el-form-item label="入库数量" class="el-form-item2">
+                     <el-input v-model="inStockAmt"></el-input>
+                </el-form-item>
+                <el-form-item class="el-form-item-button">
+                      <el-button type="primary" @click="onSubmit">提交</el-button>
+                      <span style="margin-right:20px"></span>
+                      <el-button @click="onBack">取消</el-button>
+                 </el-form-item>
             </el-form>
         </div>
     </div>
 </template>
 
 <script>
-	import config from '../common/config.vue'
+    import config from '../common/config.vue'
+    import jquery from 'jquery'
     export default {
         data: function(){
             return {
-                form: {
-                    name: '',
-                    region: '',
-                    date1: '',
-                    date2: '',
-                    delivery: true,
-                    type: ['步步高'],
-                    resource: '小天才',
-                    desc: ''
-                },
                 item:{},
-                outStockAmt:0
+                inStockAmt:0
             }
         },
         methods: {
             onSubmit() {
-                //this.$message.success('提交成功！');
+                var self = this;
+                jquery.ajax({
+                    url:config.server+"/busi/instock",
+                    data:{
+                        id:self.$route.query.stockId,
+                        instockAmt:self.inStockAmt
+                    },
+                    dataType:'jsonp'
+                }).then(function(resp){
+                    if(resp.code != 200){
+                        self.$message.error(resp.message)
+                        return;
+                    }
+                    self.$router.go(-1);
+                });
+            },
+            onBack(){
                 this.$router.go(-1)
             },
             initData() {
-            	var jsonp = require('jsonp')
-            	var $data = this;
-            	jsonp(config.server+"/queryMaterialsStockById?id=1",null,function(err,data){
-            		// console.log(data)
-            		$data.item = data.value;
-            	})
+                var jsonp = require('jsonp')
+                var $data = this;
+                jsonp(config.server+"/busi/queryMaterialsStockById?id="+this.$route.query.stockId,null,function(err,data){
+                    //console.log(data)
+                    $data.item = data.value;
+                })
             }
         },
         computed:{
-        	stockTypeName:function(){
-        		if(this.item.stockType && this.item.stockType==1){
-        			return '总库'
-        		}else{
-        			return '分库'
-        		}
-        	}
+            stockTypeName:function(){
+                if(this.item.stockType && this.item.stockType==1){
+                    return '总库'
+                }else{
+                    return '分库'
+                }
+            }
         },
         mounted(){
-        	this.initData();
+            this.initData();
+        },
+        activated(){
+            
         }
     }
 </script>
-<style>
-.noborder {
-	border-left:0px;
-	border-top:0px;
-	border-right:0px;
-	border-bottom:1px;
-}
+<style scoped>
+  .table-simple {
+    font-size: 0;
+  }
+  .table-simple label {
+    width: 90px;
+    color: #99a9bf;
+    background-color: red;
+
+  }
+  .table-simple .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
+  .table-simple .el-form-item2 {
+    width: 90%;
+  }
+  .el-form-item-button {
+    margin-top: 10px;
+    margin-left: 20%;
+    width: 90%;
+  }
 </style>
