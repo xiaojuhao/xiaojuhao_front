@@ -20,11 +20,21 @@
                 <el-form-item label="已用数量">
                     <span>{{item.usedStock}}</span>
                 </el-form-item>
-                <el-form-item label="库存类型">
+                <el-form-item label="库存类型" class="el-form-item2">
                     <span>{{stockTypeName}}</span>
                 </el-form-item>
-                <el-form-item label="入库数量" class="el-form-item2">
+                <el-form-item label="入库数量" >
                      <el-input v-model="inStockAmt"></el-input>
+                </el-form-item>
+                <el-form-item label="门店">
+                     <el-select v-model="storeCode" placeholder="请选择">
+                        <el-option
+                          v-for="item in storeSelection"
+                          :key="item.storeCode"
+                          :label="item.storeName"
+                          :value="item.storeCode">
+                        </el-option>
+                      </el-select>
                 </el-form-item>
                 <el-form-item class="el-form-item-button">
                       <el-button type="primary" @click="onSubmit">提交</el-button>
@@ -43,7 +53,9 @@
         data: function(){
             return {
                 item:{},
-                inStockAmt:0
+                inStockAmt:0,
+                storeCode:'',
+                storeSelection:[]
             }
         },
         methods: {
@@ -52,8 +64,9 @@
                 jquery.ajax({
                     url:config.server+"/busi/instock",
                     data:{
-                        id:self.$route.query.stockId,
-                        instockAmt:self.inStockAmt
+                        materialCode:self.item.materialCode,
+                        instockAmt:self.inStockAmt,
+                        storeCode:self.storeCode
                     },
                     dataType:'jsonp'
                 }).then(function(resp){
@@ -87,9 +100,17 @@
         },
         mounted(){
             this.initData();
+            var $this = this;
+            jquery.ajax({
+                url:config.server+"/store/getAllStore",
+                dataType:'jsonp'
+            }).then((resp)=>{
+                console.log(resp)
+                $this.storeSelection = resp.value.values;
+            })
         },
         activated(){
-            
+
         }
     }
 </script>

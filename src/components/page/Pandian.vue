@@ -143,7 +143,7 @@
                 return row.tag === value;
             },
             correctStock(index, item) {
-                this.$prompt('盘点库存', '提示', {
+                this.$prompt("请输入【"+item.materialName+"-"+item.materialCode+"】的真实库存", '判断库存', {
                   confirmButtonText: '确定',
                   cancelButtonText: '取消',
                   inputPattern: /^\d+(\.\d{1,2})?$/,

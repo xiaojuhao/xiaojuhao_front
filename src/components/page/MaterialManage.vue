@@ -58,7 +58,7 @@
                 //this.$message.success('提交成功！');
                 let self = this;
                 var jsonp = require('jsonp')
-                jsonp(config.server+'/addMaterials?canSplit=N&materialName='+this.$data.form.name,
+                jsonp(config.server+'/busi/addMaterials?canSplit=N&materialName='+this.$data.form.name,
                 null,
                 function(err,resp){
                     console.log(resp)

@@ -9,25 +9,24 @@
         <div class="form-box">
             <el-form ref="form"  label-width="80px">
                 <el-form-item label="门店名称">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="门店编码">
-                    <el-input disabled v-model="form.name" placehoder="自动生成"></el-input>
+                    <el-input v-model="storeName" placeholder="门店名称"></el-input>
                 </el-form-item>
                 <el-form-item label="门店地址">
-                    <el-input disabled v-model="form.name" placehoder="自动生成"></el-input>
+                    <el-input v-model="storeAddr" placeholder="门店地址"></el-input>
                 </el-form-item>
-                <el-form-item label="门店负责人">
-                    <el-input disabled v-model="form.name" placehoder="自动生成"></el-input>
+                <el-form-item label="负责人">
+                    <el-input v-model="storeManager" placeholder="负责人"></el-input>
                 </el-form-item>
-                <el-row>
-                    <el-col>
+                <el-form-item label="负责人手机">
+                    <el-input v-model="managerPhone" placeholder="负责人手机"></el-input>
+                </el-form-item>
+                <el-form-item label="负责人邮箱">
+                    <el-input v-model="managerEmail" placeholder="负责人邮箱"></el-input>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">新增</el-button>
                     <el-button>取消</el-button>
                 </el-form-item>
-                    </el-col>
-                </el-row>
             </el-form>
         </div>
 
@@ -35,24 +34,29 @@
 </template>
 
 <script>
+    import jquery from 'jquery'
+    import config from '../common/config.vue'
     export default {
         data: function(){
             return {
-                form: {
-                    name: '',
-                    region: '',
-                    date1: '',
-                    date2: '',
-                    delivery: true,
-                    type: ['步步高'],
-                    resource: '小天才',
-                    desc: ''
-                }
+                storeName:'',
+                storeAddr:'',
+                storeManager:'',
+                managerPhone:'',
+                managerEmail:''
             }
         },
         methods: {
             onSubmit() {
-                this.$message.success('提交成功！');
+                var $data = this.$data;
+                //this.$message.success('提交成功！');
+                jquery.ajax({
+                    url:config.server+"/store/addStore",
+                    data:$data,
+                    dataType:'jsonp'
+                }).then((resp)=>{
+                    console.log(resp)
+                })
             }
         }
     }

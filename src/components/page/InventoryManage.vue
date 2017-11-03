@@ -29,7 +29,7 @@
             </el-table-column>
             <el-table-column prop="usedStock" label="已用数量" width="100">
             </el-table-column>
-            <el-table-column prop="stockUnit" label="库存单位" width="100">
+            <el-table-column prop="storeName" label="仓库" width="100">
             </el-table-column>
             <el-table-column prop="stockType" label="库存类型" width="100" :formatter="formatStockType">
             </el-table-column>
@@ -91,23 +91,7 @@
             data(){
                 const self = this;
                 return self.tableData.filter(function(d){
-                	//console.log(d)
                 	return d;
-                    // let is_del = false;
-                    // for (let i = 0; i < self.del_list.length; i++) {
-                    //     if(d.name === self.del_list[i].name){
-                    //         is_del = true;
-                    //         break;
-                    //     }
-                    // }
-                    // if(!is_del){
-                    //     if(d.address.indexOf(self.select_cate) > -1 && 
-                    //         (d.name.indexOf(self.select_word) > -1 ||
-                    //         d.address.indexOf(self.select_word) > -1)
-                    //     ){
-                    //         return d;
-                    //     }
-                    // }
                 })
             }
         },
