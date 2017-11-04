@@ -26,13 +26,13 @@
                 <el-form-item label="入库数量" >
                      <el-input v-model="inStockAmt"></el-input>
                 </el-form-item>
-                <el-form-item label="门店">
-                     <el-select v-model="storeCode" placeholder="请选择">
+                <el-form-item label="仓库">
+                     <el-select v-model="warehouseCode" placeholder="请选择">
                         <el-option
-                          v-for="item in storeSelection"
-                          :key="item.storeCode"
-                          :label="item.storeName"
-                          :value="item.storeCode">
+                          v-for="item in warehouseSelection"
+                          :key="item.warehouseCode"
+                          :label="item.warehouseName"
+                          :value="item.warehouseCode">
                         </el-option>
                       </el-select>
                 </el-form-item>
@@ -54,8 +54,8 @@
             return {
                 item:{},
                 inStockAmt:0,
-                storeCode:'',
-                storeSelection:[]
+                warehouseCode:'',
+                warehouseSelection:[]
             }
         },
         methods: {
@@ -66,7 +66,7 @@
                     data:{
                         materialCode:self.item.materialCode,
                         instockAmt:self.inStockAmt,
-                        storeCode:self.storeCode
+                        warehouseCode:self.warehouseCode
                     },
                     dataType:'jsonp'
                 }).then(function(resp){
@@ -99,7 +99,10 @@
         },
         mounted(){
             this.initData();
-            config.getAllStore((resp)=>this.storeSelection=resp.value.values);
+            config.getWarehouse({},(resp)=>{
+                console.log(resp)
+                this.warehouseSelection=resp.value.values
+            });
         },
         activated(){
 

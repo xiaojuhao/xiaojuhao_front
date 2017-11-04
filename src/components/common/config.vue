@@ -19,6 +19,24 @@
 				cb && cb(resp)
 			})
 		},
+		getWarehouse:function(param,cb){
+			jquery.ajax({
+				url:this.server+"/warehouse/queryWarehouses",
+				data:param,
+				dataType:'jsonp'
+			}).then((resp)=>{
+				cb && cb(resp)
+			})
+		},
+		getWarehouseByCode:function(code,cb){
+			jquery.ajax({
+				url:this.server+"/warehouse/queryWarehouses",
+				data:{warehouseCode:code},
+				dataType:'jsonp'
+			}).then((resp)=>{
+				cb && cb(resp)
+			})
+		},
 		login:function(data,cb,fcb){
 			jquery.ajax({
 				url:this.server+"/user/login",

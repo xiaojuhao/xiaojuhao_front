@@ -18,18 +18,18 @@
                     <span>{{item.currStock}}</span>
                 </el-form-item>
                 <el-form-item label="仓库">
-                    <span>{{item.storeName}}</span>
+                    <span>{{item.warehouseName}}</span>
                 </el-form-item>
                 <el-form-item label="调拨数量" >
                      <el-input v-model="diaoboAmt"></el-input>
                 </el-form-item>
                 <el-form-item label="拨出仓库">
-                     <el-select v-model="toStoreCode" placeholder="请选择">
+                     <el-select v-model="toWarehouseCode" placeholder="请选择">
                         <el-option
-                          v-for="item in storeSelection"
-                          :key="item.storeCode"
-                          :label="item.storeName"
-                          :value="item.storeCode">
+                          v-for="item in warehouseSelection"
+                          :key="item.warehouseCode"
+                          :label="item.warehouseName"
+                          :value="item.warehouseCode">
                         </el-option>
                       </el-select>
                 </el-form-item>
@@ -51,8 +51,8 @@
             return {
                 item:{},
                 diaoboAmt:0,
-                allStore:[],
-                toStoreCode:''
+                allWarehouse:[],
+                toWarehouseCode:''
             }
         },
         methods: {
@@ -63,7 +63,7 @@
                     data:{
                         materialCode:self.item.materialCode,
                         diaoboAmt:self.diaoboAmt,
-                        storeCode:self.item.storeCode,
+                        warehouseCode:self.item.warehouseCode,
                         toStoreCode:self.toStoreCode
                     },
                     dataType:'jsonp'
@@ -87,10 +87,10 @@
             }
         },
         computed:{
-            storeSelection:function(p){
-                return this.allStore.filter((d)=>{
+            warehouseSelection:function(p){
+                return this.allWarehouse.filter((d)=>{
                     //过滤拨出仓库
-                    if(d.storeCode != this.item.storeCode){
+                    if(d.warehouseCode != this.item.warehouseCode){
                         return d;
                     }
                 });
@@ -98,7 +98,7 @@
         },
         mounted(){
             this.initData();
-            config.getAllStore((resp)=>this.allStore=resp.value.values);
+            config.getWarehouse({},(resp)=>this.allWarehouse=resp.value.values);
         },
         activated(){
 

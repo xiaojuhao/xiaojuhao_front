@@ -46,16 +46,28 @@ export default new Router({
                     component: resolve => require(['../components/page/MaterialManage.vue'], resolve)    // Vue-Quill-Editor组件
                 },
                 {
+                    path: '/materialManagePage',
+                    component: resolve => require(['../components/page/MaterialManagePage.vue'], resolve)    // Vue-Quill-Editor组件
+                },
+                {
                     path: '/dishesManage',
                     component: resolve => require(['../components/page/dishesManage.vue'], resolve)     // Vue-Quill-Editor组件
                 },
                 {
-                    path: '/wharehouseManage',
-                    component: resolve => require(['../components/page/wharehouseManage.vue'], resolve)       // Vue-Core-Image-Upload组件
+                    path: '/warehouseManage',
+                    component: resolve => require(['../components/page/warehouseManage.vue'], resolve)       // Vue-Core-Image-Upload组件
+                },
+                {
+                    path: '/warehouseManagePage',
+                    component: resolve => require(['../components/page/warehouseManagePage.vue'], resolve)       // Vue-Core-Image-Upload组件
                 },
                 {
                     path: '/storeManage',
                     component: resolve => require(['../components/page/storeManage.vue'], resolve)   // vue-schart组件
+                },
+                {
+                    path: '/storeManagePage',
+                    component: resolve => require(['../components/page/storeManagePage.vue'], resolve)   // vue-schart组件
                 },
                 {
                     path: '/inventoryOut',

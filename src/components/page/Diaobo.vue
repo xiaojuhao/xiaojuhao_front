@@ -15,12 +15,12 @@
               :value="item.code">
             </el-option>
           </el-select>
-            <el-select v-model="query.storeCode" clearable placeholder="仓库">
+            <el-select v-model="query.warehouseCode" clearable placeholder="仓库">
                 <el-option
-                    v-for="item in storeSelection"
-                    :key="item.storeCode"
-                    :label="item.storeName"
-                    :value="item.storeCode">
+                    v-for="item in warehouseSelection"
+                    :key="item.warehouseCode"
+                    :label="item.warehouseName"
+                    :value="item.warehouseCode">
                 </el-option>
             </el-select>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
@@ -41,13 +41,11 @@
             </el-table-column>
             <el-table-column prop="usedStock" label="已用数量" width="100">
             </el-table-column>
-            <el-table-column prop="storeName" label="仓库" width="100">
-            </el-table-column>
-            <el-table-column prop="stockType" label="库存类型" width="100" :formatter="formatStockType">
+            <el-table-column prop="warehouseName" label="仓库" width="200">
             </el-table-column>
             <el-table-column prop="modifier" label="修改人" width="100">
             </el-table-column>
-            <el-table-column label="操作" width="150">
+            <el-table-column label="操作" fixed="right" width="100">
                 <template scope="scope">
                     <el-button size="small" type="primary" @click="diaobo(scope.$index, scope.row)">调拨</el-button>
                 </template>
@@ -65,7 +63,6 @@
 
 <script>
     import config from '../common/config.vue'
-    import OutStock from './OutStock.vue'
     import jquery from 'jquery'
     export default {
         data() {
@@ -75,18 +72,15 @@
                 cur_page: 1,
                 pageSize:5,
                 totalRows:0,
-                multipleSelection: [],
-                select_cate: '',
-                select_word: '',
                 loadingState: false,
                 del_list: [],
                 is_search: false,
                 query:{
                     materialCode:'',
                     stockType:'2',
-                    storeCode:''
+                    warehouseCode:''
                 },
-                storeSelection:[],
+                warehouseSelection:[],
                 materialSelection:[],
                 showOutStock:false
             }
@@ -98,10 +92,10 @@
             this.getData();
             var $this = this;
             jquery.ajax({
-                url:config.server+"/store/getAllStore",
+                url:config.server+"/warehouse/queryWarehouses",
                 dataType:'jsonp'
             }).then((resp)=>{
-                $this.storeSelection = resp.value.values;
+                $this.warehouseSelection = resp.value.values;
             })
         },
         activated(){
@@ -129,7 +123,7 @@
                         pageSize:self.$data.pageSize,
                         pageNo:self.$data.cur_page,
                         materialCode:self.$data.query.materialCode,
-                        storeCode:self.$data.query.storeCode,
+                        warehouseCode:self.$data.query.warehouseCode,
                         stockType:self.$data.query.stockType
                     },
                     dataType: 'jsonp'

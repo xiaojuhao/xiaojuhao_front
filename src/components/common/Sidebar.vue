@@ -64,7 +64,7 @@
                                 title: '菜品管理'
                             },
                             {
-                                index: 'wharehouseManage',
+                                index: 'warehouseManage',
                                 title: '仓库管理'
                             },
                             {

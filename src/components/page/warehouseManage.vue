@@ -3,7 +3,7 @@
         <div class="handle-box">
             <el-button round @click="queryData()">查询列表</el-button>
             <div style="position:relative; float:right; ">
-                <el-button round @click="edit()">增加新门店</el-button>
+                <el-button round @click="edit()">增加仓库</el-button>
             </div>
         </div>
         <el-table :data="queryList" border style="width: 100%"
@@ -13,13 +13,13 @@
             element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column prop="id" label="ID" sortable width="100">
             </el-table-column>
-            <el-table-column prop="storeCode" label="门店编码" width="200">
+            <el-table-column prop="warehouseCode" label="仓库编码" width="200">
             </el-table-column>
-            <el-table-column prop="storeName" label="门店名称" width="150">
+            <el-table-column prop="warehouseName" label="仓库名称" width="150">
             </el-table-column>
-            <el-table-column prop="storeManager" label="负责人" width="120">
+            <el-table-column prop="warehouseManager" label="负责人" width="120">
             </el-table-column>
-            <el-table-column prop="storeAddr" label="门店地址" width="">
+            <el-table-column prop="warehouseAddr" label="仓库地址" width="">
             </el-table-column>
             <el-table-column label="操作" width="100">
                 <template scope="scope">
@@ -39,12 +39,10 @@
 
 <script>
     import config from '../common/config.vue'
-    import OutStock from './OutStock.vue'
     import jquery from 'jquery'
     export default {
         data() {
             return {
-                url: './static/vuetable.json',
                 tableData: [],
                 pageNo: 1,
                 pageSize: 20,
@@ -55,7 +53,7 @@
         },
         methods: {
             handleCurrentChange(val){
-                this.pageNo = val;
+                this.$data.pageNo = val;
                 this.queryData();
             },
             queryData(){
@@ -64,7 +62,7 @@
                 let self = this;
                 self.$data.loadingState = true;
                 jquery.ajax({
-                    url:config.server+'/store/getAllStore',
+                    url:config.server+'/warehouse/queryWarehouses',
                     data:{
                         pageSize:self.$data.pageSize,
                         pageNo:self.$data.pageNo
@@ -89,7 +87,7 @@
                 })
             },
             edit(index, item){
-                this.$router.push({path:"/storeManagePage",query:{storeCode:item && item.storeCode}})
+                this.$router.push({path:"/warehouseManagePage",query:{warehouseCode:item && item.warehouseCode}})
             }
         },
         mounted(){
