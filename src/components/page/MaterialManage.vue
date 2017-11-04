@@ -7,6 +7,7 @@
                 @select="handleSelect">
             </el-autocomplete>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
+            <el-button type="primary" icon="search" @click="search22">搜索22</el-button>
             <div style="position:relative; float:right; ">
                 <el-button round @click="edit()">增加</el-button>
             </div>
@@ -45,6 +46,7 @@
 </template>
 
 <script>
+    import * as functions from '../common/bus.js'
     import config from '../common/config.vue'
     import OutStock from './OutStock.vue'
     import jquery from 'jquery'
@@ -76,6 +78,10 @@
 
         },
         methods: {
+            search22(){
+                console.log(functions.store.funa())
+                console.log(functions.store.funb())
+            },
             handleCurrentChange(val){
                 this.pageNo = val;
                 this.queryData();
