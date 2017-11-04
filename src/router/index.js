@@ -74,6 +74,10 @@ export default new Router({
                     component: resolve => require(['../components/page/Diaobo.vue'], resolve)    // 拖拽列表组件
                 },
                 {
+                    path: '/diaobopage',
+                    component: resolve => require(['../components/page/DiaoboPage.vue'], resolve)    // 拖拽列表组件
+                },
+                {
                     path: '/waitingTask',
                     component: resolve => require(['../components/page/IndexInfo.vue'], resolve)    // 拖拽列表组件
                 },
