@@ -74,13 +74,17 @@
                         ]
                     },
                     {
-                        icon: 'el-icon-setting',
+                        icon: 'el-icon-menu',
                         index: '4',
                         title: '进销存管理',
                         subs: [
                             {
-                                index: 'inventoryManage',
-                                title: '出库入库'
+                                index: 'inventoryOut',
+                                title: '出库管理'
+                            },
+                            {
+                                index: 'inventoryIn',
+                                title: '入库管理'
                             },
                             {
                                 index: 'pandian',
@@ -93,7 +97,7 @@
                         ]
                     },
                     {
-                        icon: 'el-icon-setting',
+                        icon: 'el-icon-menu',
                         index: '5',
                         title: '任务管理',
                         subs: [
@@ -111,14 +115,7 @@
             }
         },
         created: function(){
-            // var jsonp = require('jsonp');
-            // var datax = this;
-            // jsonp('http://localhost:8080/menu',null,function(err,data){
-            //     console.log(data.value)
-            //     console.log(datax.items)
-            //     datax.items = data.value
-            //     console.log(datax.$router)
-            // })
+            
         },
         computed:{
             onRoutes(){

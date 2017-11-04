@@ -44,11 +44,11 @@
                 self.$refs[formName].validate((valid) => {
                     if (valid) {
                         self.$data.tips = "登录中.....";
-                        var jsonp = require('jsonp')
-                        var url = config.server+'/user/login?userCode='+self.$data.ruleForm.username;
-                        url += "&password="+self.$data.ruleForm.password;
-                        jsonp(url,null,function(err,resp){
-                            //console.log(resp)
+                        var data = {
+                            userCode:self.$data.ruleForm.username,
+                            password:self.$data.ruleForm.password
+                        }
+                        config.login(data,(resp)=>{
                             if(resp.code != 200){
                                 self.$data.tips = resp.message;
                             }else{
@@ -57,11 +57,9 @@
                                 localStorage.setItem('ms_username',userinfo.userName);
                                 self.$router.push('/home');
                             }
-                        });
-                       //
+                        })
                        return true;
                     } else {
-                        console.log('error submit!!');
                         return false;
                     }
                 });

@@ -6,10 +6,13 @@
                 :trigger-on-focus="false"
                 @select="handleSelect">
             </el-autocomplete>
-            <el-input v-model="query.code" placeholder="原料编码" class="handle-input mr5" style="width:150px"></el-input>
-            <el-select v-model="select_cate" placeholder="库存类型" class="handle-select mr10">
-                <el-option key="1" label="总库" value="1"></el-option>
-                <el-option key="2" label="分库" value="2"></el-option>
+            <el-select v-model="query.storeCode" clearable placeholder="仓库">
+                <el-option
+                    v-for="item in storeSelection"
+                    :key="item.storeCode"
+                    :label="item.storeName"
+                    :value="item.storeCode">
+                </el-option>
             </el-select>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
@@ -31,11 +34,11 @@
             </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位" width="100">
             </el-table-column>
-            <el-table-column prop="stockType" label="库存类型" width="100" :formatter="formatStockType">
+            <el-table-column prop="storeName" label="仓库" width="100">
             </el-table-column>
             <el-table-column prop="modifier" label="修改人" width="100">
             </el-table-column>
-            <el-table-column label="操作"fixed="right" width="150">
+            <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
                     <el-button size="small" type="primary" @click="correctStock(scope.$index, scope.row)">盘点库存</el-button>
                 </template>
@@ -69,6 +72,7 @@
                 select_word: '',
                 loadingState: false,
                 del_list: [],
+                storeSelection:[],
                 is_search: false,
                 query:{
                     code:'',
@@ -81,8 +85,15 @@
             console.log('created......')
         },
         mounted(){
-            console.log('mounnted......')
             this.getData();
+            var $this = this;
+            jquery.ajax({
+                url:config.server+"/store/getAllStore",
+                dataType:'jsonp'
+            }).then((resp)=>{
+                console.log(resp)
+                $this.storeSelection = resp.value.values;
+            })
         },
         activated(){
             console.log("activated......");
@@ -107,7 +118,10 @@
                     url:config.server+'/busi/queryMaterialsStock',
                     data:{
                         pageSize:self.$data.pageSize,
-                        pageNo:self.$data.cur_page
+                        pageNo:self.$data.cur_page,
+                        materialCode:self.$data.query.materialCode,
+                        storeCode:self.$data.query.storeCode,
+                        stockType:'2'
                     },
                     dataType: 'jsonp'
                 }).then(function(resp){

@@ -12,7 +12,7 @@
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
                 <el-form-item label="原料编码">
-                    <el-input disabled v-model="form.name" placehoder="自动生成"></el-input>
+                    <el-input disabled placehoder="自动生成"></el-input>
                 </el-form-item>
                 <el-form-item label="单位">
                     <el-select v-model="form.region" placeholder="请选择">
@@ -26,7 +26,6 @@
                     <el-col>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">新增</el-button>
-                    <el-button>取消</el-button>
                 </el-form-item>
                     </el-col>
                 </el-row>
@@ -38,6 +37,7 @@
 
 <script>
     import config from '../common/config.vue'
+    import jquery from 'jquery'
     export default {
         data: function(){
             return {
@@ -57,12 +57,17 @@
             onSubmit() {
                 //this.$message.success('提交成功！');
                 let self = this;
-                var jsonp = require('jsonp')
-                jsonp(config.server+'/busi/addMaterials?canSplit=N&materialName='+this.$data.form.name,
-                null,
-                function(err,resp){
-                    console.log(resp)
-                });
+                jquery.ajax({
+                    url:config.server+'/busi/addMaterials',
+                    data:{
+                        materialName:this.$data.form.name,
+                        canSplit:'N'
+                    },
+                    dataType:'jsonp'
+                }).then((resp)=>{
+                    self.$message.success("新增成功")
+                })
+                
             }
         },
         created(){

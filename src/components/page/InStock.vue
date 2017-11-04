@@ -81,11 +81,10 @@
                 this.$router.go(-1)
             },
             initData() {
-                var jsonp = require('jsonp')
+                var stockId = this.$route.query.stockId;
                 var $data = this;
-                jsonp(config.server+"/busi/queryMaterialsStockById?id="+this.$route.query.stockId,null,function(err,data){
-                    //console.log(data)
-                    $data.item = data.value;
+                config.queryMaterialsStockById(stockId,(resp)=>{
+                    $data.item = resp.value;
                 })
             }
         },
@@ -100,14 +99,7 @@
         },
         mounted(){
             this.initData();
-            var $this = this;
-            jquery.ajax({
-                url:config.server+"/store/getAllStore",
-                dataType:'jsonp'
-            }).then((resp)=>{
-                console.log(resp)
-                $this.storeSelection = resp.value.values;
-            })
+            config.getAllStore((resp)=>this.storeSelection=resp.value.values);
         },
         activated(){
 

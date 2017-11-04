@@ -1,19 +1,11 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-autocomplete class="inline-input" v-model="query.name"
-                :fetch-suggestions="querySearch" placeholder="原料名称"
-                :trigger-on-focus="false"
-                @select="handleSelect">
-            </el-autocomplete>
-            <el-select v-model="query.storeCode" clearable placeholder="仓库">
-                <el-option
-                    v-for="item in storeSelection"
-                    :key="item.storeCode"
-                    :label="item.storeName"
-                    :value="item.storeCode">
-                </el-option>
-            </el-select>
+            <el-autocomplete class="inline-input" v-model="query.materialCode"
+      			:fetch-suggestions="querySearch" placeholder="原料编码"
+      			:trigger-on-focus="false"
+      			@select="handleSelect">
+      		</el-autocomplete>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
         <el-table :data="data" border style="width: 100%"
@@ -24,30 +16,23 @@
             
             <el-table-column prop="id" label="ID" sortable width="100">
             </el-table-column>
-            <el-table-column prop="materialName" label="原料名称" width="120">
+            <el-table-column prop="materialName" label="原料名称" width="220">
             </el-table-column>
-            <el-table-column prop="materialCode" label="原料编码" width="100">
+            <el-table-column prop="materialCode" label="原料编码" width="150">
             </el-table-column>
-            <el-table-column prop="currStock" label="当前库存" width="100">
+            <el-table-column prop="currStock" label="入库总量" width="150">
             </el-table-column>
-            <el-table-column prop="usedStock" label="已用数量" width="100">
+            <el-table-column prop="modifier" label="修改人" width="">
             </el-table-column>
-            <el-table-column prop="stockUnit" label="库存单位" width="100">
-            </el-table-column>
-            <el-table-column prop="storeName" label="仓库" width="100">
-            </el-table-column>
-            <el-table-column prop="modifier" label="修改人" width="100">
-            </el-table-column>
-            <el-table-column label="操作" fixed="right" width="150">
+            <el-table-column label="操作" width="150">
                 <template scope="scope">
-                    <el-button size="small" type="primary" @click="correctStock(scope.$index, scope.row)">盘点库存</el-button>
+                    <el-button size="small" type="primary" @click="instock(scope.$index, scope.row)">入库</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="pagination">
             <el-pagination
                     @current-change ="handleCurrentChange"
-                    :current-page.sync="cur_page"
                     layout="prev, pager, next"
                     :total="totalRows" :page-size="pageSize">
             </el-pagination>
@@ -56,8 +41,8 @@
 </template>
 
 <script>
-    import config from '../common/config.vue'
-    import OutStock from './OutStock.vue'
+	import config from '../common/config.vue'
+	import OutStock from './OutStock.vue'
     import jquery from 'jquery'
     export default {
         data() {
@@ -72,11 +57,9 @@
                 select_word: '',
                 loadingState: false,
                 del_list: [],
-                storeSelection:[],
                 is_search: false,
                 query:{
-                    code:'',
-                    name:''
+                	materialCode:''
                 },
                 showOutStock:false
             }
@@ -85,15 +68,7 @@
             console.log('created......')
         },
         mounted(){
-            this.getData();
-            var $this = this;
-            jquery.ajax({
-                url:config.server+"/store/getAllStore",
-                dataType:'jsonp'
-            }).then((resp)=>{
-                console.log(resp)
-                $this.storeSelection = resp.value.values;
-            })
+			this.getData();
         },
         activated(){
             console.log("activated......");
@@ -102,7 +77,7 @@
             data(){
                 const self = this;
                 return self.tableData.filter(function(d){
-                    return d;
+                	return d;
                 })
             }
         },
@@ -119,9 +94,9 @@
                     data:{
                         pageSize:self.$data.pageSize,
                         pageNo:self.$data.cur_page,
-                        materialCode:self.$data.query.materialCode,
-                        storeCode:self.$data.query.storeCode,
-                        stockType:'2'
+                        materialCode:self.$data.materialCode,
+                        storeCode:'M000',
+                        stockType:'1'
                     },
                     dataType: 'jsonp'
                 }).then(function(resp){
@@ -146,7 +121,6 @@
                 })
             },
             search(){
-                this.cur_page = 1;
                 this.tableData = [];
                 this.getData();
             },
@@ -156,30 +130,11 @@
             filterTag(value, row) {
                 return row.tag === value;
             },
-            correctStock(index, item) {
-                this.$prompt("请输入【"+item.materialName+"-"+item.materialCode+"】的真实库存", '判断库存', {
-                  confirmButtonText: '确定',
-                  cancelButtonText: '取消',
-                  inputPattern: /^\d+(\.\d{1,2})?$/,
-                  inputErrorMessage: '库存数字不正确'
-                }).then(({ value }) => {
-                    jquery.ajax({
-                        url:config.server+"/busi/correctStock",
-                        data:{
-                            id:item.id,
-                            materialCode:item.materialCode,
-                            realStock:value
-                        },
-                        dataType:'jsonp'
-                    }).then((resp)=>{
-                        item.currStock = resp.value.currStock;
-                        this.$message({type:'success',message:"库存盘点成功"})
-                    }).fail((resp)=>{
-                        console.log('fails')
-                    })
-                }).catch(() => {
-                  //取消操作     
-                });
+            outstock(index, item) {
+                // this.$message('编辑第'+(index+1)+'行');
+                //console.log(row)
+                this.$router.push({path:"/outStock",query:{stockId:item.id}})
+               // this.$data.showOutStock=true;
             },
             instock(index, item) {
                 this.$router.push({path:"/inStock",query:{stockId:item.id}})
@@ -205,15 +160,15 @@
                 this.multipleSelection = val;
             },
             handleSelect(item){
-                this.$data.query.name=item.value;
+            	this.$data.query.name=item.value;
             },
             querySearch(queryString,cb){
-                var data = [];
-                data.push({id:1,value:'aaaaa'})
-                data.push({id:2,value:'bbbbb'})
-                data.push({id:3,value:'ccccc'})
-                console.log(this.$data.query)
-                cb(data)
+            	var data = [];
+            	data.push({id:1,value:'aaaaa'})
+            	data.push({id:2,value:'bbbbb'})
+            	data.push({id:3,value:'ccccc'})
+            	console.log(this.$data.query)
+            	cb(data)
             }
         }
     }

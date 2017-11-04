@@ -31,7 +31,7 @@ export default new Router({
                 },
                 {
                     path: '/userManage',
-                    component: resolve => require(['../components/page/IndexInfo.vue'], resolve)
+                    component: resolve => require(['../components/page/UserManage.vue'], resolve)
                 },
                 {
                     path: '/roleManage',
@@ -58,8 +58,12 @@ export default new Router({
                     component: resolve => require(['../components/page/storeManage.vue'], resolve)   // vue-schart组件
                 },
                 {
-                    path: '/inventoryManage',
-                    component: resolve => require(['../components/page/inventoryManage.vue'], resolve)    // 拖拽列表组件
+                    path: '/inventoryOut',
+                    component: resolve => require(['../components/page/inventoryOutManage.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                    path: '/inventoryIn',
+                    component: resolve => require(['../components/page/inventoryInManage.vue'], resolve)    // 拖拽列表组件
                 },
                 {
                     path: '/pandian',

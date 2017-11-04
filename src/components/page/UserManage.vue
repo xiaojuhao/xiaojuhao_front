@@ -1,25 +1,5 @@
 <template>
     <div class="table">
-        <div class="handle-box">
-            <el-autocomplete class="inline-input" v-model="query.materialCode"
-      			:fetch-suggestions="querySearch" placeholder="原料编码"
-      			:trigger-on-focus="false"
-      			@select="handleSelect">
-      		</el-autocomplete>
-            <el-select v-model="query.stockType" clearable placeholder="库存类型" class="handle-select mr10">
-                <el-option key="1" label="总库" value="1"></el-option>
-                <el-option key="2" label="分库" value="2"></el-option>
-            </el-select>
-            <el-select v-model="query.storeCode" clearable placeholder="仓库">
-                <el-option
-                    v-for="item in storeSelection"
-                    :key="item.storeCode"
-                    :label="item.storeName"
-                    :value="item.storeCode">
-                </el-option>
-            </el-select>
-            <el-button type="primary" icon="search" @click="search">搜索</el-button>
-        </div>
         <el-table :data="data" border style="width: 100%"
             v-loading="loadingState"
             element-loading-text="拼命加载中"
@@ -28,24 +8,14 @@
             
             <el-table-column prop="id" label="ID" sortable width="100">
             </el-table-column>
-            <el-table-column prop="materialName" label="原料名称" width="120">
+            <el-table-column prop="userCode" label="用户编码" width="120">
             </el-table-column>
-            <el-table-column prop="materialCode" label="原料编码" width="100">
-            </el-table-column>
-            <el-table-column prop="currStock" label="当前库存" width="100">
-            </el-table-column>
-            <el-table-column prop="usedStock" label="已用数量" width="100">
-            </el-table-column>
-            <el-table-column prop="storeName" label="仓库" width="100">
-            </el-table-column>
-            <el-table-column prop="stockType" label="库存类型" width="100" :formatter="formatStockType">
-            </el-table-column>
-            <el-table-column prop="modifier" label="修改人" width="100">
-            </el-table-column>
-            <el-table-column label="操作"fixed="right" width="150">
+            <el-table-column prop="userName" label="用户名称"></el-table-column>
+            
+            <el-table-column label="操作" width="250">
                 <template scope="scope">
-                	<el-button size="small" type="primary" @click="outstock(scope.$index, scope.row)">出库</el-button>
-                    <el-button size="small" type="primary" @click="instock(scope.$index, scope.row)">入库</el-button>
+                	<el-button size="small" type="primary" @click="update(scope.$index, scope.row)">修改</el-button>
+                    <el-button size="small" type="primary" @click="resetpassword(scope.$index, scope.row)">重置密码</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -118,36 +88,9 @@
             },
             getData(){
                 let self = this;
-                self.$data.loadingState = true;
-                jquery.ajax({
-                    url:config.server+'/busi/queryMaterialsStock',
-                    data:{
-                        pageSize:self.$data.pageSize,
-                        pageNo:self.$data.cur_page,
-                        materialCode:self.$data.query.materialCode,
-                        storeCode:self.$data.query.storeCode,
-                        stockType:self.$data.query.stockType
-                    },
-                    dataType: 'jsonp'
-                }).then(function(resp){
-                    if(resp.code!=200){
-                        self.$message.error(resp.message)
-                        return;
-                    }
-                    var value = resp.value;
-                    if(!value){
-                       self.$message.error("服务端没有返回数据")
-                       return;
-                    }
-                    self.tableData = value.values;
-                    self.totalRows = value.totalRows;
-                }).fail(function(resp){
-                    self.$message.error("请求出错")
-                }).done(function(resp){
-                    // self.$notify({
-                    //     title:'请求数据',message:'请求完成',duration:1000,position: 'bottom-right'
-                    // });
-                    self.$data.loadingState = false;
+                config.queryUsers(null,(resp)=>{
+                    console.log(resp)
+                    self.tableData = resp.value.values;
                 })
             },
             search(){
@@ -160,14 +103,12 @@
             filterTag(value, row) {
                 return row.tag === value;
             },
-            outstock(index, item) {
-                // this.$message('编辑第'+(index+1)+'行');
-                //console.log(row)
-                this.$router.push({path:"/outStock",query:{stockId:item.id}})
-               // this.$data.showOutStock=true;
+            update(index, item) {
+                this.$message.error('修改功能尚未实现');
+                
             },
-            instock(index, item) {
-                this.$router.push({path:"/inStock",query:{stockId:item.id}})
+            resetpassword(index, item) {
+                this.$message.error('重置密码功能尚未实现');
             },
             handleEdit(index, row) {
                 this.$message('编辑第'+(index+1)+'行');
