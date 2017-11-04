@@ -1,11 +1,20 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-autocomplete class="inline-input" v-model="query.materialCode"
-      			:fetch-suggestions="querySearch" placeholder="原料编码"
-      			:trigger-on-focus="false"
-      			@select="handleSelect">
-      		</el-autocomplete>
+        <el-select
+            v-model="query.materialCode"
+            filterable clearable
+            remote
+            reserve-keyword
+            placeholder="请输入关键词"
+            :remote-method="remoteMethod">
+            <el-option
+              v-for="item in materialSelection"
+              :key="item.code"
+              :label="item.name"
+              :value="item.code">
+            </el-option>
+          </el-select>
             <el-select v-model="query.storeCode" clearable placeholder="仓库">
                 <el-option
                     v-for="item in storeSelection"
@@ -78,11 +87,12 @@
                     storeCode:''
                 },
                 storeSelection:[],
+                materialSelection:[],
                 showOutStock:false
             }
         },
         created(){
-            console.log('created......')
+            
         },
         mounted(){
 			this.getData();
@@ -91,12 +101,11 @@
                 url:config.server+"/store/getAllStore",
                 dataType:'jsonp'
             }).then((resp)=>{
-                console.log(resp)
                 $this.storeSelection = resp.value.values;
             })
         },
         activated(){
-            console.log("activated......");
+            
         },
         computed: {
             data(){
@@ -189,12 +198,24 @@
             },
             querySearch(queryString,cb){
             	var data = [];
-            	data.push({id:1,value:'aaaaa'})
-            	data.push({id:2,value:'bbbbb'})
-            	data.push({id:3,value:'ccccc'})
-            	console.log(this.$data.query)
+            	config.search({w:queryString},(resp)=>{
+                    data = resp.values;
+                })
             	cb(data)
+            },
+            remoteMethod(query) {
+            if (query !== '') {
+              this.loading = true;
+              setTimeout(() => {
+                this.loading = false;
+                config.search({w:query},(resp)=>{
+                    this.materialSelection = resp.value;
+                })
+              }, 200);
+            } else {
+              this.materialSelection = [];
             }
+          }
         }
     }
 </script>

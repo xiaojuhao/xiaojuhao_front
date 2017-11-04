@@ -40,6 +40,15 @@
 			}).fail((resp)=>{
 				fcb && fcb(resp)
 			})
+		},
+		search:function(param,cb){
+			jquery.ajax({
+				url:this.server+"/s/w",
+				data:param,
+				dataType:'jsonp'
+			}).then((resp)=>{
+				cb && cb(resp)
+			})
 		}
 	}
 </script>
