@@ -13,15 +13,19 @@
             element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column prop="id" label="ID" sortable width="100">
             </el-table-column>
-            <el-table-column prop="warehouseCode" label="仓库编码" width="200">
+            <el-table-column prop="warehouseCode" label="仓库编码" width="150">
             </el-table-column>
             <el-table-column prop="warehouseName" label="仓库名称" width="150">
             </el-table-column>
             <el-table-column prop="warehouseManager" label="负责人" width="120">
             </el-table-column>
-            <el-table-column prop="warehouseAddr" label="仓库地址" width="">
+            <el-table-column prop="warehouseAddr" label="仓库地址" width="150">
             </el-table-column>
-            <el-table-column label="操作" width="100">
+            <el-table-column prop="managerPhone" label="负责人手机" width="120">
+            </el-table-column>
+            <el-table-column prop="managerEmail" label="负责人邮箱" width="250">
+            </el-table-column>
+            <el-table-column label="操作" fixed="right" width="100">
                 <template scope="scope">
                     <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">编辑</el-button>
                 </template>

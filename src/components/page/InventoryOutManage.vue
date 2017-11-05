@@ -41,11 +41,13 @@
             </el-table-column>
             <el-table-column prop="usedStock" label="已用数量" width="100">
             </el-table-column>
-            <el-table-column prop="warehouseName" label="仓库" width="200">
+            <el-table-column prop="stockUnit" label="已用数量" width="100">
             </el-table-column>
-            <el-table-column prop="modifier" label="修改人" width="100">
+            <el-table-column prop="warehouseName" label="仓库" width="150">
             </el-table-column>
-            <el-table-column label="操作" width="150">
+            <el-table-column prop="modifier" label="修改人" width="150">
+            </el-table-column>
+            <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
                 	<el-button size="small" type="primary" @click="outstock(scope.$index, scope.row)">出库</el-button>
                     

@@ -60,7 +60,7 @@
                                 title: '原料管理'
                             },
                             {
-                                index: 'dishesManage',
+                                index: 'recipesManage',
                                 title: '菜品管理'
                             },
                             {

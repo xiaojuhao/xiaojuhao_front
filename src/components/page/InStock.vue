@@ -20,11 +20,16 @@
                 <el-form-item label="已用数量">
                     <span>{{item.usedStock}}</span>
                 </el-form-item>
-                <el-form-item label="库存类型" class="el-form-item2">
+                <el-form-item label="库存类型" >
                     <span>{{stockTypeName}}</span>
                 </el-form-item>
+                <el-form-item label="是否拆分" >
+                    <span>否</span>
+                </el-form-item>
                 <el-form-item label="入库数量" >
-                     <el-input v-model="inStockAmt"></el-input>
+                     <el-input v-model="inStockAmt" class="input-width-short">
+                         <template slot="append">{{item.stockUnit}}</template>
+                     </el-input>
                 </el-form-item>
                 <el-form-item label="仓库">
                      <el-select v-model="warehouseCode" placeholder="请选择">
@@ -49,6 +54,7 @@
 <script>
     import config from '../common/config.vue'
     import jquery from 'jquery'
+    import * as bus from '../common/bus'
     export default {
         data: function(){
             return {
@@ -61,20 +67,15 @@
         methods: {
             onSubmit() {
                 var self = this;
-                jquery.ajax({
-                    url:config.server+"/busi/instock",
-                    data:{
-                        materialCode:self.item.materialCode,
-                        instockAmt:self.inStockAmt,
-                        warehouseCode:self.warehouseCode
-                    },
-                    dataType:'jsonp'
-                }).then(function(resp){
-                    if(resp.code != 200){
-                        self.$message.error(resp.message)
-                        return;
-                    }
+                bus.store.instock({
+                    materialCode:self.item.materialCode,
+                    instockAmt:self.inStockAmt,
+                    warehouseCode:self.warehouseCode
+                }).then((resp)=>{
+                    self.$message("处理成功");
                     self.$router.go(-1);
+                }).fail((resp)=>{
+                    self.$message.error(resp.message);
                 });
             },
             onBack(){
@@ -131,5 +132,8 @@
     margin-top: 10px;
     margin-left: 20%;
     width: 90%;
+  }
+  .input-width-short {
+    width: 150px;
   }
 </style>

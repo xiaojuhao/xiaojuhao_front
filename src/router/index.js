@@ -50,8 +50,8 @@ export default new Router({
                     component: resolve => require(['../components/page/MaterialManagePage.vue'], resolve)    // Vue-Quill-Editor组件
                 },
                 {
-                    path: '/dishesManage',
-                    component: resolve => require(['../components/page/dishesManage.vue'], resolve)     // Vue-Quill-Editor组件
+                    path: '/recipesManage',
+                    component: resolve => require(['../components/page/RecipesManage.vue'], resolve)     // Vue-Quill-Editor组件
                 },
                 {
                     path: '/warehouseManage',

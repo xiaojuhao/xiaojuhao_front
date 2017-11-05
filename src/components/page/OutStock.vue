@@ -20,11 +20,23 @@
                 <el-form-item label="已用数量">
                     <span>{{item.usedStock}}</span>
                 </el-form-item>
-                <el-form-item label="库存类型">
+                <el-form-item label="库存类型" class="el-form-item2">
                     <span>{{stockTypeName}}</span>
                 </el-form-item>
-                <el-form-item label="出库数量" class="el-form-item2">
-                     <el-input v-model="outStockAmt"></el-input>
+                <el-form-item label="出库数量" >
+                     <el-input v-model="outStockAmt" class="input-width-short">
+                         <template slot="append">{{item.stockUnit}}</template>
+                     </el-input>
+                </el-form-item>
+                <el-form-item label="门店">
+                     <el-select v-model="storeCode" placeholder="请选择">
+                        <el-option
+                          v-for="item in storeSelection"
+                          :key="item.storeCode"
+                          :label="item.storeCode + '-' + item.storeName"
+                          :value="item.storeCode">
+                        </el-option>
+                      </el-select>
                 </el-form-item>
                 <el-form-item class="el-form-item-button">
                       <el-button type="primary" @click="onSubmit">提交</el-button>
@@ -38,24 +50,27 @@
 
 <script>
 	import config from '../common/config.vue'
+    import * as bus from '../common/bus'
     export default {
         data: function(){
             return {
                 item:{},
-                outStockAmt:0
+                outStockAmt:0,
+                storeCode:'',
+                storeSelection:[]
             }
         },
         methods: {
             onSubmit() {
-                //this.$message.success('提交成功！');
-                var jsonp = require('jsonp')
-                var $data = this;
-                //console.log($data)
-                var url = config.server+"/busi/outstock?id="+this.$route.query.stockId+"&outstockAmt="+$data.outStockAmt;
-                jsonp(url,null,function(err,data){
-                    console.log(data)
-                })
-                this.$router.go(-1)
+                var $this = this;
+                bus.store.outstock({
+                    id:this.$route.query.stockId,
+                    outstockAmt:$this.outStockAmt,
+                    storeCode:$this.storeCode
+                }).then((resp)=>{
+                    $this.$message("出库成功")
+                    $this.$router.go(-1)
+                });
             },
             onBack(){
                 this.$router.go(-1)
@@ -66,7 +81,13 @@
             	jsonp(config.server+"/busi/queryMaterialsStockById?id="+this.$route.query.stockId,null,function(err,data){
             		//console.log(data)
             		$data.item = data.value;
-            	})
+            	});
+
+                bus.store.getAllStoreList()
+                .then((resp)=>{
+                    $data.storeSelection = resp
+                })
+
             }
         },
         computed:{
@@ -108,5 +129,8 @@
     margin-top: 10px;
     margin-left: 20%;
     width: 90%;
+  }
+  .input-width-short {
+    width: 150px;
   }
 </style>

@@ -1,9 +1,14 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-button round @click="queryData()">查询列表</el-button>
+            <el-autocomplete class="inline-input" v-model="queryCond.materialCode"
+                :fetch-suggestions="querySearch" placeholder="菜品编码"
+                :trigger-on-focus="false"
+                @select="handleSelect">
+            </el-autocomplete>
+            <el-button type="primary" icon="search" @click="search">搜索</el-button>
             <div style="position:relative; float:right; ">
-                <el-button round @click="edit()">增加新门店</el-button>
+                <el-button round @click="edit()">增加菜品</el-button>
             </div>
         </div>
         <el-table :data="queryList" border style="width: 100%"
@@ -13,19 +18,11 @@
             element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column prop="id" label="ID" sortable width="100">
             </el-table-column>
-            <el-table-column prop="storeCode" label="门店编码" width="120">
+            <el-table-column prop="recipeslName" label="菜品名称" width="200">
             </el-table-column>
-            <el-table-column prop="storeName" label="门店名称" width="150">
+            <el-table-column prop="recipesCode" label="菜品编码" width="200">
             </el-table-column>
-            <el-table-column prop="storeManager" label="负责人" width="120">
-            </el-table-column>
-            <el-table-column prop="storeAddr" label="门店地址" width="150">
-            </el-table-column>
-            <el-table-column prop="managerPhone" label="负责人手机" width="130">
-            </el-table-column>
-            <el-table-column prop="managerEmail" label="负责人邮箱" width="220">
-            </el-table-column>
-            <el-table-column label="操作" fixed="right" width="100">
+            <el-table-column label="操作" width="">
                 <template scope="scope">
                     <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">编辑</el-button>
                 </template>
@@ -42,6 +39,7 @@
 </template>
 
 <script>
+    import * as bus from '../common/bus.js'
     import config from '../common/config.vue'
     import OutStock from './OutStock.vue'
     import jquery from 'jquery'
@@ -51,11 +49,26 @@
                 url: './static/vuetable.json',
                 tableData: [],
                 pageNo: 1,
-                pageSize: 20,
+                pageSize: 5,
                 totalRows:0,
                 loadingState: false,
+                queryCond:{
+                    materialCode:''
+                },
                 queryList:[]
             }
+        },
+        created(){
+            
+        },
+        mounted(){
+            this.queryData();
+        },
+        activated(){
+           
+        },
+        computed: {
+
         },
         methods: {
             handleCurrentChange(val){
@@ -63,15 +76,14 @@
                 this.queryData();
             },
             queryData(){
-                this.queryList = [];
-                this.totalRows = 0;
                 let self = this;
                 self.$data.loadingState = true;
                 jquery.ajax({
-                    url:config.server+'/store/getAllStore',
+                    url:config.server+'/recipes/queryRecipes',
                     data:{
                         pageSize:self.$data.pageSize,
-                        pageNo:self.$data.pageNo
+                        pageNo:self.$data.pageNo,
+                        materialCode:self.$data.materialCode
                     },
                     dataType: 'jsonp'
                 }).then(function(resp){
@@ -89,15 +101,33 @@
                 }).fail(function(resp){
                     self.$message.error("请求出错")
                 }).done(function(resp){
+                    // self.$notify({
+                    //     title:'请求数据',message:'请求完成',duration:1000,position: 'bottom-right'
+                    // });
                     self.$data.loadingState = false;
                 })
             },
+            search(){
+                this.queryList = [];
+                this.queryData();
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            handleSelect(item){
+                this.$data.query.name=item.value;
+            },
+            querySearch(queryString,cb){
+                var data = [];
+                data.push({id:1,value:'aaaaa'})
+                data.push({id:2,value:'bbbbb'})
+                data.push({id:3,value:'ccccc'})
+                console.log(this.$data.query)
+                cb(data)
+            },
             edit(index, item){
-                this.$router.push({path:"/storeManagePage",query:{storeCode:item && item.storeCode}})
+                this.$router.push({path:"/materialManagePage",query:{mid:item && item.id}})
             }
-        },
-        mounted(){
-            this.queryData();
         }
     }
 </script>

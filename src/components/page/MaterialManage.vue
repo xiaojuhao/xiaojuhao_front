@@ -7,9 +7,8 @@
                 @select="handleSelect">
             </el-autocomplete>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
-            <el-button type="primary" icon="search" @click="search22">搜索22</el-button>
             <div style="position:relative; float:right; ">
-                <el-button round @click="edit()">增加</el-button>
+                <el-button round @click="edit()">增加原料</el-button>
             </div>
         </div>
         <el-table :data="queryList" border style="width: 100%"
@@ -78,10 +77,6 @@
 
         },
         methods: {
-            search22(){
-                console.log(functions.store.funa())
-                console.log(functions.store.funb())
-            },
             handleCurrentChange(val){
                 this.pageNo = val;
                 this.queryData();
