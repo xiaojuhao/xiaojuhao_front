@@ -18,11 +18,11 @@
             element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column prop="id" label="ID" sortable width="100">
             </el-table-column>
-            <el-table-column prop="recipeslName" label="菜品名称" width="200">
+            <el-table-column prop="recipesName" label="菜品名称" width="200">
             </el-table-column>
-            <el-table-column prop="recipesCode" label="菜品编码" width="200">
+            <el-table-column prop="recipesCode" label="菜品编码" width="">
             </el-table-column>
-            <el-table-column label="操作" width="">
+            <el-table-column label="操作" width="120">
                 <template scope="scope">
                     <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">编辑</el-button>
                 </template>
@@ -78,32 +78,13 @@
             queryData(){
                 let self = this;
                 self.$data.loadingState = true;
-                jquery.ajax({
-                    url:config.server+'/recipes/queryRecipes',
-                    data:{
-                        pageSize:self.$data.pageSize,
-                        pageNo:self.$data.pageNo,
-                        materialCode:self.$data.materialCode
-                    },
-                    dataType: 'jsonp'
-                }).then(function(resp){
-                    if(resp.code!=200){
-                        self.$message.error(resp.message)
-                        return;
-                    }
-                    var value = resp.value;
-                    if(!value){
-                       self.$message.error("服务端没有返回数据")
-                       return;
-                    }
-                    self.queryList = value.values;
-                    self.totalRows = value.totalRows;
-                }).fail(function(resp){
-                    self.$message.error("请求出错")
-                }).done(function(resp){
-                    // self.$notify({
-                    //     title:'请求数据',message:'请求完成',duration:1000,position: 'bottom-right'
-                    // });
+                bus.recipes.queryRecipesPage({
+                    recipesCode:''
+                })
+                .then((page)=>{
+                    self.$data.totalRows = page.totalRows;
+                    self.$data.queryList = page.values;
+                }).done(()=>{
                     self.$data.loadingState = false;
                 })
             },

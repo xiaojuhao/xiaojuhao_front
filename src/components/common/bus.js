@@ -14,6 +14,25 @@ const http = {
 		.then((resp)=>df.resolve(resp))
 		.fail((resp)=>df.reject(resp))
 		return df;
+	},
+	jsonp2(uri,data){
+		var df = jquery.Deferred();
+		jquery.ajax({
+			url: config.server + uri,
+			data:data,
+			dataType:'jsonp'
+		})
+		.then((resp)=>{
+			if(resp.code == "200"){
+				df.resolve(resp.value)
+			}else{
+				df.reject(resp);
+			}
+		})
+		.fail((resp)=>df.reject(resp))
+		;
+
+		return df;
 	}
 }
 export const login = {
@@ -92,19 +111,6 @@ export const recipes = {
 		})
 	},
 	queryRecipesPage(data){
-		var df = jquery.Deferred();
-		jquery.ajax({
-			url:config.server+"/recipes/queryRecipes",
-			data:data,
-			dataType:'jsonp'
-		}).then((resp)=>{
-			if(resp.code == "200"){
-				df.resolve(resp.value);
-			}else{
-				df.reject(resp);
-			}
-		}).fail((resp)=>{
-			df.reject(resp);
-		})
+		return http.jsonp2("/recipes/queryRecipes",data)
 	}
 }
