@@ -107,7 +107,7 @@
                 cb(data)
             },
             edit(index, item){
-                this.$router.push({path:"/materialManagePage",query:{mid:item && item.id}})
+                this.$router.push({path:"/recipesManagePage",query:{code:item && item.recipesCode}})
             }
         }
     }

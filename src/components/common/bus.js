@@ -108,9 +108,13 @@ export const recipes = {
 			}
 		}).fail((resp)=>{
 			df.reject(resp);
-		})
+		});
+		return df;
 	},
 	queryRecipesPage(data){
 		return http.jsonp2("/recipes/queryRecipes",data)
+	},
+	queryRecipesByCode(code){
+		return http.jsonp2("/recipes/queryRecipesByCode",{recipesCode:code})
 	}
 }

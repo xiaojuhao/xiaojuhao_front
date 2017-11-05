@@ -54,6 +54,10 @@ export default new Router({
                     component: resolve => require(['../components/page/RecipesManage.vue'], resolve)     // Vue-Quill-Editor组件
                 },
                 {
+                    path: '/recipesManagePage',
+                    component: resolve => require(['../components/page/RecipesManagePage.vue'], resolve)     // Vue-Quill-Editor组件
+                },
+                {
                     path: '/warehouseManage',
                     component: resolve => require(['../components/page/warehouseManage.vue'], resolve)       // Vue-Core-Image-Upload组件
                 },
