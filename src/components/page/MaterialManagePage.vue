@@ -29,7 +29,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="是否可拆">
-                    <el-switch v-model="form.boolCanSplit" @change="canSplitChange">
+                    <el-switch v-model="form.canSplit" on-text="是" off-text="否" on-value="Y" off-value="N"> 
                     </el-switch>
                 </el-form-item>
                 <el-form-item label="搜索短语">
@@ -61,7 +61,7 @@
                     materialCode:'',
                     utilizationRatio:100,
                     stockUnit:'',
-                    boolCanSplit:'',
+                    canSplit:'',
                     searchKey:'',
                     formulaStr:'',
                     formula:[
@@ -90,9 +90,6 @@
             },
             onCancel(){
                 this.$router.go(-1)
-            },
-            canSplitChange(){
-                
             }
         },
         computed:{
@@ -114,6 +111,7 @@
                     form.materialCode = v.materialCode;
                     form.stockUnit = v.stockUnit;
                     form.searchKey = v.searchKey;
+                    form.canSplit = v.canSplit;
                     form.utilizationRatio = v.utilizationRatio;
                 }
             })
