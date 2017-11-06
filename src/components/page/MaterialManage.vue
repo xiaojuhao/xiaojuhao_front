@@ -22,13 +22,15 @@
             </el-table-column>
             <el-table-column prop="materialCode" label="原料编码" width="150">
             </el-table-column>
+            <el-table-column prop="utilizationRatio" label="利用率(%)" width="120">
+            </el-table-column>
+            <el-table-column prop="storageLife" label="保质期" width="120">
+            </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位" width="120">
             </el-table-column>
             <el-table-column prop="canSplit" label="是否可拆" width="120">
             </el-table-column>
-            <el-table-column prop="modifier" label="最近修改人" width="">
-            </el-table-column>
-            <el-table-column label="操作" width="100">
+            <el-table-column label="操作" fixed="right" width="100">
                 <template scope="scope">
                     <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">编辑</el-button>
                 </template>

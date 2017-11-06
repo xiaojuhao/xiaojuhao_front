@@ -14,6 +14,9 @@
                 <el-form-item label="门店地址">
                     <el-input v-model="form.storeAddr" placeholder="门店地址"></el-input>
                 </el-form-item>
+                <el-form-item label="默认仓库">
+                    <el-input v-model="form.defaultWarehouse" placeholder="默认仓库"></el-input>
+                </el-form-item>
                 <el-form-item label="负责人">
                     <el-input v-model="form.storeManager" placeholder="负责人"></el-input>
                 </el-form-item>

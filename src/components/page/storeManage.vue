@@ -17,6 +17,8 @@
             </el-table-column>
             <el-table-column prop="storeName" label="门店名称" width="150">
             </el-table-column>
+            <el-table-column prop="defaultWharehouse" label="默认仓库" width="150">
+            </el-table-column>
             <el-table-column prop="storeManager" label="负责人" width="120">
             </el-table-column>
             <el-table-column prop="storeAddr" label="门店地址" width="150">

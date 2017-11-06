@@ -99,6 +99,17 @@
                     {
                         icon: 'el-icon-menu',
                         index: '5',
+                        title: '报表',
+                        subs: [
+                            {
+                                index: 'reportOfStock',
+                                title: '库存报表'
+                            }
+                        ]
+                    },
+                    {
+                        icon: 'el-icon-menu',
+                        index: '6',
                         title: '任务管理',
                         subs: [
                             {

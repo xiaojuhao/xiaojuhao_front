@@ -100,6 +100,10 @@ export default new Router({
                 {
                     path: '/myTask',
                     component: resolve => require(['../components/page/IndexInfo.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                    path: '/reportOfStock',
+                    component: resolve => require(['../components/page/ReportOfStock.vue'], resolve)
                 }
             ]
         }

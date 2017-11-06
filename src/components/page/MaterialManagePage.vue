@@ -14,6 +14,12 @@
                 <el-form-item label="原料编码">
                     <el-input disabled v-model="form.materialCode" placehoder="自动生成"></el-input>
                 </el-form-item>
+                <el-form-item label="利用率(%)">
+                    <el-slider v-model="form.utilizationRatio" :min="50" :max="100" :show-input="true"></el-slider>
+                </el-form-item>
+                <el-form-item label="保质期">
+                    <el-input v-model="form.storageLife"></el-input>
+                </el-form-item>
                 <el-form-item label="单位">
                     <el-select v-model="form.stockUnit" placeholder="请选择">
                         <el-option key="bbk" label="个" value="个"></el-option>
@@ -53,9 +59,15 @@
                     id:this.$route.query.mid,
                     materialName:'',
                     materialCode:'',
+                    utilizationRatio:100,
                     stockUnit:'',
                     boolCanSplit:'',
-                    searchKey:''
+                    searchKey:'',
+                    formulaStr:'',
+                    formula:[
+                        {id:1,name:'aaaaaaa'},
+                        {id:2,name:'bbbbbbb'}
+                    ]
                 },
                 rules: {
 
@@ -65,12 +77,14 @@
         methods: {
             onSubmit() {
                 let self = this;
+                this.$data.form.formulaStr = JSON.stringify(this.$data.form.formula);
                 jquery.ajax({
                     url:config.server+'/busi/addMaterials',
                     data:this.$data.form,
                     dataType:'jsonp'
                 }).then((resp)=>{
-                    self.$message.success("新增成功")
+                    self.$message.success("操作成功");
+                    self.$router.go(-1)
                 })
                 
             },
@@ -82,9 +96,7 @@
             }
         },
         computed:{
-            canSplit(){
-                return this.$data.form.boolCanSplit?"Y":"N";
-            }
+           
         },
         created(){
             
@@ -102,6 +114,7 @@
                     form.materialCode = v.materialCode;
                     form.stockUnit = v.stockUnit;
                     form.searchKey = v.searchKey;
+                    form.utilizationRatio = v.utilizationRatio;
                 }
             })
         }
