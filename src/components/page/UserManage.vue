@@ -6,8 +6,6 @@
             element-loading-spinner="el-icon-loading"
             element-loading-background="rgb(0, 0, 0, 0.8)">
             
-            <el-table-column prop="id" label="ID" sortable width="100">
-            </el-table-column>
             <el-table-column prop="userCode" label="用户编码" width="120">
             </el-table-column>
             <el-table-column prop="userName" label="用户名称"></el-table-column>

@@ -22,11 +22,9 @@
             element-loading-spinner="el-icon-loading"
             element-loading-background="rgb(0, 0, 0, 0.8)">
             
-            <el-table-column prop="id" label="ID" sortable width="100">
+            <el-table-column prop="materialCode" label="原料编码" width="100">
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="120">
-            </el-table-column>
-            <el-table-column prop="materialCode" label="原料编码" width="100">
             </el-table-column>
             <el-table-column prop="currStock" label="当前库存" width="100">
             </el-table-column>

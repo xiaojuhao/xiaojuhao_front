@@ -11,8 +11,6 @@
             element-loading-text="拼命加载中"
             element-loading-spinner="el-icon-loading"
             element-loading-background="rgb(0, 0, 0, 0.8)">
-            <el-table-column prop="id" label="ID" sortable width="100">
-            </el-table-column>
             <el-table-column prop="warehouseCode" label="仓库编码" width="150">
             </el-table-column>
             <el-table-column prop="warehouseName" label="仓库名称" width="150">

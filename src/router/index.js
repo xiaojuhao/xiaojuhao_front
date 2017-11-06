@@ -86,6 +86,10 @@ export default new Router({
                     component: resolve => require(['../components/page/Pandian.vue'], resolve)    // 拖拽列表组件
                 },
                 {
+                    path: '/baosun',
+                    component: resolve => require(['../components/page/Baosun.vue'], resolve)
+                },
+                {
                     path: '/diaobo',
                     component: resolve => require(['../components/page/Diaobo.vue'], resolve)    // 拖拽列表组件
                 },

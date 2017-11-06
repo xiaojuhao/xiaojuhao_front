@@ -91,6 +91,10 @@
                                 title: '库存盘点'
                             },
                             {
+                                index: 'baosun',
+                                title: '原料报损'
+                            },
+                            {
                                 index: 'diaobo',
                                 title: '库存调拨'
                             }

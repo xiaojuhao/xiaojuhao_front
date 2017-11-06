@@ -16,11 +16,9 @@
             element-loading-text="拼命加载中"
             element-loading-spinner="el-icon-loading"
             element-loading-background="rgb(0, 0, 0, 0.8)">
-            <el-table-column prop="id" label="ID" sortable width="100">
+            <el-table-column prop="materialCode" label="原料编码" width="150">
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="200">
-            </el-table-column>
-            <el-table-column prop="materialCode" label="原料编码" width="150">
             </el-table-column>
             <el-table-column v-if="canshow" prop="utilizationRatio" label="利用率(%)" width="120">
             </el-table-column>

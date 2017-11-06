@@ -13,12 +13,14 @@
             element-loading-text="拼命加载中"
             element-loading-spinner="el-icon-loading"
             element-loading-background="rgb(0, 0, 0, 0.8)">
-            
-            <el-table-column prop="id" label="ID" sortable width="100">
+            <el-table-column type="expand">
+                <template scope="props">
+                 【待实现】展示{{props.row.materialName}}最近几条入库记录
+                </template>
+            </el-table-column>
+            <el-table-column prop="materialCode" label="原料编码" width="120">
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="220">
-            </el-table-column>
-            <el-table-column prop="materialCode" label="原料编码" width="150">
             </el-table-column>
             <el-table-column prop="currStock" label="入库总量" width="150">
             </el-table-column>
