@@ -22,7 +22,7 @@
             </el-table-column>
             <el-table-column prop="materialCode" label="原料编码" width="150">
             </el-table-column>
-            <el-table-column prop="utilizationRatio" label="利用率(%)" width="120">
+            <el-table-column v-if="canshow" prop="utilizationRatio" label="利用率(%)" width="120">
             </el-table-column>
             <el-table-column prop="storageLife" label="保质期" width="120">
             </el-table-column>
@@ -76,7 +76,9 @@
            
         },
         computed: {
-
+            canshow(){
+                return true;
+            }
         },
         methods: {
             handleCurrentChange(val){
