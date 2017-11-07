@@ -1,7 +1,8 @@
 <script>
 	import jquery from 'jquery'
+	import {config} from './bus'
 	export default {
-		server:'http://localhost:8080/',
+		server:config.server,
 		getAllStore:function(cb){
 			jquery.ajax({
 				url:this.server+"/store/getAllStore",

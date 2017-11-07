@@ -1,6 +1,7 @@
 import jquery from 'jquery'
 
 const config = {
+	//server:'http://47.104.25.105:80/xiaojuhao/'
 	server:'http://localhost:8080/'
 }
 const http = {
@@ -35,6 +36,9 @@ const http = {
 		return df;
 	}
 }
+
+export {config};
+
 export const login = {
 	signin(data){
 		var df = jquery.Deferred();
