@@ -75,7 +75,17 @@ export default new Router({
                 },
                 {
                     path: '/inventoryOut',
-                    component: resolve => require(['../components/page/inventoryOutManage.vue'], resolve)    // 拖拽列表组件
+                    component: resolve => require(['../components/page/inventoryOutManage.vue'], resolve),
+                    children:[
+                        {
+                            path:"/byMaterial",
+                            component: resolve => require(['../components/page/inventoryOutByMaterial.vue'], resolve)
+                        },
+                        {
+                            path:"/byRecipes",
+                            component: resolve => require(['../components/page/inventoryOutByRecipes.vue'], resolve)
+                        }
+                    ]
                 },
                 {
                     path: '/inventoryIn',

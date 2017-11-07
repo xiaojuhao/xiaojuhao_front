@@ -121,4 +121,10 @@ export const recipes = {
 	queryRecipesByCode(code){
 		return http.jsonp2("/recipes/queryRecipesByCode",{recipesCode:code})
 	}
+};
+
+export const busi = {
+	queryMaterialsStockHistory(data){
+		return http.jsonp2("/busi/queryMaterialsStockHistory",data);
+	}
 }

@@ -29,10 +29,13 @@
             v-loading="loadingState"
             element-loading-text="拼命加载中"
             element-loading-spinner="el-icon-loading"
-            element-loading-background="rgb(0, 0, 0, 0.8)">
+            element-loading-background="rgb(0, 0, 0, 0.8)"
+            @expand="expand">
             <el-table-column type="expand">
                 <template scope="props">
-                 【待实现】展示{{props.row.materialName}}最近几条报损记录
+                 <ul>
+                    <li v-for="item in props.row.expands">{{item}}</li>
+                 </ul>
                 </template>
             </el-table-column>
             <el-table-column prop="materialCode" label="原料编码" width="100">
@@ -205,6 +208,14 @@
             } else {
               this.materialSelection = [];
             }
+          },
+          expand(row){
+            row.expands = [
+                "20170102 八佰伴店 报损 20只",
+                "20170103 八佰伴店 报损 21只",
+                "20170105 八佰伴店 报损 5只",
+                "20170112 八佰伴店 报损 12只",
+            ]
           }
         }
     }

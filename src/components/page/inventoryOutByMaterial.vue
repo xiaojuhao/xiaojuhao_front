@@ -1,43 +1,58 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-autocomplete class="inline-input" v-model="query.materialCode"
-      			:fetch-suggestions="querySearch" placeholder="原料编码"
-      			:trigger-on-focus="false"
-      			@select="handleSelect">
-      		</el-autocomplete>
+        <el-select
+            v-model="query.materialCode"
+            filterable clearable
+            remote
+            reserve-keyword
+            placeholder="请输入关键词"
+            :remote-method="remoteMethod">
+            <el-option
+              v-for="item in materialSelection"
+              :key="item.code"
+              :label="item.name"
+              :value="item.code">
+            </el-option>
+          </el-select>
+            <el-select v-model="query.warehouseCode" clearable placeholder="仓库">
+                <el-option
+                    v-for="item in warehouseSelection"
+                    :key="item.warehouseCode"
+                    :label="item.warehouseName"
+                    :value="item.warehouseCode">
+                </el-option>
+            </el-select>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
         <el-table :data="data" border style="width: 100%"
             v-loading="loadingState"
             element-loading-text="拼命加载中"
             element-loading-spinner="el-icon-loading"
-            element-loading-background="rgb(0, 0, 0, 0.8)"
-            @expand="expand">
+            element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column type="expand">
                 <template scope="props">
-                   <table class="gridtable">
-                        <tr>
-                            <th>时间</th><th>操作类型</th><th>数量</th>
-                        </tr>
-                        <tr v-for="item in props.row.extras">
-                            <td>{{item.time}}</td><td>{{item.op}}</td><td>{{item.remark}}</td>
-                        </tr>
-                        
-                    </table>
+                 【待实现】展示{{props.row.materialName}}最近几条出库记录
                 </template>
             </el-table-column>
             <el-table-column prop="materialCode" label="原料编码" width="120">
             </el-table-column>
-            <el-table-column prop="materialName" label="原料名称" width="220">
+            <el-table-column prop="materialName" label="原料名称" width="150">
             </el-table-column>
-            <el-table-column prop="currStock" label="入库总量" width="150">
+            <el-table-column prop="currStock" label="当前库存" width="100">
             </el-table-column>
-            <el-table-column prop="modifier" label="修改人" width="">
+            <el-table-column prop="usedStock" label="已用数量" width="100">
             </el-table-column>
-            <el-table-column label="操作" width="150">
+            <el-table-column prop="stockUnit" label="已用数量" width="100">
+            </el-table-column>
+            <el-table-column prop="warehouseName" label="仓库" width="150">
+            </el-table-column>
+            <el-table-column prop="modifier" label="修改人" width="150">
+            </el-table-column>
+            <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
-                    <el-button size="small" type="primary" @click="instock(scope.$index, scope.row)">入库</el-button>
+                	<el-button size="small" type="primary" @click="outstock(scope.$index, scope.row)">出库</el-button>
+                    
                 </template>
             </el-table-column>
         </el-table>
@@ -70,19 +85,31 @@
                 del_list: [],
                 is_search: false,
                 query:{
-                	materialCode:''
+                	materialCode:'',
+                    stockType:'2',
+                    storeCode:''
                 },
-                showOutStock:false
+                warehouseSelection:[],
+                materialSelection:[],
+                showOutStock:false,
+                radio:''
             }
         },
         created(){
-            console.log('created......')
+            
         },
         mounted(){
 			this.getData();
+            var $this = this;
+            jquery.ajax({
+                url:config.server+"/warehouse/queryWarehouses",
+                dataType:'jsonp'
+            }).then((resp)=>{
+                $this.warehouseSelection = resp.value.values;
+            })
         },
         activated(){
-            console.log("activated......");
+            
         },
         computed: {
             data(){
@@ -105,9 +132,9 @@
                     data:{
                         pageSize:self.$data.pageSize,
                         pageNo:self.$data.cur_page,
-                        materialCode:self.$data.materialCode,
-                        storeCode:'M000',
-                        stockType:'1'
+                        materialCode:self.$data.query.materialCode,
+                        warehouseCode:self.$data.query.warehouseCode,
+                        stockType:self.$data.query.stockType
                     },
                     dataType: 'jsonp'
                 }).then(function(resp){
@@ -175,20 +202,24 @@
             },
             querySearch(queryString,cb){
             	var data = [];
-            	data.push({id:1,value:'aaaaa'})
-            	data.push({id:2,value:'bbbbb'})
-            	data.push({id:3,value:'ccccc'})
-            	console.log(this.$data.query)
+            	config.search({w:queryString},(resp)=>{
+                    data = resp.values;
+                })
             	cb(data)
             },
-            expand(row){
-                row.extras = [
-                    {time:'2017-01-01',op:'入库',remark:'100斤'},
-                    {time:'2017-01-02',op:'入库',remark:'200斤'},
-                    {time:'2017-01-03',op:'入库',remark:'300斤'},
-                    {time:'2017-01-04',op:'入库',remark:'400斤'},
-                ]
+            remoteMethod(query) {
+            if (query !== '') {
+              this.loading = true;
+              setTimeout(() => {
+                this.loading = false;
+                config.search({w:query},(resp)=>{
+                    this.materialSelection = resp.value;
+                })
+              }, 200);
+            } else {
+              this.materialSelection = [];
             }
+          }
         }
     }
 </script>
@@ -196,6 +227,7 @@
 <style scoped>
 .handle-box{
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 .handle-select{
     width: 120px;
@@ -203,30 +235,5 @@
 .handle-input{
     width: 300px;
     display: inline-block;
-}
-table.gridtable {
-    width: 80%;
-    height: 8px;
-    font-family: verdana,arial,sans-serif;
-    color:#333333;
-    border-width: 1px;
-    border-color: #666666;
-    border-collapse: collapse;
-}
-table.gridtable th {
-    border-width: 1px;
-    height: 8px;
-    padding: 8px;
-    border-style: solid;
-    border-color: #666666;
-    background-color: #dedede;
-}
-table.gridtable td {
-    border-width: 1px;
-    height: 8px;
-    padding: 8px;
-    border-style: solid;
-    border-color: #666666;
-    background-color: #ffffff;
 }
 </style>
