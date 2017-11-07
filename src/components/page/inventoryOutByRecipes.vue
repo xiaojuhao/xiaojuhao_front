@@ -73,15 +73,10 @@
                  $data.storeSelection = resp
              });
 
-             $data.recipesSelection=[
-             	{recipesCode:"0001",recipesName:"鱼香肉丝"},
-             	{recipesCode:"0002",recipesName:"黄焖鸡小份"},
-             	{recipesCode:"0003",recipesName:"黄焖鸡大份"},
-             	{recipesCode:"0004",recipesName:"土洞牛肉"},
-             	{recipesCode:"0005",recipesName:"汉堡王大份"},
-             	{recipesCode:"0006",recipesName:"牛肉汉堡"},
-             	{recipesCode:"0007",recipesName:"小炒肉"}
-             ]
+             bus.recipes.queryAllRecipes()
+             .then((resp)=>{
+             	$data.recipesSelection = resp;
+             })
         }
     }
 </script>

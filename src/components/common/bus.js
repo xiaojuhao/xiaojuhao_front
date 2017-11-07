@@ -1,8 +1,8 @@
 import jquery from 'jquery'
 
 const config = {
-	//server:'http://47.104.25.105:80/xiaojuhao/'
-	server:'http://localhost:8080/'
+	server:'http://47.104.25.105:80/xiaojuhao/'
+	//server:'http://localhost:8080/'
 }
 const http = {
 	jsonp(uri,data){
@@ -117,6 +117,9 @@ export const recipes = {
 	},
 	queryRecipesPage(data){
 		return http.jsonp2("/recipes/queryRecipes",data)
+	},
+	queryAllRecipes(){
+		return http.jsonp2("/recipes/queryAllRecipes",{})
 	},
 	queryRecipesByCode(code){
 		return http.jsonp2("/recipes/queryRecipesByCode",{recipesCode:code})
