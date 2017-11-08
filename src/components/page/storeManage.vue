@@ -15,7 +15,7 @@
             </el-table-column>
             <el-table-column prop="storeName" label="门店名称" width="150">
             </el-table-column>
-            <el-table-column prop="defaultWharehouse" label="默认仓库" width="150">
+            <el-table-column prop="defaultWarehouse" label="默认仓库" width="150" :formatter="formatWarehouse">
             </el-table-column>
             <el-table-column prop="storeManager" label="负责人" width="120">
             </el-table-column>
@@ -45,6 +45,7 @@
     import config from '../common/config.vue'
     import OutStock from './OutStock.vue'
     import jquery from 'jquery'
+    import {api} from '../common/bus'
     export default {
         data() {
             return {
@@ -54,7 +55,8 @@
                 pageSize: 20,
                 totalRows:0,
                 loadingState: false,
-                queryList:[]
+                queryList:[],
+                allWarehouse:[]
             }
         },
         methods: {
@@ -94,10 +96,28 @@
             },
             edit(index, item){
                 this.$router.push({path:"/storeManagePage",query:{storeCode:item && item.storeCode}})
+            },
+            formatWarehouse(item){
+                console.log(item)
+                let wh = this.warehouseMap[item.defaultWarehouse];
+                return wh && wh.warehouseName;
             }
         },
         mounted(){
+            api.getAllWarehouse().
+            then((page)=>{
+                this.$data.allWarehouse = page.values;
+            })
             this.queryData();
+        },
+        computed:{
+            warehouseMap(){
+                let map = {}
+                this.$data.allWarehouse.forEach((item)=>{
+                    map[item.warehouseCode]=item;
+                })
+                return map;
+            }
         }
     }
 </script>

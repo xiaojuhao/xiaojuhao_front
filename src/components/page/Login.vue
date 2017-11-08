@@ -57,6 +57,8 @@
                                 localStorage.setItem('ms_username',userinfo.userName);
                                 self.$router.push('/home');
                             }
+                        }).fail((resp)=>{
+                            console.log(resp)
                         })
                        return true;
                     } else {

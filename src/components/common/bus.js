@@ -43,13 +43,21 @@ export {config};
 export const api = {
 	signin(data){
 		var df = jquery.Deferred();
-		jquery.ajax({
-			url:config.server +'/user/login',
-			data:data,
-			dataType:'jsonp'
-		}).then((resp)=>{
-			df.resolve(resp)
-		});
+		try{
+			jquery.ajax({
+				url:config.server +'/user/login',
+				data:data,
+				dataType:'jsonp'
+			}).then((resp)=>{
+				df.resolve(resp)
+			});
+		}catch(e){
+			df.reject({
+				code:400,
+				message:'网络异常'
+			});
+		}
+		
 		return df;
 	},
 	getAllStoreList(){
@@ -131,5 +139,12 @@ export const api = {
 			pageSize:1000
 		}
 		return http.jsonp2("/busi/queryMaterials",data);
+	},
+	queryRecipesFormula(recipesCode){
+		let data = {recipesCode: recipesCode}
+		return http.jsonp2("/recipes/queryRecipesFormula",data)
+	},
+	getAllWarehouse(){
+		return http.jsonp2("/warehouse/queryWarehouses",{})
 	}
 }

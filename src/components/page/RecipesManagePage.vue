@@ -110,7 +110,7 @@
                 let $data = this.$data;
                 setTimeout(()=>{
                     $data.allMaterialsShow =  $data.allMaterialsShow.filter((item)=>{
-                        return item.id % 2 == 0;
+                        return true;
                     })
                 },10);
             },
@@ -129,7 +129,14 @@
             api.queryAllMaterials()
             .then((val)=>{
                 this.$data.allMaterials = val.values;
+            });
+            this.$data.allMaterialsShow=[];
+            this.$data.allMaterials.forEach((item)=>this.$data.allMaterialsShow.push(item))
+            api.queryRecipesFormula(this.$data.form.recipesCode)
+            .then((value)=>{
+                this.$data.form.formula = value;
             })
+
         },
         computed:{
             allMaterialsMap:function(){

@@ -15,7 +15,14 @@
                     <el-input v-model="form.storeAddr" placeholder="门店地址"></el-input>
                 </el-form-item>
                 <el-form-item label="默认仓库">
-                    <el-input v-model="form.defaultWarehouse" placeholder="默认仓库"></el-input>
+                    <el-select v-model="form.defaultWarehouse" placeholder="请选择">
+                        <el-option
+                          v-for="item in warehouseSelection"
+                          :key="item.warehouseCode"
+                          :label="item.warehouseName"
+                          :value="item.warehouseCode">
+                        </el-option>
+                      </el-select>
                 </el-form-item>
                 <el-form-item label="负责人">
                     <el-input v-model="form.storeManager" placeholder="负责人"></el-input>
@@ -27,7 +34,7 @@
                     <el-input v-model="form.managerEmail" placeholder="负责人邮箱"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="onSubmit">新增</el-button>
+                    <el-button type="primary" @click="onSubmit">提交</el-button>
                     <el-button @click="onCancel">取消</el-button>
                 </el-form-item>
             </el-form>
@@ -39,18 +46,20 @@
 <script>
     import jquery from 'jquery'
     import config from '../common/config.vue'
+    import {api} from '../common/bus'
     export default {
         data: function(){
             return {
                 form:{
-                    sid:this.$route.query.sid,
+                    id:'',
                     storeCode:this.$route.query.storeCode,
                     storeName:'',
                     storeAddr:'',
                     storeManager:'',
                     managerPhone:'',
                     managerEmail:''
-                }
+                },
+                warehouseSelection:[]
                 
             }
         },
@@ -59,7 +68,7 @@
                 var $data = this.$data;
                 //this.$message.success('提交成功！');
                 jquery.ajax({
-                    url:config.server+"/store/addStore",
+                    url:config.server+"/store/saveStore",
                     data:this.$data.form,
                     dataType:'jsonp'
                 }).then((resp)=>{
@@ -79,13 +88,19 @@
             }).then((resp)=>{
                 if(resp && resp.value){
                     var v = resp.value;
+                    this.$data.form.id = v.id;
                     this.$data.form.storeCode = v.storeCode;
                     this.$data.form.storeName = v.storeName;
                     this.$data.form.storeAddr = v.storeAddr;
                     this.$data.form.storeManager = v.storeManager;
                     this.$data.form.managerPhone = v.managerPhone;
                     this.$data.form.managerEmail = v.managerEmail;
+                    this.$data.form.defaultWarehouse = v.defaultWarehouse;
                 }
+            });
+            api.getAllWarehouse()
+            .then((val)=>{
+                this.$data.warehouseSelection = val.values;
             })
         }
     }
