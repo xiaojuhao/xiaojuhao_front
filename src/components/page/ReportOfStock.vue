@@ -18,11 +18,9 @@
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="220">
             </el-table-column>
-            <el-table-column prop="currStock" label="总库存" width="100">
+            <el-table-column prop="currStock" label="当前库存(总)" width="120">
             </el-table-column>
-            <el-table-column prop="usedStock" label="总使用量" width="100">
-            </el-table-column>
-            <el-table-column label="剩余量" width="100" :formatter="getLeftAmount">
+            <el-table-column prop="usedStock" label="已使用量(总)" width="120">
             </el-table-column>
             <el-table-column label="利用率(%)" width="120" :formatter="getUtilizationRatio">
             </el-table-column>
@@ -132,38 +130,6 @@
                 this.cur_page = 1;
                 this.getData();
             },
-            formatStockType(row, column) {
-                return row.stockType==1?"总库":"分库";
-            },
-            filterTag(value, row) {
-                return row.tag === value;
-            },
-            outstock(index, item) {
-                // this.$message('编辑第'+(index+1)+'行');
-                //console.log(row)
-                this.$router.push({path:"/outStock",query:{stockId:item.id}})
-               // this.$data.showOutStock=true;
-            },
-            instock(index, item) {
-                this.$router.push({path:"/inStock",query:{stockId:item.id}})
-            },
-            handleEdit(index, row) {
-                this.$message('编辑第'+(index+1)+'行');
-            },
-            handleDelete(index, row) {
-                this.$message.error('删除第'+(index+1)+'行');
-            },
-            delAll(){
-                const self = this,
-                    length = self.multipleSelection.length;
-                let str = '';
-                self.del_list = self.del_list.concat(self.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += self.multipleSelection[i].name + ' ';
-                }
-                self.$message.error('删除了'+str);
-                self.multipleSelection = [];
-            },
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
@@ -180,9 +146,6 @@
             },
             expand(row,expanded){
                 this.$message(row.materialName+(expanded?"打开":"关闭"))
-            },
-            getLeftAmount(row){
-                return row.currStock - row.usedStock;
             },
             getUtilizationRatio(row){
                 return 100;

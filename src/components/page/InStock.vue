@@ -54,7 +54,7 @@
 <script>
     import config from '../common/config.vue'
     import jquery from 'jquery'
-    import * as bus from '../common/bus'
+    import {api} from '../common/bus'
     export default {
         data: function(){
             return {
@@ -67,7 +67,7 @@
         methods: {
             onSubmit() {
                 var self = this;
-                bus.store.instock({
+                api.instock({
                     materialCode:self.item.materialCode,
                     instockAmt:self.inStockAmt,
                     warehouseCode:self.warehouseCode
