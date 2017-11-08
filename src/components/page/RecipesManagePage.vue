@@ -15,31 +15,45 @@
                     <el-input disabled v-model="form.recipesCode" placeholder="菜品代码"></el-input>
                 </el-form-item>
                 <el-form-item label="配方">
-                    <table class="border-table" style="width:100%">   
-                    <tr>
-                        <th>ID</th>
-                       <th>食材</th>  
-                       <th>数量</th>  
-                       <th>操作</th>  
-                    </tr>  
-                    <tr v-for="ff in form.formula">
-                      <td>{{ff.id}}</td>  
-                      <td>
-                          <el-select v-model="ff.dropdown" filterable placeholder="请选择" 
+                    <el-row :gutter="5">
+                        <el-col :span="12"><span class="span-center">原料</span></el-col>
+                        <el-col :span="4"><span class="span-center">数量</span></el-col>
+                        <el-col :span="3"><span class="span-center">单位</span></el-col>
+                        <el-col :span="3"><span class="span-center">操作</span></el-col>
+                    </el-row>
+                    <el-row v-for="(ff,index) in form.formula" :gutter="5">
+                        <el-col :span="12">
+                            <el-select v-model="ff.materialCode" 
+                            placeholder="请选择" 
+                            :filterable="true"
+                            :filter-method="filterMaterials"
+                            @visible-change="materialVisualChange"
                             @change="formulaChange(ff)">
-                            <el-option
-                              v-for="item in allMaterials"
-                              :key="item.value"
-                              :label="item.label"
-                              :value="item.value"
-                              :disabled="item.disabled">
-                            </el-option>
-                          </el-select>
-                      </td>  
-                      <td>{{ff.dropdown}}</td>  
-                      <td>330623***********9</td>  
-                    </tr>
-                    </table>  
+                                <el-option
+                                  v-for="item in allMaterialsShow"
+                                  :key="item.materialCode"
+                                  :label="item.materialName"
+                                  :value="item.materialCode">
+                                </el-option>
+                              </el-select>
+                        </el-col>
+                        <el-col :span="4">
+                            <el-input v-model="ff.amt" placeholder="数量"></el-input>
+                        </el-col>
+                        <el-col :span="3">
+                            <div class="grid-content">{{ff.stockUnit}}</div>
+                        </el-col>
+                        <el-col :span="3">
+                            <div class="grid-content">
+                                <el-button type="danger" icon="delete" @click="removeFormula(index)"></el-button>
+                            </div>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="24">
+                            <el-button type="success" @click="addFormula">增加原料</el-button>
+                        </el-col>
+                    </el-row>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">提交</el-button>
@@ -60,17 +74,10 @@
                     id:'',
                     recipesCode:this.$route.query.code,
                     recipesName:'',
-                    formula:[
-                        {id:1},{id:2},{},{}
-                    ]
+                    formula:[]
                 },
-                allMaterials:[
-                    {label:'鱼头',value:'00001'},
-                    {label:'鱼肉',value:'00002'},
-                    {label:'葱',value:'00003'},
-                    {label:'大蒜',value:'00004'},
-                    {label:'耗油',value:'00005'}
-                ]
+                allMaterials:[],
+                allMaterialsShow:[]
             }
         },
         methods: {
@@ -78,9 +85,9 @@
                 var $data = this.$data;
                 api.addRecipes({
                     recipesCode:$data.form.recipesCode,
-                    recipesName:$data.form.recipesName
+                    recipesName:$data.form.recipesName,
+                    formulaJson:JSON.stringify($data.form.formula)
                 }).then((resp)=>{
-                    //console.log(resp)
                     this.$message("操作成功")
                     this.$router.go(-1)
                 })
@@ -89,31 +96,68 @@
                 this.$router.go(-1)
             },
             formulaChange(item){
-                //console.log(item)
-                this.$data.allMaterials.forEach((val,index,arr)=>{
-                    if(val.value == item.dropdown){
-                        val.disabled = true;
-                    }
-                })
+                if(this.allMaterialsMap && this.allMaterialsMap[item.materialCode]){
+                    item.stockUnit = this.allMaterialsMap[item.materialCode].stockUnit;   
+                }
+            },
+            removeFormula(index){
+                this.$data.form.formula.splice(index,1)
+            },
+            addFormula(){
+                this.$data.form.formula.push({id:0,stockUnit:'',amt:0,materialCode:''})
+            },
+            filterMaterials(input){
+                let $data = this.$data;
+                setTimeout(()=>{
+                    $data.allMaterialsShow =  $data.allMaterialsShow.filter((item)=>{
+                        return item.id % 2 == 0;
+                    })
+                },10);
+            },
+            materialVisualChange(val){
+                if(val){
+                    this.$data.allMaterialsShow=[];
+                    this.$data.allMaterials.forEach((item)=>this.$data.allMaterialsShow.push(item))
+                }
             }
         },
         mounted(){
             api.queryRecipesByCode(this.$data.form.recipesCode)
             .then((resp)=>{
                 this.$data.form.recipesName = resp.recipesName;
+            });
+            api.queryAllMaterials()
+            .then((val)=>{
+                this.$data.allMaterials = val.values;
             })
+        },
+        computed:{
+            allMaterialsMap:function(){
+                var map = {};
+                this.$data.allMaterials.forEach((item)=>{
+                    map[item.materialCode]=item
+                })
+                return map;
+            }
         }
     }
 </script>
-<style>
-    .border-table {   
-        border-collapse: collapse;   
-        border: none;   
-    }   
-    .border-table td {   
-        border: solid #000 1px;   
+<style scoped>
+    .span-center {
+        display:inline-block;
+        width: 100%;
+        font-weight:bold;
     }
-    .border-table th {   
-        border: solid #000 1px;   
-    }
+    .grid-content {
+        min-height: 1px;
+     }
+    .el-row {
+        margin-bottom: 4px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    .el-col {
+        border-radius: 4px;
+      }
 </style>

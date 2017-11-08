@@ -2,7 +2,8 @@ import jquery from 'jquery'
 
 const config = {
 	//server:'http://47.104.25.105:80/xiaojuhao/'
-	server:'http://localhost:8080/'
+	//server:'http://localhost:8080/'
+	server: process.env.REMOTE_SERVER
 }
 const http = {
 	jsonp(uri,data){
@@ -123,5 +124,12 @@ export const api = {
 	},
 	queryMaterialsStockById(id){
 		return http.jsonp2("/busi/queryMaterialsStockById",{id:id});
+	},
+	queryAllMaterials(){
+		let data = {
+			pageNo:1,
+			pageSize:1000
+		}
+		return http.jsonp2("/busi/queryMaterials",data);
 	}
 }
