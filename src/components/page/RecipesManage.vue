@@ -37,7 +37,7 @@
 </template>
 
 <script>
-    import * as bus from '../common/bus.js'
+    import {api} from '../common/bus.js'
     import config from '../common/config.vue'
     import OutStock from './OutStock.vue'
     import jquery from 'jquery'
@@ -76,7 +76,7 @@
             queryData(){
                 let self = this;
                 self.$data.loadingState = true;
-                bus.recipes.queryRecipesPage({
+                api.queryRecipesPage({
                     recipesCode:''
                 })
                 .then((page)=>{

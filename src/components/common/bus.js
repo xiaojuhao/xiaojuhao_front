@@ -1,8 +1,8 @@
 import jquery from 'jquery'
 
 const config = {
-	server:'http://47.104.25.105:80/xiaojuhao/'
-	//server:'http://localhost:8080/'
+	//server:'http://47.104.25.105:80/xiaojuhao/'
+	server:'http://localhost:8080/'
 }
 const http = {
 	jsonp(uri,data){
@@ -39,7 +39,7 @@ const http = {
 
 export {config};
 
-export const login = {
+export const api = {
 	signin(data){
 		var df = jquery.Deferred();
 		jquery.ajax({
@@ -50,10 +50,7 @@ export const login = {
 			df.resolve(resp)
 		});
 		return df;
-	}
-};
-
-export const store = {
+	},
 	getAllStoreList(){
 		var df = jquery.Deferred();
 		http.jsonp('/store/getAllStore')
@@ -94,10 +91,7 @@ export const store = {
 			df.reject(resp)
 		})
 		return df;
-	}
-};
-
-export const recipes = {
+	},
 	addRecipes(data){
 		var df = jquery.Deferred();
 		jquery.ajax({
@@ -123,11 +117,11 @@ export const recipes = {
 	},
 	queryRecipesByCode(code){
 		return http.jsonp2("/recipes/queryRecipesByCode",{recipesCode:code})
-	}
-};
-
-export const busi = {
+	},
 	queryMaterialsStockHistory(data){
 		return http.jsonp2("/busi/queryMaterialsStockHistory",data);
+	},
+	queryMaterialsStockById(id){
+		return http.jsonp2("/busi/queryMaterialsStockById",{id:id});
 	}
 }

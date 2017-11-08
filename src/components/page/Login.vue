@@ -19,7 +19,7 @@
 </template>
 
 <script>
-    import {login} from '../common/bus'
+    import {api} from '../common/bus'
     export default {
         data: function(){
             return {
@@ -48,7 +48,7 @@
                             userCode:self.$data.ruleForm.username,
                             password:self.$data.ruleForm.password
                         }
-                        login.signin(data).then((resp)=>{
+                        api.signin(data).then((resp)=>{
                             if(resp.code != 200){
                                 self.$data.tips = resp.message;
                             }else{

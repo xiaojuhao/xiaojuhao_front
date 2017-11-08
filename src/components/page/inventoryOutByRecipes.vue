@@ -40,7 +40,7 @@
 </template>
 
 <script>
-    import * as bus from '../common/bus'
+    import {api} from '../common/bus'
     export default {
         data(){
             return {
@@ -68,12 +68,12 @@
         },
         mounted(){
         	var $data = this.$data;
-        	bus.store.getAllStoreList()
+        	api.getAllStoreList()
              .then((resp)=>{
                  $data.storeSelection = resp
              });
 
-             bus.recipes.queryAllRecipes()
+             api.queryAllRecipes()
              .then((resp)=>{
              	$data.recipesSelection = resp;
              })

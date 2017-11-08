@@ -52,7 +52,7 @@
 </template>
 
 <script>
-    import * as bus from '../common/bus'
+    import {api} from '../common/bus'
     export default {
         data: function(){
             return {
@@ -76,7 +76,7 @@
         methods: {
             onSubmit() {
                 var $data = this.$data;
-                bus.recipes.addRecipes({
+                api.addRecipes({
                     recipesCode:$data.form.recipesCode,
                     recipesName:$data.form.recipesName
                 }).then((resp)=>{
@@ -98,7 +98,7 @@
             }
         },
         mounted(){
-            bus.recipes.queryRecipesByCode(this.$data.form.recipesCode)
+            api.queryRecipesByCode(this.$data.form.recipesCode)
             .then((resp)=>{
                 this.$data.form.recipesName = resp.recipesName;
             })

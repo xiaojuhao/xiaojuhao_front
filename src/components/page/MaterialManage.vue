@@ -45,7 +45,6 @@
 </template>
 
 <script>
-    import * as functions from '../common/bus.js'
     import config from '../common/config.vue'
     import OutStock from './OutStock.vue'
     import jquery from 'jquery'

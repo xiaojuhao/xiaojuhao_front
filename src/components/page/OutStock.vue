@@ -49,8 +49,7 @@
 </template>
 
 <script>
-	import config from '../common/config.vue'
-    import * as bus from '../common/bus'
+    import {api} from '../common/bus'
     export default {
         data: function(){
             return {
@@ -63,13 +62,17 @@
         methods: {
             onSubmit() {
                 var $this = this;
-                bus.store.outstock({
+                api.outstock({
                     id:this.$route.query.stockId,
+                    materialCode:$this.item.materialCode,
+                    warehouseCode:$this.item.warehouseCode,
                     outstockAmt:$this.outStockAmt,
                     storeCode:$this.storeCode
                 }).then((resp)=>{
                     $this.$message("出库成功")
                     $this.$router.go(-1)
+                }).fail((resp)=>{
+                    $this.$message.error(resp.message)
                 });
             },
             onBack(){
@@ -78,15 +81,14 @@
             initData() {
             	var jsonp = require('jsonp')
             	var $data = this;
-            	jsonp(config.server+"/busi/queryMaterialsStockById?id="+this.$route.query.stockId,null,function(err,data){
-            		//console.log(data)
-            		$data.item = data.value;
-            	});
-
-                bus.store.getAllStoreList()
-                .then((resp)=>{
-                    $data.storeSelection = resp
-                })
+              api.queryMaterialsStockById(this.$route.query.stockId)
+              .then((value)=>{
+                  $data.item = value;
+              });
+              api.getAllStoreList()
+              .then((value)=>{
+                  $data.storeSelection = value;
+              })
 
             }
         },
