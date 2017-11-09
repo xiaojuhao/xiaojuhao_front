@@ -57,7 +57,8 @@
                     storeAddr:'',
                     storeManager:'',
                     managerPhone:'',
-                    managerEmail:''
+                    managerEmail:'',
+                    defaultWarehouse:''
                 },
                 warehouseSelection:[]
                 

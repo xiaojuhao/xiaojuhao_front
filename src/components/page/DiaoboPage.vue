@@ -63,8 +63,8 @@
                     data:{
                         materialCode:self.item.materialCode,
                         diaoboAmt:self.diaoboAmt,
-                        warehouseCode:self.item.warehouseCode,
-                        toStoreCode:self.toStoreCode
+                        fromWarehouseCode:self.item.warehouseCode,
+                        toWarehouseCode:self.toWarehouseCode
                     },
                     dataType:'jsonp'
                 }).then(function(resp){

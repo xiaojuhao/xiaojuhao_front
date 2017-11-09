@@ -108,9 +108,14 @@
             },
             filterMaterials(input){
                 let $data = this.$data;
+                console.log(input)
                 setTimeout(()=>{
-                    $data.allMaterialsShow =  $data.allMaterialsShow.filter((item)=>{
-                        return true;
+                    $data.allMaterialsShow =  $data.allMaterials.filter((item)=>{
+                        var key = item.searchKey;
+                        if(!key || key.indexOf(input)>=0){
+                            return true;
+                        }
+                        return false;
                     })
                 },10);
             },
