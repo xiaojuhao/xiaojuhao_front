@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<el-select v-model="selectedCode" 
+		    <el-select v-model="selectedCode" 
            placeholder="请选择" 
            :filterable="true"
            :filter-method="filterMethod"
@@ -18,6 +18,7 @@
 <script>
 	import {api} from './bus'
 	export default {
+    props:["excludes"],
 		data(){
 			return {
 				allValues:[],
@@ -40,6 +41,9 @@
           let $data = this.$data;
           setTimeout(()=>{
               $data.valuesShow =  $data.allValues.filter((item)=>{
+                  if(this.excludesMap[item.materialCode]){
+                      return true;
+                  }
                   var key = item.searchKey;
                   if(!key || key.indexOf(input)>=0){
                       return true;
@@ -50,8 +54,22 @@
       },
       visualChange(visible){
          if(visible)
-            this.$data.valuesShow = this.$data.allValues;
+            this.$data.valuesShow = this.$data.allValues.filter((item)=>{
+                  if(this.excludesMap[item.materialCode]){
+                      return false;
+                  }
+                  return true;
+              })
       }
-		}
+		},
+    computed:{
+      excludesMap(){
+         let map = {};
+         this.$props.excludes && this.$props.excludes.forEach((item)=>{
+            map[item] = 1;
+         })
+         return map;
+      }
+    }
 	}
 </script>

@@ -3,30 +3,24 @@
         <div class="form-box">
             <el-form ref="form"  label-width="80px">
                 <el-form-item label="门店">
-                   <el-select v-model="storeCode" placeholder="请选择">
-                        <el-option
-                          v-for="item in storeSelection"
-                          :key="item.storeCode"
-                          :label="item.storeCode + '-' + item.storeName"
-                          :value="item.storeCode">
-                        </el-option>
-                      </el-select>
-                      <el-button type="primary" icon="plus" @click="addRows"></el-button>
+                    <el-row>
+                       <el-col :span="12"><StoreSelection></StoreSelection></el-col>
+                       <el-col :span="12"><el-button type="primary" icon="plus" @click="addRows"></el-button></el-col>
+                    </el-row>
                 </el-form-item>
                 <el-form-item>
                 	<div v-for="(item,index) in recipesList">
-                	    <el-select v-model="item.recipesCode" placeholder="请选择">
-                        <el-option
-                          v-for="item in recipesSelection"
-                          :key="item.recipesCode"
-                          :label="item.recipesCode + '-' + item.recipesName"
-                          :value="item.recipesCode">
-                        </el-option>
-                      </el-select>
-                      <el-input placeholder="请输入份数" v-model="item.num" >
-					    <template slot="prepend">份数</template>
-					  </el-input>
-					  <el-button type="primary" icon="minus" @click="removeRows(index)"></el-button>
+                      <el-row>
+                	       <el-col :span="10"><RecipesSelection></RecipesSelection></el-col>
+                         <el-col :span="8">
+                            <el-input placeholder="请输入份数" v-model="item.num" >
+					                       <template slot="prepend">份数</template>
+					                 </el-input>
+                         </el-col>
+                         <el-col :span="6">
+					                 <el-button type="primary" icon="minus" @click="removeRows(index)"></el-button>
+                         </el-col>
+                      </el-row>
                   </div>
                 </el-form-item>
                 <el-form-item>
@@ -41,15 +35,13 @@
 
 <script>
     import {api} from '../common/bus'
+    import StoreSelection from '../common/StoreSelection'
+    import RecipesSelection from '../common/RecipesSelection'
     export default {
         data(){
             return {
-                storeSelection:[],
-                recipesSelection:[],
                 storeCode:'',
-                recipesList:[
-                	{}
-                ]
+                recipesList:[]
              }
         },
         methods: {  
@@ -67,16 +59,11 @@
             }
         },
         mounted(){
-        	var $data = this.$data;
-        	api.getAllStoreList()
-             .then((resp)=>{
-                 $data.storeSelection = resp
-             });
-
-             api.queryAllRecipes()
-             .then((resp)=>{
-             	$data.recipesSelection = resp;
-             })
+        	
+        },
+        components:{
+          StoreSelection,
+          RecipesSelection
         }
     }
 </script>

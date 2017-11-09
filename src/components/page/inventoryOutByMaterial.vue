@@ -1,29 +1,11 @@
 <template>
     <div class="table">
         <div class="handle-box">
-        <el-select
-            v-model="query.materialCode"
-            filterable clearable
-            remote
-            reserve-keyword
-            placeholder="请输入关键词"
-            :remote-method="remoteMethod">
-            <el-option
-              v-for="item in materialSelection"
-              :key="item.code"
-              :label="item.name"
-              :value="item.code">
-            </el-option>
-          </el-select>
-            <el-select v-model="query.warehouseCode" clearable placeholder="仓库">
-                <el-option
-                    v-for="item in warehouseSelection"
-                    :key="item.warehouseCode"
-                    :label="item.warehouseName"
-                    :value="item.warehouseCode">
-                </el-option>
-            </el-select>
-            <el-button type="primary" icon="search" @click="search">搜索</el-button>
+            <el-row :gutter="4">
+               <el-col :span="4"><StoreSelection></StoreSelection></el-col>
+               <el-col :span="4"><WarehouseSelection></WarehouseSelection></el-col>
+               <el-button type="primary" icon="search" @click="search">搜索</el-button>
+            </el-row>
         </div>
         <el-table :data="data" border style="width: 100%"
             v-loading="loadingState"
@@ -68,8 +50,9 @@
 
 <script>
 	import config from '../common/config.vue'
-	import OutStock from './OutStock.vue'
     import jquery from 'jquery'
+    import StoreSelection from '../common/StoreSelection'
+    import WarehouseSelection from '../common/WarehouseSelection'
     export default {
         data() {
             return {
@@ -94,6 +77,10 @@
                 showOutStock:false,
                 radio:''
             }
+        },
+        components:{
+            StoreSelection,
+            WarehouseSelection
         },
         created(){
             

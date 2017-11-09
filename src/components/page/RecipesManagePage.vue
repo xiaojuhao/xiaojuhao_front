@@ -23,19 +23,7 @@
                     </el-row>
                     <el-row v-for="(ff,index) in form.formula" :gutter="5">
                         <el-col :span="12">
-                            <el-select v-model="ff.materialCode" 
-                            placeholder="请选择" 
-                            :filterable="true"
-                            :filter-method="filterMaterials"
-                            @visible-change="materialVisualChange"
-                            @change="formulaChange(ff)">
-                                <el-option
-                                  v-for="item in allMaterialsShow"
-                                  :key="item.materialCode"
-                                  :label="item.materialName"
-                                  :value="item.materialCode">
-                                </el-option>
-                              </el-select>
+                            <MaterialSelection></MaterialSelection>
                         </el-col>
                         <el-col :span="4">
                             <el-input v-model="ff.amt" placeholder="数量"></el-input>
@@ -67,6 +55,7 @@
 
 <script>
     import {api} from '../common/bus'
+    import MaterialSelection from '../common/MaterialSelection'
     export default {
         data: function(){
             return {
@@ -105,25 +94,6 @@
             },
             addFormula(){
                 this.$data.form.formula.push({id:0,stockUnit:'',amt:0,materialCode:''})
-            },
-            filterMaterials(input){
-                let $data = this.$data;
-                console.log(input)
-                setTimeout(()=>{
-                    $data.allMaterialsShow =  $data.allMaterials.filter((item)=>{
-                        var key = item.searchKey;
-                        if(!key || key.indexOf(input)>=0){
-                            return true;
-                        }
-                        return false;
-                    })
-                },10);
-            },
-            materialVisualChange(val){
-                if(val){
-                    this.$data.allMaterialsShow=[];
-                    this.$data.allMaterials.forEach((item)=>this.$data.allMaterialsShow.push(item))
-                }
             }
         },
         mounted(){
@@ -131,12 +101,7 @@
             .then((resp)=>{
                 this.$data.form.recipesName = resp.recipesName;
             });
-            api.queryAllMaterials()
-            .then((val)=>{
-                this.$data.allMaterials = val.values;
-            });
-            this.$data.allMaterialsShow=[];
-            this.$data.allMaterials.forEach((item)=>this.$data.allMaterialsShow.push(item))
+            
             api.queryRecipesFormula(this.$data.form.recipesCode)
             .then((value)=>{
                 this.$data.form.formula = value;
@@ -144,13 +109,10 @@
 
         },
         computed:{
-            allMaterialsMap:function(){
-                var map = {};
-                this.$data.allMaterials.forEach((item)=>{
-                    map[item.materialCode]=item
-                })
-                return map;
-            }
+            
+        },
+        components: {
+            MaterialSelection
         }
     }
 </script>
