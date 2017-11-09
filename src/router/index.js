@@ -113,7 +113,7 @@ export default new Router({
                 },
                 {
                     path: '/myTask',
-                    component: resolve => require(['../components/page/IndexInfo.vue'], resolve)    // 拖拽列表组件
+                    component: resolve => require(['../components/page/MyTask.vue'], resolve)    // 拖拽列表组件
                 },
                 {
                     path: '/reportOfStock',
