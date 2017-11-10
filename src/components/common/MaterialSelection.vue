@@ -1,9 +1,10 @@
 <template>
 	<div>
-		    <el-select v-model="selectedCode" 
+		    <el-select v-model="selectedCode"
            placeholder="请选择" 
-           :filterable="true"
+           filterable
            :filter-method="filterMethod"
+           @keyup.enter.native="enterkey"
            @change="setValue"
            @visible-change="visualChange">
                <el-option
@@ -18,7 +19,7 @@
 <script>
 	import {api} from './bus'
 	export default {
-    props:["excludes"],
+    props:["excludes","initValue"],
 		data(){
 			return {
 				allValues:[],
@@ -27,25 +28,29 @@
 			}
 		},
 		mounted(){
-			let $data = this.$data;
-			api.queryAllMaterials()
-			.then((value)=>{
-				$data.allValues = value.values;
-			});
+       this.initData();
 		},
 		methods: {
 			setValue(){
 				this.$emit("setValue",this.selectedCode)
 			},
+      initData(){
+        let $data = this.$data;
+        api.queryAllMaterials()
+        .then((value)=>{
+          $data.allValues = value.values;
+          $data.selectedCode = this.$props.initValue;
+        });
+      },
+      enterkey(e){
+        console.log(e)
+      },
 			filterMethod(input){
           let $data = this.$data;
           setTimeout(()=>{
               $data.valuesShow =  $data.allValues.filter((item)=>{
-                  if(this.excludesMap[item.materialCode]){
-                      return true;
-                  }
-                  var key = item.searchKey;
-                  if(!key || key.indexOf(input)>=0){
+                  var key = [item.materialCode,item.materialName,item.searchKey].join(',')
+                  if(key.indexOf(input)>=0){
                       return true;
                   }
                   return false;
@@ -53,13 +58,14 @@
           },10);
       },
       visualChange(visible){
-         if(visible)
+         if(visible){
             this.$data.valuesShow = this.$data.allValues.filter((item)=>{
                   if(this.excludesMap[item.materialCode]){
                       return false;
                   }
                   return true;
               })
+          }
       }
 		},
     computed:{

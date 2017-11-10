@@ -1,7 +1,7 @@
 <template>
     <div>
-        <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
-        <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
+        <MaterialSelection :excludes="excludes" v-on:setValue="setValue" initValue="M00003"></MaterialSelection>
+        <MaterialSelection :excludes="excludes" v-on:setValue="setValue" initValue="M00003"></MaterialSelection>
         <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
         <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
         <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
