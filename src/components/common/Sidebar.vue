@@ -66,6 +66,10 @@
                             {
                                 index: 'storeManage',
                                 title: '门店管理'
+                            },
+                            {
+                                index: "supplierManage",
+                                title: "供应商管理"
                             }
                         ]
                     },

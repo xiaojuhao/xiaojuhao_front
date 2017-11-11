@@ -78,6 +78,14 @@ export default new Router({
                     component: resolve => require(['../components/page/storeManagePage.vue'], resolve)   // vue-schart组件
                 },
                 {
+                    path: '/supplierManage',
+                    component: resolve => require(['../components/page/SupplierManage.vue'], resolve)   // vue-schart组件
+                },
+                {
+                    path: '/supplierManagePage',
+                    component: resolve => require(['../components/page/SupplierManagePage.vue'], resolve)   // vue-schart组件
+                },
+                {
                     path: '/inventoryOut',
                     component: resolve => require(['../components/page/inventoryOutManage.vue'], resolve),
                     children:[
