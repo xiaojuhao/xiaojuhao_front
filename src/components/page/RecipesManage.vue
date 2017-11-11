@@ -96,7 +96,7 @@
                         item.formulas=''
                         self.$data.queryList.push(item)
                     })
-                }).done(()=>{
+                }).always(()=>{
                     self.$data.loadingState = false;
                 })
             },

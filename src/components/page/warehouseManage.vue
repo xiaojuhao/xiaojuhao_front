@@ -51,7 +51,7 @@
                     self.queryList = page.values;
                 }).fail(function(resp){
                     self.$message.error("请求出错")
-                }).done(function(resp){
+                }).always(function(resp){
                     self.$data.loadingState = false;
                 })
             },

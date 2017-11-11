@@ -146,7 +146,7 @@
                     self.totalRows = value.totalRows;
                 }).fail(function(resp){
                     self.$message.error("请求出错")
-                }).done(function(resp){
+                }).always(function(resp){
                     // self.$notify({
                     //     title:'请求数据',message:'请求完成',duration:1000,position: 'bottom-right'
                     // });

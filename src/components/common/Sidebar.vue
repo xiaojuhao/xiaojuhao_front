@@ -41,10 +41,6 @@
                                 title: '用户管理'
                             },
                             {
-                                index: 'roleManage',
-                                title: '角色管理'
-                            },
-                            {
                                 index: 'sysConfig',
                                 title: '系统设置'
                             }

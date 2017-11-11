@@ -7,7 +7,7 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form"  label-width="80px">
+            <el-form ref="form"  label-width="80px" v-loading="loadingState">
                 <el-form-item label="菜品名称">
                     <el-input v-model="form.recipesName" placeholder="菜品名称"></el-input>
                 </el-form-item>
@@ -70,11 +70,13 @@
                     recipesName:'',
                     formula:[]
                 },
-                allMaterials:[]
+                allMaterials:[],
+                loadingState:false
             }
         },
         methods: {
             onSubmit() {
+                this.$data.loadingState  = true;
                 var $data = this.$data;
                 api.addRecipes({
                     recipesCode:$data.form.recipesCode,
@@ -83,6 +85,8 @@
                 }).then((resp)=>{
                     this.$message("操作成功")
                     this.$router.go(-1)
+                }).always(()=>{
+                    this.$data.loadingState  = false;
                 })
             },
             onCancel(){

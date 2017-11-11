@@ -34,12 +34,16 @@ export default new Router({
                     component: resolve => require(['../components/page/UserManage.vue'], resolve)
                 },
                 {
+                    path: '/userManagePage',
+                    component: resolve => require(['../components/page/UserManagePage.vue'], resolve)
+                },
+                {
                     path: '/roleManage',
                     component: resolve => require(['../components/page/IndexInfo.vue'], resolve)     // vue-datasource组件
                 },
                 {
                     path: '/sysConfig',
-                    component: resolve => require(['../components/page/IndexInfo.vue'], resolve)
+                    component: resolve => require(['../components/page/SysConfig.vue'], resolve)
                 },
                 {
                     path: '/materialManage',

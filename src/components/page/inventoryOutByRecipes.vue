@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="form-box">
-            <el-form ref="form"  label-width="80px">
+            <el-form ref="form"  label-width="80px" v-loading="loadingState">
                 <el-form-item label="门店">
                     <el-row>
                        <el-col :span="12">
@@ -51,7 +51,8 @@
             return {
                 storeCode:'',
                 recipesList:[],
-                allRecipes:[]
+                allRecipes:[],
+                loadingState:false
              }
         },
         methods: {  
@@ -59,6 +60,7 @@
                 this.$router.go(-1)
             },
             onSubmit(){
+                this.$data.loadingState = true;
                 http.jsonp2("/busi/outstockByRecipes",{
                     storeCode: this.$data.storeCode,
                     recipesJson:JSON.stringify(this.$data.recipesList)
@@ -66,6 +68,8 @@
                     this.$message("提交成功")
                 }).fail((resp)=>{
                     this.$message.error(resp.message)
+                }).always(()=>{
+                    this.$data.loadingState = false;
                 })
             },
             addRows(){

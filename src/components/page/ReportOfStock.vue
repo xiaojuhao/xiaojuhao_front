@@ -14,10 +14,10 @@
             <el-table-column type="expand">
                 <template scope="props">
                     <el-table :data="props.row.fenku" show-header=false >
-                        <el-table-column prop="warehouseCode"   width="100"></el-table-column>
-                        <el-table-column prop="warehouseName"   width="120"></el-table-column>
-                        <el-table-column prop="currStock"   width="120"></el-table-column>
-                        <el-table-column prop="usedStock"  width="120"></el-table-column>
+                        <el-table-column prop="warehouseCode" label="仓库编码"  width="100"></el-table-column>
+                        <el-table-column prop="warehouseName" label="仓库名称"  width="120"></el-table-column>
+                        <el-table-column prop="currStock" label="当前库存"  width="120"></el-table-column>
+                        <el-table-column prop="usedStock" label="已用数量" width="120"></el-table-column>
                     </el-table>
                 </template>
             </el-table-column>
@@ -97,7 +97,7 @@
                     self.totalRows = page.totalRows;
                 }).fail((resp)=>{
                     self.$message.error("请求出错")
-                }).done(()=>{
+                }).always(()=>{
                     self.$data.loadingState = false;
                 })
             },

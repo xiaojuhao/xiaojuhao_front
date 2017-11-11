@@ -7,7 +7,7 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form"  label-width="80px">
+            <el-form ref="form"  label-width="80px" v-loading="loadingState">
                 <el-form-item label="原料名称">
                     <el-input v-model="form.materialName"></el-input>
                 </el-form-item>
@@ -80,11 +80,13 @@
                 },
                 rules: {
 
-                }
+                },
+                loadingState:false
             }
         },
         methods: {
             onSubmit() {
+                this.$data.loadingState = true;
                 let self = this;
                 this.$data.form.formulaStr = JSON.stringify(this.$data.form.formula);
                 jquery.ajax({
@@ -94,6 +96,8 @@
                 }).then((resp)=>{
                     self.$message.success("操作成功");
                     self.$router.go(-1)
+                }).always(()=>{
+                    this.$data.loadingState = false;
                 })
             },
             onCancel(){

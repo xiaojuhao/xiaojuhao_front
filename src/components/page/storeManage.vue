@@ -55,7 +55,7 @@
                     self.queryList = values;
                 }).fail((resp)=>{
                     this.$message.error(resp.message)
-                }).done(()=>{
+                }).always(()=>{
                     self.$data.loadingState = false;
                 })
             },

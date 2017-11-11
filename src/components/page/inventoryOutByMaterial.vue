@@ -25,7 +25,7 @@
             </el-table-column>
             <el-table-column prop="usedStock" label="已用数量" width="100">
             </el-table-column>
-            <el-table-column prop="stockUnit" label="已用数量" width="100">
+            <el-table-column prop="stockUnit" label="库存单位" width="100">
             </el-table-column>
             <el-table-column prop="warehouseName" label="仓库" width="150">
             </el-table-column>
@@ -33,7 +33,8 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
-                	<el-button size="small" type="primary" @click="outstock(scope.$index, scope.row)">出库</el-button>
+                	<el-button size="small" type="primary" 
+                        @click="outstock(scope.$index, scope.row)">出库</el-button>
                     
                 </template>
             </el-table-column>
@@ -138,10 +139,7 @@
                     self.totalRows = value.totalRows;
                 }).fail(function(resp){
                     self.$message.error("请求出错")
-                }).done(function(resp){
-                    // self.$notify({
-                    //     title:'请求数据',message:'请求完成',duration:1000,position: 'bottom-right'
-                    // });
+                }).always(function(resp){
                     self.$data.loadingState = false;
                 })
             },

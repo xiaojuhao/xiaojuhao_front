@@ -15,7 +15,7 @@ const http = {
 		})
 		.then((resp)=>df.resolve(resp))
 		.fail((resp)=>df.reject(resp))
-		return df;
+		return df.promise();
 	},
 	jsonp2(uri,data){
 		var df = jquery.Deferred();
@@ -30,11 +30,10 @@ const http = {
 			}else{
 				df.reject(resp);
 			}
-		})
-		.fail((resp)=>df.reject(resp))
+		}).fail((resp)=>df.reject(resp))
 		;
 
-		return df;
+		return df.promise();
 	}
 }
 
@@ -60,7 +59,16 @@ export const api = {
 			});
 		}
 		
-		return df;
+		return df.promise();
+	},
+	saveUser(data){
+		return http.jsonp2("/user/saveUser",data);
+	},
+	resetPassword(userCode){
+		return http.jsonp2("/user/resetPassword",{userCode:userCode})
+	},
+	getUserByCode(userCode){
+		return http.jsonp2("/user/queryUserByCode",{userCode:userCode})
 	},
 	getAllStoreList(){
 		var df = jquery.Deferred();
@@ -73,7 +81,7 @@ export const api = {
 				df.reject(resp)
 			}
 		}).fail((resp)=>df.reject(resp))
-		return df;
+		return df.promise();
 	},
 	outstock(data){
 		var df = jquery.Deferred();
@@ -87,7 +95,7 @@ export const api = {
 		}).fail((resp)=>{
 			df.reject(resp)
 		})
-		return df;
+		return df.promise();
 	},
 	instock(data){
 		var df = jquery.Deferred();
@@ -101,7 +109,7 @@ export const api = {
 		}).fail((resp)=>{
 			df.reject(resp)
 		})
-		return df;
+		return df.promise();
 	},
 	addRecipes(data){
 		var df = jquery.Deferred();
@@ -118,7 +126,7 @@ export const api = {
 		}).fail((resp)=>{
 			df.reject(resp);
 		});
-		return df;
+		return df.promise();
 	},
 	queryRecipesPage(data){
 		return http.jsonp2("/recipes/queryRecipes",data)
@@ -146,7 +154,7 @@ export const api = {
 			df.reject(resp);
 		});
 
-		return df;
+		return df.promise();
 	},
 	queryMaterialsStockHistory(data){
 		return http.jsonp2("/busi/queryMaterialsStockHistory",data);
