@@ -16,6 +16,7 @@ const http = {
 		.then((resp)=>df.resolve(resp))
 		.fail((resp)=>df.reject(resp))
 		return df.promise();
+		
 	},
 	jsonp2(uri,data){
 		var df = jquery.Deferred();
