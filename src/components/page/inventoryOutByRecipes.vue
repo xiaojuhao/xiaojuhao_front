@@ -4,7 +4,9 @@
             <el-form ref="form"  label-width="80px">
                 <el-form-item label="门店">
                     <el-row>
-                       <el-col :span="12"><StoreSelection></StoreSelection></el-col>
+                       <el-col :span="12">
+                            <StoreSelection :value="storeCode" @input="selectStore"></StoreSelection>
+                        </el-col>
                        <el-col :span="12"><el-button type="primary" icon="plus" @click="addRows"></el-button></el-col>
                     </el-row>
                 </el-form-item>
@@ -20,12 +22,12 @@
                                 ></RecipesSelection>
                            </el-col>
                            <el-col :span="8">
-                              <el-input placeholder="请输入份数" v-model="item.num" >
+                              <el-input placeholder="请输入份数" v-model="item.amt" >
 					               <template slot="prepend">份数</template>
 					           </el-input>
                             </el-col>
                             <el-col :span="6">
-					             <el-button type="primary" icon="minus" @click="removeRows(index)"></el-button>
+					             <el-button type="error" size="small" icon="delete" @click="removeRows(index)"></el-button>
                             </el-col>
                       </el-row>
                   </div>
@@ -41,7 +43,7 @@
 </template>
 
 <script>
-    import {api} from '../common/bus'
+    import {api,http} from '../common/bus'
     import StoreSelection from '../common/StoreSelection'
     import RecipesSelection from '../common/RecipesSelection'
     export default {
@@ -57,12 +59,20 @@
                 this.$router.go(-1)
             },
             onSubmit(){
-            	this.$message.error("还未实现")
+                http.jsonp2("/busi/outstockByRecipes",{
+                    storeCode: this.$data.storeCode,
+                    recipesJson:JSON.stringify(this.$data.recipesList)
+                }).then((value)=>{
+                    this.$message("提交成功")
+                }).fail((resp)=>{
+                    this.$message.error(resp.message)
+                })
             },
             addRows(){
             	this.$data.recipesList.push({
                     recipesCode:'',
-                    recipesName:''
+                    recipesName:'',
+                    amt:0
                 })
             },
             removeRows(index){
@@ -72,6 +82,9 @@
                 let item = this.recipesMap[recipesCode]
                 if(!item) return;
                 Object.keys(item).forEach((key)=>ctx[key]=item[key])
+            },
+            selectStore(ctx,val){
+                this.$data.storeCode = val;
             }
         },
         mounted(){
@@ -119,5 +132,11 @@
     }
     .el-input {
 	    width: 150px;
-	  }
+	}
+    .el-row {
+        margin-bottom: 5px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+    }
 </style>

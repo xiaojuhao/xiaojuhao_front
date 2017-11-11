@@ -40,6 +40,8 @@ const http = {
 
 export {config};
 
+export {http};
+
 export const api = {
 	signin(data){
 		var df = jquery.Deferred();
@@ -126,6 +128,25 @@ export const api = {
 	},
 	queryRecipesByCode(code){
 		return http.jsonp2("/recipes/queryRecipesByCode",{recipesCode:code})
+	},
+	queryMaterialsStockPage(data){
+		return http.jsonp2("/busi/queryMaterialsStock",data);
+	},
+	queryAllFenkuMaterialsStock(materialCode){
+		let data = {
+			materialCode: materialCode,
+			pageSize:1000,
+			stockType:'2'
+		}
+		var df = jquery.Deferred();
+		http.jsonp2("/busi/queryMaterialsStock",data)
+		.then((page)=>{
+			df.resolve(page.values);
+		}).fail((resp)=>{
+			df.reject(resp);
+		});
+
+		return df;
 	},
 	queryMaterialsStockHistory(data){
 		return http.jsonp2("/busi/queryMaterialsStockHistory",data);

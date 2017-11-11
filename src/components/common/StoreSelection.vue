@@ -1,11 +1,13 @@
 <template>
 	<div>
-		<el-select v-model="selectedStoreCode" 
-           placeholder="请选择"
+		    <el-select v-model="selectedCode"
+           placeholder="请选择" 
+           filterable
+           :filter-method="filterMethod"
            @change="setValue"
            @visible-change="visualChange">
                <el-option
-                    v-for="item in allStores"
+                    v-for="item in valuesShow"
                     :key="item.storeCode"
                     :label="item.storeName"
                     :value="item.storeCode">
@@ -16,41 +18,68 @@
 <script>
 	import {api} from './bus'
 	export default {
+    props:["excludes","value","context"],
 		data(){
 			return {
-				allStores:[],
-				storesShow:[],
-				selectedStoreCode:''
+				allValues:[],
+				valuesShow:[],
+				selectedCode:''
 			}
 		},
 		mounted(){
-			let $data = this.$data;
-			api.getAllStoreList()
-			.then((value)=>{
-				$data.allStores = value;
-			});
-			$data.storesShow = $data.allStores;
+       this.initData();
 		},
+    watch: {
+      value(nval, oval){
+        this.initData();
+      }
+    },
 		methods: {
 			setValue(){
-				this.$emit("setValue",this.selectedStoreCode)
+				this.$emit("input",this.$props.context,this.selectedCode)
 			},
-			filterStore(input){
-                let $data = this.$data;
-                setTimeout(()=>{
-                    $data.storesShow =  $data.allStores.filter((item)=>{
-                        var key = item.searchKey;
-                        if(!key || key.indexOf(input)>=0){
-                            return true;
-                        }
-                        return false;
-                    })
-                },10);
-            },
-            visualChange(visible){
-            	if(visible)
-            	this.$data.storesShow = this.$data.allStores;
-            }
-		}
+      initData(){
+        let $data = this.$data;
+        api.getAllStoreList()
+        .then((value)=>{
+          $data.allValues = value;
+          $data.selectedCode = this.$props.value;
+        });
+      },
+      enterkey(e){
+
+      },
+	  filterMethod(input){
+          let $data = this.$data;
+          setTimeout(()=>{
+              $data.valuesShow =  $data.allValues.filter((item)=>{
+                  var key = [item.storeCode,item.storeName,item.searchKey].join(',')
+                  if(key.indexOf(input)>=0){
+                      return true;
+                  }
+                  return false;
+              })
+          },10);
+      },
+      visualChange(visible){
+         if(visible){
+            this.$data.valuesShow = this.$data.allValues.filter((item)=>{
+                  if(this.excludesMap[item.storeCode]){
+                      return false;
+                  }
+                  return true;
+              })
+          }
+      }
+		},
+    computed:{
+      excludesMap(){
+         let map = {};
+         this.$props.excludes && this.$props.excludes.forEach((item)=>{
+            map[item] = 1;
+         })
+         return map;
+      }
+    }
 	}
 </script>

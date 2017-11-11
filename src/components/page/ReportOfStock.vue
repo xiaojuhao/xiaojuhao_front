@@ -13,7 +13,12 @@
             @expand="expand">
             <el-table-column type="expand">
                 <template scope="props">
-                    {{props.row.info}}
+                    <el-table :data="props.row.fenku" show-header=false >
+                        <el-table-column prop="warehouseCode"   width="100"></el-table-column>
+                        <el-table-column prop="warehouseName"   width="120"></el-table-column>
+                        <el-table-column prop="currStock"   width="120"></el-table-column>
+                        <el-table-column prop="usedStock"  width="120"></el-table-column>
+                    </el-table>
                 </template>
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="220">
@@ -46,37 +51,23 @@
 </template>
 
 <script>
-    import config from '../common/config.vue'
-    import OutStock from './OutStock.vue'
-    import jquery from 'jquery'
+    import {api} from '../common/bus'
     export default {
         data() {
             return {
-                url: './static/vuetable.json',
                 tableData: [],
                 cur_page: 1,
                 pageSize:5,
                 totalRows:0,
-                multipleSelection: [],
-                select_cate: '',
-                select_word: '',
                 loadingState: false,
-                del_list: [],
-                is_search: false,
                 query:{
                     materialCode:''
                 },
                 showOutStock:false
             }
         },
-        created(){
-            console.log('created......')
-        },
         mounted(){
             this.getData();
-        },
-        activated(){
-            console.log("activated......");
         },
         computed: {
             data(){
@@ -94,34 +85,19 @@
             getData(){
                 let self = this;
                 self.$data.loadingState = true;
-                jquery.ajax({
-                    url:config.server+'/busi/queryMaterialsStock',
-                    data:{
+                api.queryMaterialsStockPage({
                         pageSize:self.$data.pageSize,
                         pageNo:self.$data.cur_page,
                         materialCode:self.$data.materialCode,
                         storeCode:'M000',
                         stockType:'1'
-                    },
-                    dataType: 'jsonp'
-                }).then(function(resp){
-                    if(resp.code!=200){
-                        self.$message.error(resp.message)
-                        return;
-                    }
-                    var value = resp.value;
-                    if(!value){
-                       self.$message.error("服务端没有返回数据")
-                       return;
-                    }
-                    self.tableData = value.values;
-                    self.totalRows = value.totalRows;
-                }).fail(function(resp){
+                }).then((page)=>{
+                    page.values.forEach((item)=>item.fenku=[])
+                    self.tableData = page.values;
+                    self.totalRows = page.totalRows;
+                }).fail((resp)=>{
                     self.$message.error("请求出错")
-                }).done(function(resp){
-                    // self.$notify({
-                    //     title:'请求数据',message:'请求完成',duration:1000,position: 'bottom-right'
-                    // });
+                }).done(()=>{
                     self.$data.loadingState = false;
                 })
             },
@@ -129,9 +105,6 @@
                 this.tableData = [];
                 this.cur_page = 1;
                 this.getData();
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
             },
             handleSelect(item){
                 this.$data.query.name=item.value;
@@ -145,8 +118,13 @@
                 cb(data)
             },
             expand(row,expanded){
-                row.info=row.materialName+(expanded?"打开":"关闭");
-                this.$message(row.materialName+(expanded?"打开":"关闭"))
+                if(!expanded){
+                    return;
+                }
+                api.queryAllFenkuMaterialsStock(row.materialCode)
+                .then((list)=>{
+                    row.fenku = list;
+                })
             },
             getUtilizationRatio(row){
                 return 100;

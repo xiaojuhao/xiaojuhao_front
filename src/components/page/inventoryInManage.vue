@@ -31,11 +31,15 @@
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="220">
             </el-table-column>
-            <el-table-column prop="currStock" label="入库总量" width="150">
+            <el-table-column prop="currStock" label="当前库存量" width="120">
+            </el-table-column>
+            <el-table-column prop="usedStock" label="已用数量" width="120">
+            </el-table-column>
+            <el-table-column label="总数量" width="120" :formatter="calcTotalStock">
             </el-table-column>
             <el-table-column prop="modifier" label="修改人" width="">
             </el-table-column>
-            <el-table-column label="操作" width="150">
+            <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
                     <el-button size="small" type="primary" @click="instock(scope.$index, scope.row)">入库</el-button>
                 </template>
@@ -137,6 +141,9 @@
             },
             formatStockType(row, column) {
                 return row.stockType==1?"总库":"分库";
+            },
+            calcTotalStock(row,column) {
+                return row.currStock + row.usedStock;
             },
             filterTag(value, row) {
                 return row.tag === value;
