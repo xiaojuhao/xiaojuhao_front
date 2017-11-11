@@ -13,7 +13,7 @@
             @expand="expand">
             <el-table-column type="expand">
                 <template scope="props">
-                    {{props.row.materialName}}每个仓库的明细（待实现）
+                    {{props.row.info}}
                 </template>
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="220">
@@ -145,6 +145,7 @@
                 cb(data)
             },
             expand(row,expanded){
+                row.info=row.materialName+(expanded?"打开":"关闭");
                 this.$message(row.materialName+(expanded?"打开":"关闭"))
             },
             getUtilizationRatio(row){

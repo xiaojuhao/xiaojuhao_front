@@ -1,7 +1,7 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-button round @click="queryData()">查询列表</el-button>
+            <el-button round @click="queryData()">刷新数据</el-button>
             <div style="position:relative; float:right; ">
                 <el-button round @click="edit()">增加新门店</el-button>
             </div>
@@ -31,66 +31,31 @@
                 </template>
             </el-table-column>
         </el-table>
-        <div class="pagination">
-            <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next"
-                    :total="totalRows" :page-size="pageSize">
-            </el-pagination>
-        </div>
     </div>
 </template>
 
 <script>
-    import config from '../common/config.vue'
-    import OutStock from './OutStock.vue'
-    import jquery from 'jquery'
     import {api} from '../common/bus'
     export default {
         data() {
             return {
-                url: './static/vuetable.json',
-                tableData: [],
-                pageNo: 1,
-                pageSize: 20,
-                totalRows:0,
                 loadingState: false,
                 queryList:[],
                 allWarehouse:[]
             }
         },
         methods: {
-            handleCurrentChange(val){
-                this.pageNo = val;
-                this.queryData();
-            },
             queryData(){
                 this.queryList = [];
                 this.totalRows = 0;
                 let self = this;
                 self.$data.loadingState = true;
-                jquery.ajax({
-                    url:config.server+'/store/getAllStore',
-                    data:{
-                        pageSize:self.$data.pageSize,
-                        pageNo:self.$data.pageNo
-                    },
-                    dataType: 'jsonp'
-                }).then(function(resp){
-                    if(resp.code!=200){
-                        self.$message.error(resp.message)
-                        return;
-                    }
-                    var value = resp.value;
-                    if(!value){
-                       self.$message.error("服务端没有返回数据")
-                       return;
-                    }
-                    self.queryList = value.values;
-                    self.totalRows = value.totalRows;
-                }).fail(function(resp){
-                    self.$message.error("请求出错")
-                }).done(function(resp){
+                api.getAllStoreList()
+                .then((values)=>{
+                    self.queryList = values;
+                }).fail((resp)=>{
+                    this.$message.error(resp.message)
+                }).done(()=>{
                     self.$data.loadingState = false;
                 })
             },
@@ -98,7 +63,6 @@
                 this.$router.push({path:"/storeManagePage",query:{storeCode:item && item.storeCode}})
             },
             formatWarehouse(item){
-                console.log(item)
                 let wh = this.warehouseMap[item.defaultWarehouse];
                 return wh && wh.warehouseName;
             }

@@ -18,14 +18,21 @@
                     <el-slider v-model="form.utilizationRatio" :min="50" :max="100" :show-input="true"></el-slider>
                 </el-form-item>
                 <el-form-item label="保质期">
-                    <el-input v-model="form.storageLife"></el-input>
+                    <el-input v-model="form.storageLifeNum" style="width:160px">
+                        <el-select v-model="form.storageLifeUnit" slot="append" style="width:80px" 
+                            placeholder="请选择">
+                          <el-option label="小时" value="H"></el-option>
+                          <el-option label="天" value="D"></el-option>
+                          <el-option label="月" value="M"></el-option>
+                          <el-option label="年" value="Y"></el-option>
+                        </el-select>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="单位">
-                    <el-select v-model="form.stockUnit" placeholder="请选择">
-                        <el-option key="bbk" label="个" value="个"></el-option>
-                        <el-option key="xtc" label="斤" value="斤"></el-option>
-                        <el-option key="imoo" label="克" value="克"></el-option>
-                        <el-option key="imoo" label="箱" value="箱"></el-option>
+                    <el-select v-model="form.stockUnit" style="width:160px" placeholder="请选择">
+                        <el-option key="A" label="个" value="个"></el-option>
+                        <el-option key="KG" label="千克" value="千克"></el-option>
+                        <el-option key="G" label="克" value="克"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="是否可拆">
@@ -64,7 +71,9 @@
                     canSplit:'',
                     searchKey:'',
                     formulaStr:'',
-                    formula:[
+                    storageLifeUnit:'',
+                    storageLifeNum:'',
+                    splitMaterials:[
                         {id:1,name:'aaaaaaa'},
                         {id:2,name:'bbbbbbb'}
                     ]
@@ -86,7 +95,6 @@
                     self.$message.success("操作成功");
                     self.$router.go(-1)
                 })
-                
             },
             onCancel(){
                 this.$router.go(-1)
@@ -106,13 +114,20 @@
                 dataType:'jsonp'
             }).then((resp)=>{
                 if(resp.code==200 && resp.value ){
-                    var v = resp.value;
+                    let re = /(\d+)(\w)/ig;
+                    let v = resp.value;
                     form.materialName = v.materialName;
                     form.materialCode = v.materialCode;
                     form.stockUnit = v.stockUnit;
                     form.searchKey = v.searchKey;
                     form.canSplit = v.canSplit;
                     form.utilizationRatio = v.utilizationRatio;
+                    let r = re.exec(v.storageLife)
+                    if(r){
+                        form.storageLifeNum = r[1];
+                        form.storageLifeUnit = r[2];
+                    }
+                    console.log(form.storageLifeNum)
                 }
             })
         }

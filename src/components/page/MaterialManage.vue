@@ -22,7 +22,7 @@
             </el-table-column>
             <el-table-column v-if="canshow" prop="utilizationRatio" label="利用率(%)" width="120">
             </el-table-column>
-            <el-table-column prop="storageLife" label="保质期" width="120">
+            <el-table-column prop="storageLife" label="保质期" width="120" :formatter="formatStorageLife">
             </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位" width="120">
             </el-table-column>
@@ -81,6 +81,21 @@
             handleCurrentChange(val){
                 this.pageNo = val;
                 this.queryData();
+            },
+            formatStorageLife(row){
+                let re = /(\d+)(\w)/ig;
+                let r = re.exec(row.storageLife);
+                let ret = "";
+                if(r){
+                    ret = r[1];
+                    switch(r[2]){
+                        case "D": ret = ret + "天"; break;
+                        case "H": ret = ret + "小时"; break;
+                        case "Y": ret = ret + "年"; break;
+                        case "M": ret = ret + "月"; break;
+                    }
+                }
+                return ret;
             },
             queryData(){
                 let self = this;

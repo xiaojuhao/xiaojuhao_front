@@ -62,7 +62,7 @@ export const api = {
 	},
 	getAllStoreList(){
 		var df = jquery.Deferred();
-		http.jsonp('/store/getAllStore')
+		http.jsonp('/store/getAllStore',{pageSize:1000})
 		.then((resp)=>{
 			if(resp.code=="200"){
 				var values = resp.value && resp.value.values;
@@ -122,7 +122,7 @@ export const api = {
 		return http.jsonp2("/recipes/queryRecipes",data)
 	},
 	queryAllRecipes(){
-		return http.jsonp2("/recipes/queryAllRecipes",{})
+		return http.jsonp2("/recipes/queryAllRecipes",{pageSize:1000})
 	},
 	queryRecipesByCode(code){
 		return http.jsonp2("/recipes/queryRecipesByCode",{recipesCode:code})
@@ -136,7 +136,7 @@ export const api = {
 	queryAllMaterials(){
 		let data = {
 			pageNo:1,
-			pageSize:1000
+			pageSize:2000
 		}
 		return http.jsonp2("/busi/queryMaterials",data);
 	},
@@ -145,6 +145,6 @@ export const api = {
 		return http.jsonp2("/recipes/queryRecipesFormula",data)
 	},
 	getAllWarehouse(){
-		return http.jsonp2("/warehouse/queryWarehouses",{})
+		return http.jsonp2("/warehouse/queryWarehouses",{pageSize:1000})
 	}
 }

@@ -11,15 +11,22 @@
                 <el-form-item>
                 	<div v-for="(item,index) in recipesList">
                       <el-row>
-                	       <el-col :span="10"><RecipesSelection></RecipesSelection></el-col>
-                         <el-col :span="8">
-                            <el-input placeholder="请输入份数" v-model="item.num" >
-					                       <template slot="prepend">份数</template>
-					                 </el-input>
-                         </el-col>
-                         <el-col :span="6">
-					                 <el-button type="primary" icon="minus" @click="removeRows(index)"></el-button>
-                         </el-col>
+                	       <el-col :span="10">
+                                <RecipesSelection 
+                                    :value="item.recipesCode"
+                                    v-on:input="addNewRecipes"
+                                    :context="item"
+                                    :excludes="addedRecipesCode"
+                                ></RecipesSelection>
+                           </el-col>
+                           <el-col :span="8">
+                              <el-input placeholder="请输入份数" v-model="item.num" >
+					               <template slot="prepend">份数</template>
+					           </el-input>
+                            </el-col>
+                            <el-col :span="6">
+					             <el-button type="primary" icon="minus" @click="removeRows(index)"></el-button>
+                            </el-col>
                       </el-row>
                   </div>
                 </el-form-item>
@@ -41,7 +48,8 @@
         data(){
             return {
                 storeCode:'',
-                recipesList:[]
+                recipesList:[],
+                allRecipes:[]
              }
         },
         methods: {  
@@ -52,14 +60,42 @@
             	this.$message.error("还未实现")
             },
             addRows(){
-            	this.$data.recipesList.push({})
+            	this.$data.recipesList.push({
+                    recipesCode:'',
+                    recipesName:''
+                })
             },
             removeRows(index){
             	this.$data.recipesList.splice(index,1)
+            },
+            addNewRecipes(ctx,recipesCode){
+                let item = this.recipesMap[recipesCode]
+                if(!item) return;
+                Object.keys(item).forEach((key)=>ctx[key]=item[key])
             }
         },
         mounted(){
-        	
+            let self = this;
+        	api.queryAllRecipes()
+            .then((values)=>{
+                self.$data.allRecipes = values;
+            })
+        },
+        computed: {
+            recipesMap(){
+                let map = {}
+                this.$data.allRecipes.forEach((item)=>{
+                    map[item.recipesCode] = item;
+                })
+                return map;
+            },
+            addedRecipesCode(){
+                let ll = [];
+                Object.keys(this.$data.recipesList).forEach((i)=>{
+                    ll.push(this.$data.recipesList[i].recipesCode)
+                })
+                return ll;
+            }
         },
         components:{
           StoreSelection,

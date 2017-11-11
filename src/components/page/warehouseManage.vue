@@ -1,7 +1,7 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-button round @click="queryData()">查询列表</el-button>
+            <el-button round @click="queryData()">刷新列表</el-button>
             <div style="position:relative; float:right; ">
                 <el-button round @click="edit()">增加仓库</el-button>
             </div>
@@ -29,59 +29,26 @@
                 </template>
             </el-table-column>
         </el-table>
-        <div class="pagination">
-            <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next"
-                    :total="totalRows" :page-size="pageSize">
-            </el-pagination>
-        </div>
     </div>
 </template>
 
 <script>
-    import config from '../common/config.vue'
-    import jquery from 'jquery'
+    import {api} from '../common/bus'
     export default {
         data() {
             return {
-                tableData: [],
-                pageNo: 1,
-                pageSize: 20,
-                totalRows:0,
                 loadingState: false,
                 queryList:[]
             }
         },
         methods: {
-            handleCurrentChange(val){
-                this.$data.pageNo = val;
-                this.queryData();
-            },
             queryData(){
-                this.queryList = [];
-                this.totalRows = 0;
                 let self = this;
+                self.queryList = [];
                 self.$data.loadingState = true;
-                jquery.ajax({
-                    url:config.server+'/warehouse/queryWarehouses',
-                    data:{
-                        pageSize:self.$data.pageSize,
-                        pageNo:self.$data.pageNo
-                    },
-                    dataType: 'jsonp'
-                }).then(function(resp){
-                    if(resp.code!=200){
-                        self.$message.error(resp.message)
-                        return;
-                    }
-                    var value = resp.value;
-                    if(!value){
-                       self.$message.error("服务端没有返回数据")
-                       return;
-                    }
-                    self.queryList = value.values;
-                    self.totalRows = value.totalRows;
+                api.getAllWarehouse()
+                .then((page)=>{
+                    self.queryList = page.values;
                 }).fail(function(resp){
                     self.$message.error("请求出错")
                 }).done(function(resp){
@@ -100,7 +67,7 @@
 
 <style scoped>
 .handle-box{
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 .handle-select{
     width: 120px;

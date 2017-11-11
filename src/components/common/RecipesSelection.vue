@@ -1,11 +1,14 @@
 <template>
 	<div>
-		<el-select v-model="selectedCode" 
-           placeholder="请选择"
+		    <el-select v-model="selectedCode"
+           placeholder="请选择" 
+           filterable
+           :filter-method="filterMethod"
+           @keyup.enter.native="enterkey"
            @change="setValue"
            @visible-change="visualChange">
                <el-option
-                    v-for="item in allValues"
+                    v-for="item in valuesShow"
                     :key="item.recipesCode"
                     :label="item.recipesName"
                     :value="item.recipesCode">
@@ -16,6 +19,7 @@
 <script>
 	import {api} from './bus'
 	export default {
+    props:["excludes","value","context"],
 		data(){
 			return {
 				allValues:[],
@@ -24,22 +28,34 @@
 			}
 		},
 		mounted(){
-			let $data = this.$data;
-			api.queryAllRecipes()
-			.then((value)=>{
-				$data.allValues = value;
-			});
+       this.initData();
 		},
+    watch: {
+      value(nval, oval){
+        this.initData();
+      }
+    },
 		methods: {
 			setValue(){
-				this.$emit("setValue",this.selectedCode)
+				this.$emit("input",this.$props.context,this.selectedCode)
 			},
-			filterMethod(input){
+      initData(){
+        let $data = this.$data;
+        api.queryAllRecipes()
+        .then((value)=>{
+          $data.allValues = value;
+          $data.selectedCode = this.$props.value;
+        });
+      },
+      enterkey(e){
+
+      },
+	  filterMethod(input){
           let $data = this.$data;
           setTimeout(()=>{
               $data.valuesShow =  $data.allValues.filter((item)=>{
-                  var key = item.searchKey;
-                  if(!key || key.indexOf(input)>=0){
+                  var key = [item.recipesCode,item.recipesName,item.searchKey].join(',')
+                  if(key.indexOf(input)>=0){
                       return true;
                   }
                   return false;
@@ -47,9 +63,24 @@
           },10);
       },
       visualChange(visible){
-          if(visible)
-            this.$data.valuesShow = this.$data.allValues;
+         if(visible){
+            this.$data.valuesShow = this.$data.allValues.filter((item)=>{
+                  if(this.excludesMap[item.recipesCode]){
+                      return false;
+                  }
+                  return true;
+              })
+          }
       }
-		}
+		},
+    computed:{
+      excludesMap(){
+         let map = {};
+         this.$props.excludes && this.$props.excludes.forEach((item)=>{
+            map[item] = 1;
+         })
+         return map;
+      }
+    }
 	}
 </script>

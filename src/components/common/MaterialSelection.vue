@@ -10,7 +10,7 @@
                <el-option
                     v-for="item in valuesShow"
                     :key="item.materialCode"
-                    :label="item.materialName"
+                    :label="item.materialName + '-' +item.materialCode"
                     :value="item.materialCode">
                </el-option>
          </el-select>
@@ -19,7 +19,7 @@
 <script>
 	import {api} from './bus'
 	export default {
-    props:["excludes","initValue"],
+    props:["excludes","value","context"],
 		data(){
 			return {
 				allValues:[],
@@ -30,16 +30,21 @@
 		mounted(){
        this.initData();
 		},
+    watch:{
+      value(nval,oval){
+        this.initData();
+      }
+    },
 		methods: {
 			setValue(){
-				this.$emit("setValue",this.selectedCode)
+				this.$emit("input",this.$props.context,this.selectedCode)
 			},
       initData(){
         let $data = this.$data;
         api.queryAllMaterials()
         .then((value)=>{
           $data.allValues = value.values;
-          $data.selectedCode = this.$props.initValue;
+          $data.selectedCode = this.$props.value;
         });
       },
       enterkey(e){

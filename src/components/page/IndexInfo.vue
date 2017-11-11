@@ -1,8 +1,14 @@
 <template>
     <div>
-        敬请期待！！！！！！！
+        {{url}}
     </div>
 </template>
 <script>
-
+	export default {
+		data(){
+			return {
+				url:location.href
+			}
+		}
+	}
 </script>

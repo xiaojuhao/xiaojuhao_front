@@ -15,7 +15,17 @@
             v-loading="loadingState"
             element-loading-text="拼命加载中"
             element-loading-spinner="el-icon-loading"
-            element-loading-background="rgb(0, 0, 0, 0.8)">
+            element-loading-background="rgb(0, 0, 0, 0.8)"
+            @expand="expand">
+            <el-table-column type="expand">
+                <template scope="props">
+                    <el-row v-for="item in props.row.formulas">
+                        <el-col :span="3">{{item.materialName}}</el-col>
+                        <el-col :span="1">{{item.materialAmt}}</el-col>
+                        <el-col :span="1">{{item.materialUnit}}</el-col>
+                    </el-row>
+                </template>
+            </el-table-column>
             <el-table-column prop="recipesCode" label="菜品编码" width="120">
             </el-table-column>
             <el-table-column prop="recipesName" label="菜品名称" width="">
@@ -81,7 +91,11 @@
                 })
                 .then((page)=>{
                     self.$data.totalRows = page.totalRows;
-                    self.$data.queryList = page.values;
+                    Object.keys(page.values).forEach((index)=>{
+                        let item = page.values[index];
+                        item.formulas=''
+                        self.$data.queryList.push(item)
+                    })
                 }).done(()=>{
                     self.$data.loadingState = false;
                 })
@@ -106,6 +120,14 @@
             },
             edit(index, item){
                 this.$router.push({path:"/recipesManagePage",query:{code:item && item.recipesCode}})
+            },
+            expand(row,expanded){
+                if(expanded){
+                    api.queryRecipesFormula(row.recipesCode)
+                    .then((values)=>{
+                        row.formulas = values;
+                    })
+                }
             }
         }
     }
@@ -122,4 +144,10 @@
     width: 300px;
     display: inline-block;
 }
+.el-row {
+    margin-bottom: 4px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
 </style>

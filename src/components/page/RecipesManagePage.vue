@@ -23,13 +23,18 @@
                     </el-row>
                     <el-row v-for="(ff,index) in form.formula" :gutter="5">
                         <el-col :span="12">
-                            <MaterialSelection></MaterialSelection>
+                            <MaterialSelection 
+                                :value="ff.materialCode" 
+                                :context="ff"
+                                :excludes="addedMaterials"
+                                v-on:input="addNewFormula">
+                            </MaterialSelection>
                         </el-col>
                         <el-col :span="4">
-                            <el-input v-model="ff.amt" placeholder="数量"></el-input>
+                            <el-input v-model="ff.materialAmt" placeholder="数量"></el-input>
                         </el-col>
                         <el-col :span="3">
-                            <div class="grid-content">{{ff.stockUnit}}</div>
+                            <div class="grid-content">{{ff.materialUnit}}</div>
                         </el-col>
                         <el-col :span="3">
                             <div class="grid-content">
@@ -39,7 +44,7 @@
                     </el-row>
                     <el-row>
                         <el-col :span="24">
-                            <el-button type="success" @click="addFormula">增加原料</el-button>
+                            <el-button type="success" @click="addFormulaItem">增加原料</el-button>
                         </el-col>
                     </el-row>
                 </el-form-item>
@@ -65,8 +70,7 @@
                     recipesName:'',
                     formula:[]
                 },
-                allMaterials:[],
-                allMaterialsShow:[]
+                allMaterials:[]
             }
         },
         methods: {
@@ -84,16 +88,23 @@
             onCancel(){
                 this.$router.go(-1)
             },
-            formulaChange(item){
-                if(this.allMaterialsMap && this.allMaterialsMap[item.materialCode]){
-                    item.stockUnit = this.allMaterialsMap[item.materialCode].stockUnit;   
-                }
-            },
             removeFormula(index){
                 this.$data.form.formula.splice(index,1)
             },
-            addFormula(){
-                this.$data.form.formula.push({id:0,stockUnit:'',amt:0,materialCode:''})
+            addFormulaItem(){
+                this.$data.form.formula.push({
+                    id:0,
+                    materialUnit:'',
+                    materialAmt:0,
+                    materialCode:''
+                })
+            },
+            addNewFormula(ctx,val){
+                let item = this.allMaterialsMap[val]
+                Object.keys(item).forEach((key)=>{
+                    ctx[key]=item[key]
+                })
+                ctx.materialUnit = item.stockUnit;
             }
         },
         mounted(){
@@ -101,15 +112,28 @@
             .then((resp)=>{
                 this.$data.form.recipesName = resp.recipesName;
             });
-            
-            api.queryRecipesFormula(this.$data.form.recipesCode)
-            .then((value)=>{
-                this.$data.form.formula = value;
+            api.queryAllMaterials()
+            .then((page)=>{
+                this.$data.allMaterials = page.values;
             })
-
+            api.queryRecipesFormula(this.$data.form.recipesCode)
+            .then((values)=>{
+                this.$data.form.formula = values;
+            })
         },
         computed:{
-            
+            allMaterialsMap(){
+                let map = {}
+                this.allMaterials.forEach((item)=>{
+                    map[item.materialCode] = item;
+                })
+                return map;
+            },
+            addedMaterials(){
+                let ll = [];
+                this.$data.form.formula.forEach((item)=>ll.push(item.materialCode))
+                return ll;
+            }
         },
         components: {
             MaterialSelection
