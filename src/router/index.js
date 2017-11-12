@@ -104,6 +104,14 @@ export default new Router({
                     component: resolve => require(['../components/page/inventoryInManage.vue'], resolve)    // 拖拽列表组件
                 },
                 {
+                    path: '/inventoryInIndex',
+                    component: resolve => require(['../components/page/inventoryInIndex.vue'], resolve)    // 拖拽列表组件
+                },
+                {
+                    path: '/inventoryInPage',
+                    component: resolve => require(['../components/page/inventoryInPage.vue'], resolve)    // 拖拽列表组件
+                },
+                {
                     path: '/pandian',
                     component: resolve => require(['../components/page/Pandian.vue'], resolve)    // 拖拽列表组件
                 },

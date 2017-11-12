@@ -1,0 +1,198 @@
+<template>
+    <div v-loading="loadingState">
+    	<div class="handbox" >
+    		<el-autocomplete id="handbox"
+			  v-model="storeCode"
+			  :fetch-suggestions="querySearchAsync"
+			  placeholder="请输入内容"
+			  @select="handleSelect">
+			</el-autocomplete> 
+            <span>搜索内容后回车或选中添加记录</span>
+    	</div>
+        <div class="form-box">
+            <el-row>
+                <el-col  :span="4"><div class="grid-content bg-purple">品名</div></el-col>
+                <el-col :span="4"><div class="grid-content bg-purple">供应商</div></el-col>
+                <el-col :span="2"><div class="grid-content bg-purple">数量</div></el-col>
+                <el-col :span="2"><div class="grid-content bg-purple">单位</div></el-col>
+                <el-col :span="3"><div class="grid-content bg-purple">生产日期</div></el-col>
+                <el-col :span="3"><div class="grid-content bg-purple">保质期</div></el-col>
+                <el-col :span="2"><div class="grid-content bg-purple">金额</div></el-col>
+                <el-col :span="3"><div class="grid-content bg-purple">仓库</div></el-col>
+                <el-col :span="1"><div class="grid-content bg-purple">&nbsp;</div></el-col>
+            </el-row>
+            <el-row v-for="(item,index) in recipesList">
+                <el-col class="grid-content" :span="4">{{item.value}}</el-col>
+                <el-col class="grid-content" :span="4">{{item.supplier}}</el-col>
+                <el-col class="grid-content" :span="2">
+                    <el-input v-model="item.amt" style="width:100%" size="mini"></el-input>
+                </el-col>
+                <el-col class="grid-content" :span="2">{{item.stockUnit}}</el-col>
+                <el-col class="grid-content" :span="3">{{currDate}}</el-col>
+                <el-col class="grid-content" :span="3">3天</el-col>
+                <el-col class="grid-content" :span="2">100.00</el-col>
+                <el-col class="grid-content" :span="3">{{warehouse.warehouseName}}</el-col>
+                <el-col :span="1"><el-button icon="delete" size="mini" @click="removeRows(index)"></el-button></el-col>
+            </el-row>
+            <el-row style="margin-top:20px;">
+                <el-col :offset="6">
+                    <el-button type="primary" :disabled="recipesList.length==0" @click="onSubmit">提交入库</el-button>
+                    <el-button type="primary" @click="onClear">清空</el-button>
+                </el-col>
+            </el-row>
+        </div>
+
+    </div>
+</template>
+
+<script>
+    import {api,http} from '../common/bus'
+    import StoreSelection from '../common/StoreSelection'
+    import RecipesSelection from '../common/RecipesSelection'
+    import jquery from 'jquery'
+    export default {
+        data(){
+            return {
+                storeCode:'',
+                recipesList:[],
+                currSelectAlts:[],
+                loadingState:false,
+                currDate:'2017-11-11',
+                warehouse:{}
+             }
+        },
+        methods: {
+            onClear(){
+                let self = this;
+                this.$confirm('是否清空当前页内容?', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                }).then(() => {
+                  self.recipesList = [];
+                })
+            },
+            onSubmit(){
+                let self = this;
+                this.$confirm('是否提交入库?', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                }).then(() => {
+                  this.$message({
+                    type: 'success',
+                    message: '入库成功!'
+                  });
+                  self.recipesList = [];
+                }).catch(() => {
+                  this.$message({
+                    type: 'info',
+                    message: '取消入库'
+                  });          
+                });
+            },
+            removeRows(index){
+            	this.$data.recipesList.splice(index,1)
+            },
+            querySearchAsync(queryString, cb){
+                queryString = jquery.trim(queryString)
+            	let all = [
+            		{id:1,value:'萝卜-常州青菜公司',supplier:'常州青菜公司',material:'萝卜'},
+            		{id:2,value:'青菜-常州青菜公司',supplier:'常州青菜公司',material:'青菜'},
+            		{id:3,value:'豆腐-常州青菜公司',supplier:'常州青菜公司',material:'豆腐'},
+            		{id:4,value:'紫菜-常州青菜责任有限无线公司',supplier:'常州青菜责任有限无线公司',material:'紫菜'}
+            	]
+                console.log(queryString)
+            	let result = all.filter((item)=>{
+                    return item.value.indexOf(queryString) >=0;
+                })
+                this.$data.currSelectAlts = result;
+            	cb(result)
+            },
+            addAltsToList(){
+                if(this.recipesList.length>10){
+                    this.$message.error("添加记录太多,请先入库")
+                    return
+                }
+                let self = this;
+                this.currSelectAlts.forEach((item)=>{
+                    if(!this.recipesListMap[item.id]){
+                        self.recipesList.push(item)
+                    }
+                })
+            },
+            handleSelect(item){
+            	this.currSelectAlts = [item]
+                this.storeCode = '';
+                this.addAltsToList();
+            },
+            onEnterKeyPressed(){
+                if(this.loadingState){
+                    return;
+                } 
+                this.loadingState = true;
+                setTimeout(()=>{
+                    this.addAltsToList()
+                    this.loadingState = false;
+                }, 0)
+            }
+        },
+        mounted(){
+            let self = this;
+            api.getWarehouseByCode(this.$route.query.CODE)
+            .then((val)=>{
+                this.warehouse = val;
+            })
+            //添加回车监听
+            jquery("#handbox").keyup(function(event){
+              if(event.keyCode ==13){
+                 self.onEnterKeyPressed();
+              }
+            });
+        },
+        computed: {
+            recipesListMap(){
+                let map = {};
+                this.recipesList.forEach((item)=>map[item.id]=item)
+                return map;
+            }
+        },
+        components:{
+          StoreSelection,
+          RecipesSelection
+        }
+    }
+</script>
+<style scoped>
+	.form-box{
+		margin-top: 20px;
+        width: 80%;
+	}
+    .border-table {   
+        border-collapse: collapse;   
+        border: none;   
+    }   
+    .border-table td {   
+        border: solid #000 1px;   
+    }
+    .border-table th {   
+        border: solid #000 1px;   
+    }
+    .el-input {
+	    width: 150px;
+	}
+    .el-row {
+        margin-bottom: 5px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+    }
+    .bg-purple {
+        background: #d3dce6;
+    }
+    .grid-content{
+        min-height: 1px;
+        text-align: center;
+        
+    }
+</style>

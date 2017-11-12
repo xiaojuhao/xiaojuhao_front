@@ -84,6 +84,9 @@ export const api = {
 		}).fail((resp)=>df.reject(resp))
 		return df.promise();
 	},
+	queryMyStores(){
+		return http.jsonp2("/store/getMyStore",{})
+	},
 	outstock(data){
 		var df = jquery.Deferred();
 		http.jsonp('/busi/outstock',data)
@@ -176,5 +179,11 @@ export const api = {
 	},
 	getAllWarehouse(){
 		return http.jsonp2("/warehouse/queryWarehouses",{pageSize:1000})
+	},
+	getWarehouseByCode(code){
+		return http.jsonp2("/warehouse/queryWarehouseByCode",{warehouseCode:code})
+	},
+	queryMyWarehouse(){
+		return http.jsonp2("/warehouse/queryMyWarehouse",{});
 	}
 }

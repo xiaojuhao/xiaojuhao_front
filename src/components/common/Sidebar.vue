@@ -83,7 +83,7 @@
                                 title: '出库管理'
                             },
                             {
-                                index: 'inventoryIn',
+                                index: 'inventoryInIndex',
                                 title: '入库管理'
                             },
                             {
