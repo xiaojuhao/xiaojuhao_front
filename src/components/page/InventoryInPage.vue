@@ -22,7 +22,7 @@
                 <el-col :span="1"><div class="grid-content bg-purple">&nbsp;</div></el-col>
             </el-row>
             <el-row v-for="(item,index) in recipesList">
-                <el-col class="grid-content" :span="4">{{item.value}}</el-col>
+                <el-col class="grid-content" :span="4">{{item.material}}</el-col>
                 <el-col class="grid-content" :span="4">{{item.supplier}}</el-col>
                 <el-col class="grid-content" :span="2">
                     <el-input v-model="item.amt" style="width:100%" size="mini"></el-input>
@@ -58,7 +58,8 @@
                 currSelectAlts:[],
                 loadingState:false,
                 currDate:'2017-11-11',
-                warehouse:{}
+                warehouse:{},
+                allMaterialSupplier:[]
              }
         },
         methods: {
@@ -79,11 +80,15 @@
                   cancelButtonText: '取消',
                   type: 'warning'
                 }).then(() => {
-                  this.$message({
-                    type: 'success',
-                    message: '入库成功!'
-                  });
-                  self.recipesList = [];
+                    this.loadingState = true;
+                    this.$message({
+                      type: 'success',
+                      message: '入库成功!'
+                    });
+                    self.recipesList = [];
+                    setTimeout(()=>{
+                        this.loadingState = false;
+                    },2000)
                 }).catch(() => {
                   this.$message({
                     type: 'info',
@@ -96,16 +101,18 @@
             },
             querySearchAsync(queryString, cb){
                 queryString = jquery.trim(queryString)
-            	let all = [
-            		{id:1,value:'萝卜-常州青菜公司',supplier:'常州青菜公司',material:'萝卜'},
-            		{id:2,value:'青菜-常州青菜公司',supplier:'常州青菜公司',material:'青菜'},
-            		{id:3,value:'豆腐-常州青菜公司',supplier:'常州青菜公司',material:'豆腐'},
-            		{id:4,value:'紫菜-常州青菜责任有限无线公司',supplier:'常州青菜责任有限无线公司',material:'紫菜'}
-            	]
-                console.log(queryString)
-            	let result = all.filter((item)=>{
+            	
+            	let result = this.allMaterialSupplier.map((item)=>{
+                    return {
+                        id:item.id,
+                        value:item.materialName+"-"+item.supplierName,
+                        supplier:item.supplierName,
+                        material:item.materialName
+                    }
+                }).filter((item)=>{
                     return item.value.indexOf(queryString) >=0;
                 })
+
                 this.$data.currSelectAlts = result;
             	cb(result)
             },
@@ -142,6 +149,10 @@
             api.getWarehouseByCode(this.$route.query.CODE)
             .then((val)=>{
                 this.warehouse = val;
+            })
+            api.queryAllMaterialSuppler()
+            .then((values)=>{
+                this.allMaterialSupplier = values;
             })
             //添加回车监听
             jquery("#handbox").keyup(function(event){

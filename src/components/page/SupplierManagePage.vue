@@ -66,9 +66,11 @@
         data: function(){
             return {
                 form:{
-                    id:'',
                     supplierCode:this.$route.query.supplierCode,
                     supplierName:'',
+                    supplierTel:'',
+                    supplierPhone:'',
+                    supplierEmail:'',
                     materials:[]
                 },
                 allMaterials:[],
@@ -77,7 +79,20 @@
         },
         methods: {
             onSubmit() {
-                this.$message("待实现")
+                let param = {
+                    supplierCode:this.form.supplierCode,
+                    supplierName:this.form.supplierName,
+                    supplierTel:this.form.supplierTel,
+                    supplierPhone: this.form.supplierPhone,
+                    supplierEmail: this.form.supplierEmail,
+                    materialJson: JSON.stringify(this.form.materials)
+                }
+                api.saveSupplierInfo(param)
+                .then((val)=>{
+                    this.$message("提交成功")
+                }).fail((resp)=>{
+                    this.$message.error(resp.message)
+                })
             },
             onCancel(){
                 this.$router.go(-1)
@@ -87,9 +102,6 @@
             },
             addMaterialItem(){
                 this.$data.form.materials.push({
-                    id:0,
-                    materialUnit:'',
-                    materialAmt:0,
                     materialCode:''
                 })
             },
@@ -102,10 +114,23 @@
             }
         },
         mounted(){
-            
+            api.querySupplierByCode(this.form.supplierCode)
+            .then((sp)=>{
+                this.form.supplierName = sp.supplierName;
+                this.form.supplierTel = sp.supplierTel;
+                this.form.supplierPhone = sp.supplierPhone;
+                this.form.supplierEmail = sp.supplierEmail;
+            });
             api.queryAllMaterials()
             .then((page)=>{
                 this.$data.allMaterials = page.values;
+            });
+            api.queryMaterialSupplerByCode({
+                supplierCode:this.form.supplierCode
+            }).then((values)=>{
+                values.forEach((item)=>{
+                    this.form.materials.push({materialCode:item.materialCode})
+                })
             })
             
         },

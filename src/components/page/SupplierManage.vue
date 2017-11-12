@@ -24,17 +24,17 @@
             </el-table-column>
             <el-table-column prop="supplierCode" label="供应商编码" width="120">
             </el-table-column>
-            <el-table-column prop="supplierName" label="供应商名称" width="120">
+            <el-table-column prop="supplierName" label="供应商名称" width="150">
             </el-table-column>
-            <el-table-column prop="supplierTel" label="电话" width="120">
+            <el-table-column prop="supplierTel" label="电话" width="130">
             </el-table-column>
-            <el-table-column prop="supplierPhone" label="手机" width="120">
+            <el-table-column prop="supplierPhone" label="手机" width="130">
             </el-table-column>
             <el-table-column prop="supplierEmail" label="邮箱" width="150">
             </el-table-column>
             <el-table-column prop="status" label="状态" width="100">
             </el-table-column>
-            <el-table-column prop="supplierAddr" label="地址" width="">
+            <el-table-column prop="supplierAddr" label="地址" width="300">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="120">
                 <template scope="scope">
@@ -54,9 +54,6 @@
 
 <script>
     import {api} from '../common/bus.js'
-    import config from '../common/config.vue'
-    import OutStock from './OutStock.vue'
-    import jquery from 'jquery'
     export default {
         data() {
             return {
@@ -88,20 +85,13 @@
                 this.queryData();
             },
             queryData(){
-                this.$data.queryList=[
-                {
-                    supplierCode:"S0001",
-                    supplierName:"XXXX供应商"
-                },
-                {
-                    supplierCode:"S0002",
-                    supplierName:"YYYY供应商"
-                },
-                {
-                    supplierCode:"S0003",
-                    supplierName:"ZZZZ供应商"
-                }
-                ]
+                api.querySupplierPage({
+                    pageNo:this.pageNo,
+                    pageSize:this.pageSize
+                }).then((page)=>{
+                    this.totalRows = page.totalRows;
+                    this.queryList = page.values;
+                })
             },
             search(){
                 this.queryList = [];

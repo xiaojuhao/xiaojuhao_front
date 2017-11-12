@@ -31,7 +31,7 @@ const http = {
 			}else{
 				df.reject(resp);
 			}
-		}).fail((resp)=>df.reject(resp))
+		})
 		;
 
 		return df.promise();
@@ -185,5 +185,20 @@ export const api = {
 	},
 	queryMyWarehouse(){
 		return http.jsonp2("/warehouse/queryMyWarehouse",{});
+	},
+	saveSupplierInfo(param){
+		return http.jsonp2("/supplier/saveSupplier",param)
+	},
+	querySupplierPage(param){
+		return http.jsonp2("/supplier/querySupplierPage",param)
+	},
+	querySupplierByCode(code){
+		return http.jsonp2("/supplier/querySupplierByCode",{supplierCode:code})
+	},
+	queryMaterialSupplerByCode(param){
+		return http.jsonp2("/busi/queryMaterialSupplerByCode",param)
+	},
+	queryAllMaterialSuppler(){
+		return http.jsonp2("/busi/queryAllMaterialSuppler",{})
 	}
 }
