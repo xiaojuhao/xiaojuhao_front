@@ -14,6 +14,9 @@
                 <el-form-item label="供应商代码">
                     <el-input disabled v-model="form.supplierCode" placeholder="供应商代码"></el-input>
                 </el-form-item>
+                <el-form-item label="供应商地址">
+                    <el-input v-model="form.supplierAddr" placeholder="供应商手机"></el-input>
+                </el-form-item>
                 <el-form-item label="供应商手机">
                     <el-input v-model="form.supplierPhone" placeholder="供应商手机"></el-input>
                 </el-form-item>
@@ -22,6 +25,25 @@
                 </el-form-item>
                 <el-form-item label="供应商邮箱">
                     <el-input v-model="form.supplierEmail" placeholder="供应商邮箱"></el-input>
+                </el-form-item>
+                <el-form-item label="结账模式">
+                    <el-select v-model="form.paidPeriod" style="width:150px" 
+                            placeholder="请选择">
+                          <el-option label="现结" value="H"></el-option>
+                          <el-option label="周结" value="D"></el-option>
+                          <el-option label="月结" value="M"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="支付方式">
+                    <template>
+                      <el-radio-group v-model="form.payWay">
+                        <el-radio :label="3">支付宝</el-radio>
+                        <el-radio :label="6">银行</el-radio>
+                      </el-radio-group>
+                    </template>
+                </el-form-item>
+                <el-form-item label="账户信息">
+                    <el-input v-model="form.account" placeholder="账户信息"></el-input>
                 </el-form-item>
                 <el-form-item label="供应原料">
                     <el-row :gutter="5">

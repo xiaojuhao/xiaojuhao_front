@@ -8,36 +8,39 @@
 			  @select="handleSelect">
 			</el-autocomplete> 
             <span>搜索内容后回车或选中添加记录</span>
+            <span style="float:right;position:relative;margin-right:20%;margin-top:10px;">
+                {{storage.code}} {{storage.name}}
+            </span>
     	</div>
         <div class="form-box">
             <el-row>
-                <el-col  :span="4"><div class="grid-content bg-purple">品名</div></el-col>
-                <el-col :span="4"><div class="grid-content bg-purple">供应商</div></el-col>
-                <el-col :span="2"><div class="grid-content bg-purple">数量</div></el-col>
-                <el-col :span="2"><div class="grid-content bg-purple">单价</div></el-col>
-                <el-col :span="2"><div class="grid-content bg-purple">单位</div></el-col>
-                <el-col :span="2"><div class="grid-content bg-purple">生产日期</div></el-col>
-                <el-col :span="2"><div class="grid-content bg-purple">保质期</div></el-col>
-                <el-col :span="2"><div class="grid-content bg-purple">金额</div></el-col>
-                <el-col :span="4"><div class="grid-content bg-purple">仓库/门店</div></el-col>
+                <el-col :span="4"><div class="grid-content bg-purple head-row">品名</div></el-col>
+                <el-col :span="4"><div class="grid-content bg-purple head-row">供应商</div></el-col>
+                <el-col :span="2"><div class="grid-content bg-purple head-row">数量</div></el-col>
+                <el-col :span="2"><div class="grid-content bg-purple head-row">单价</div></el-col>
+                <el-col :span="2"><div class="grid-content bg-purple head-row">单位</div></el-col>
+                <el-col :span="3"><div class="grid-content bg-purple head-row">生产日期</div></el-col>
+                <el-col :span="2"><div class="grid-content bg-purple head-row">保质期</div></el-col>
+                <el-col :span="2"><div class="grid-content bg-purple head-row">金额</div></el-col>
+                <el-col :span="3"><div class="grid-content bg-purple head-row">仓库/门店</div></el-col>
             </el-row>
             <el-row v-for="(item,index) in recipesList">
-                <el-col class="grid-content" :span="4">{{item.material}}</el-col>
-                <el-col class="grid-content" :span="4">{{item.supplier}}</el-col>
+                <el-col class="grid-content" :span="4">{{item.materialName}}</el-col>
+                <el-col class="grid-content" :span="4">{{item.supplierName}}</el-col>
                 <el-col class="grid-content" :span="2">
                     <el-input v-model="item.amt" style="width:100%" size="mini"></el-input>
                 </el-col>
                 <el-col :span="2">
-                    <el-input v-model="item.price" style="width:100%" size="mini"></el-input>
+                    <el-input v-model="item.unitPrice" style="width:100%" size="mini"></el-input>
                 </el-col>
                 <el-col class="grid-content" :span="2">{{item.stockUnit}}</el-col>
-                <el-col class="grid-content" :span="2">{{currDate}}</el-col>
-                <el-col class="grid-content" :span="2">3天</el-col>
+                <el-col class="grid-content" :span="3">{{item.productDate}}</el-col>
+                <el-col class="grid-content" :span="2">{{item.keepDays}}</el-col>
                 <el-col class="grid-content" :span="2">
-                    <el-input readonly :value="calcTotalPrice(item.amt , item.price)" 
+                    <el-input readonly :value="calcTotalPrice(item.amt , item.unitPrice)" 
                         style="width:100%" size="mini"></el-input>
                 </el-col>
-                <el-col class="grid-content" :span="3">{{storeage.name}}</el-col>
+                <el-col class="grid-content" :span="2">{{item.cabinName}}</el-col>
                 <el-col :span="1"><el-button icon="delete" size="mini" @click="removeRows(index)"></el-button></el-col>
             </el-row>
             <el-row style="margin-top:20px;">
@@ -60,12 +63,13 @@
     export default {
         data(){
             return {
+                timeout: null,
                 storeCode:'',
                 recipesList:[],
                 currSelectAlts:[],
                 loadingState:false,
                 currDate:'20171113',
-                storeage:{
+                storage:{
                     code:'',
                     type:'',//1:仓库 2:门店
                     name:''
@@ -91,15 +95,16 @@
                   cancelButtonText: '取消',
                   type: 'warning'
                 }).then(() => {
-                    this.loadingState = true;
-                    this.$message({
-                      type: 'success',
-                      message: '入库成功!'
-                    });
-                    self.recipesList = [];
-                    setTimeout(()=>{
-                        this.loadingState = false;
-                    },2000)
+                    // this.loadingState = true;
+                    // this.$message({
+                    //   type: 'success',
+                    //   message: '入库成功!'
+                    // });
+                    // self.recipesList = [];
+                    // setTimeout(()=>{
+                    //     this.loadingState = false;
+                    // },2000)
+                    this.submitToServer();
                 }).catch(() => {
                   this.$message({
                     type: 'info',
@@ -107,27 +112,37 @@
                   });          
                 });
             },
+            submitToServer(){
+                http.post("/busi/batchInstock",{
+                    dataJson:JSON.stringify(this.recipesList)
+                }).then((resp)=>{
+                    console.log(resp)
+                })
+            },
             removeRows(index){
             	this.$data.recipesList.splice(index,1)
             },
             querySearchAsync(queryString, cb){
-                queryString = jquery.trim(queryString)
-            	
-            	let result = this.allMaterialSupplier.map((item)=>{
-                    return {
-                        id:item.id,
-                        value:item.materialName+"-"+item.supplierName,
-                        supplier:item.supplierName,
-                        material:item.materialName
-                    }
-                }).filter((item)=>{
-                    return item.value.indexOf(queryString) >=0;
-                })
+                clearTimeout(this.timeout)
+                this.timeout = setTimeout(()=>{
+                    queryString = jquery.trim(queryString)
+                    let counter = 0;
+                    let result = this.allMaterialSupplier.map((item)=>{
+                        Vue.set(item,'value',item.materialName+"-"+item.supplierName)
+                        return item;
+                    }).filter((item)=>{
+                        counter ++;
+                        return  counter <= 20 && item.value.indexOf(queryString) >=0;
+                    })
 
-                this.$data.currSelectAlts = result;
-            	cb(result)
+                    this.$data.currSelectAlts = result;
+                    cb(result)
+                })
+                
             },
             addAltsToList(){
+                let date = new Date();
+                let today = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate();
                 if(this.recipesList.length>10){
                     this.$message.error("添加记录太多,请先入库")
                     return
@@ -137,6 +152,12 @@
                     if(!this.recipesListMap[item.id]){
                         Vue.set(item,'amt',0)
                         Vue.set(item,'price',0)
+                        Vue.set(item,'cabinCode',this.storage.code)
+                        Vue.set(item,'cabinName',this.storage.name)
+                        Vue.set(item,'cabinType',this.storage.type)
+                        Vue.set(item,'productDate',today)
+                        Vue.set(item,'keepDays','1天')
+                        Vue.set(item,'materialCode',item.materialCode)
                         self.recipesList.push(item)
                     }
                 })
@@ -169,16 +190,16 @@
             if(new RegExp("^WH").test(this.$route.query.CODE)){
                 api.getWarehouseByCode(this.$route.query.CODE)
                 .then((val)=>{
-                    this.storeage.code = val.warehouseCode;
-                    this.storeage.type = "1";
-                    this.storeage.name = val.warehouseName;
+                    this.storage.code = val.warehouseCode;
+                    this.storage.type = "1";
+                    this.storage.name = val.warehouseName;
                 })
             }else if(new RegExp("^MD").test(this.$route.query.CODE)){
                 api.queryStoreByCode(this.$route.query.CODE)
                 .then((val)=>{
-                    this.storeage.code = val.storeCode;
-                    this.storeage.type = "1";
-                    this.storeage.name = val.storeName;
+                    this.storage.code = val.storeCode;
+                    this.storage.type = "2";
+                    this.storage.name = val.storeName;
                 })
             }
             
@@ -209,7 +230,7 @@
 <style scoped>
 	.form-box{
 		margin-top: 20px;
-        width: 90%;
+        width: 100%;
 	}
     .border-table {   
         border-collapse: collapse;   
@@ -237,5 +258,8 @@
         min-height: 1px;
         text-align: center;
         
+    }
+    .head-row {
+        height: 30px;
     }
 </style>

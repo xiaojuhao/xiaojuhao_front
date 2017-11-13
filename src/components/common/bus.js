@@ -35,6 +35,22 @@ const http = {
 		;
 
 		return df.promise();
+	},
+	post(uri,data){
+		var df = jquery.Deferred();
+		jquery.ajax({
+			url: config.server + uri,
+			data:data,
+			dataType:'jsonp'
+		})
+		.then((resp)=>{
+			if(resp.code == "200"){
+				df.resolve(resp.value)
+			}else{
+				df.reject(resp);
+			}
+		});
+		return df.promise();
 	}
 }
 
