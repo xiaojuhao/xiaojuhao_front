@@ -84,6 +84,9 @@ export const api = {
 		}).fail((resp)=>df.reject(resp))
 		return df.promise();
 	},
+	queryStoreByCode(code){
+		return http.jsonp2("/store/getStoreByCode",{storeCode:code})
+	},
 	queryMyStores(){
 		return http.jsonp2("/store/getMyStore",{})
 	},

@@ -40,12 +40,14 @@
 				this.$emit("input",this.$props.context,this.selectedCode)
 			},
       initData(){
-        let $data = this.$data;
-        api.queryAllMaterials()
-        .then((value)=>{
-          $data.allValues = value.values;
-          $data.selectedCode = this.$props.value;
-        });
+        this.allValues = this.$store.state.allMaterials;
+        this.selectedCode = this.$props.value;
+        // let $data = this.$data;
+        // api.queryAllMaterials()
+        // .then((value)=>{
+        //   $data.allValues = value.values;
+        //   $data.selectedCode = this.$props.value;
+        // });
       },
       enterkey(e){
         console.log(e)

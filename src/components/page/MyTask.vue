@@ -4,10 +4,7 @@
         <MaterialSelection :excludes="excludes" v-on:setValue="setValue" initValue="M00003"></MaterialSelection>
         <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
         <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
-        <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
-        <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
-        <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
-        <MaterialSelection :excludes="excludes" v-on:setValue="setValue"></MaterialSelection>
+        <el-button @click="click">点击</el-button>
     </div>
 </template>
 
@@ -30,9 +27,18 @@
             WarehouseSelection
         },
         methods:{
+            click(){
+                console.log(this.$store.state.allMaterials)
+                console.log(this.$store.state.allRecipes)
+                console.log(this.$store.state.allWarehouses)
+                console.log(this.$store.state.allStores)
+            },
         	setValue(code){
         		this.$data.excludes.push(code)
         	}
+        },
+        mounted(){
+            this.$store.dispatch('loadAllData');
         }
     }
 </script>

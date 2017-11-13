@@ -1,36 +1,132 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import {api} from 'components/common/bus'
 Vue.use(Vuex)
 
 const state = {
-    sideBarOppened: false
+    sideBarOppened: false,
+    allMaterials:[],
+    allStores:[],
+    allRecipes:[],
+    allWarehouses:[],
+    allSuppliers:[]
 }
 
 const getters = {
-    changeState: (state, v) => {
-        console.log("changeState(getters):" + v)
+    allMaterialsMap: (state) => {
+        var map = new Map();
+        state.allMaterials.forEach((item)=>{
+            map.set(item.materialCode,item)
+        })
+        return map;
+    },
+    allStoresMap:(state)=>{
+        var map = new Map();
+        state.allStores.forEach((item)=>{
+            map.set(item.storeCode,item)
+        })
+        return map;
+    },
+    allRecipesMap: (state)=>{
+        var map = new Map();
+        state.allRecipes.forEach((item)=>{
+            map.set(item.recipesCode,item)
+        })
+        return map;
+    },
+    allWarehousesMap: (state)=>{
+        var map = new Map();
+        state.allWarehouses.forEach((item)=>{
+            map.set(item.warehouseCode,item)
+        })
+        return map;
+    },
+    allSuppliersMap: (state)=>{
+        var map = new Map();
+        state.allSuppliers.forEach((item)=>{
+            map.set(item.suppliersCode,item)
+        })
+        return map;
     }
 }
 
 const mutations = {
-    changeState: (state, v) => {
-        console.log("changeState(mutations):" + v)
-        console.log(state.sideBarOppened = v)
+    loadAllMaterials(state){
+        api.queryAllMaterials()
+        .then((page)=>{
+            state.allMaterials = page.values;
+        })
     },
-    toggleSideBarOppened: (state) => {
-        if (state.sideBarOppened) {
-            state.sideBarOppened = false;
-        } else {
-            state.sideBarOppened = true;
+    loadAllStores(state){
+        api.getAllStoreList()
+        .then((list)=>{
+            state.allStores = list;
+        })
+    },
+    loadAllRecipes(state){
+        api.queryAllRecipes()
+        .then((page)=>{
+            state.allRecipes = page.values;
+        })
+    },
+    loadAllWarehouses(state){
+        api.getAllWarehouse()
+        .then((page)=>{
+            state.allWarehouses = page.values;
+        })
+    },
+    loadAllSuppliers(state){
+        api.querySupplierPage({
+            pageSize:1000
+        }).then((page)=>{
+            state.allSuppliers = page.values;
+        })
+    },
+    ensureLoadAll(state){
+        if(!state.allMaterials || state.allMaterials.length ==0){
+            api.queryAllMaterials()
+            .then((page)=>{
+                state.allMaterials = page.values;
+            })
+        }
+        if(!state.allStores || state.allStores.length ==0){
+            api.getAllStoreList()
+            .then((list)=>{
+                state.allStores = list;
+            })
+        }
+        if(!state.allRecipes || state.allRecipes.length ==0){
+            api.queryAllRecipes()
+            .then((page)=>{
+                state.allRecipes = page.values;
+            })
+        }
+        if(!state.allWarehouses || state.allWarehouses.length ==0){
+            api.getAllWarehouse()
+            .then((page)=>{
+                state.allWarehouses = page.values;
+            })
+        }
+        if(!state.allSuppliers || state.allSuppliers.length ==0){
+            api.querySupplierPage({
+                pageSize:1000
+            }).then((page)=>{
+                state.allSuppliers = page.values;
+            })
         }
     }
 }
 
 const actions = {
-    changeState: (state, v) => {
-        console.log("changeState(actions):" + v)
-        console.log(state.sideBarOppened = v)
+    loadAllData({commit}){
+        setTimeout(()=>{commit('loadAllMaterials')},0)
+        setTimeout(()=>{commit('loadAllStores')},0)
+        setTimeout(()=>{commit('loadAllRecipes')},0)
+        setTimeout(()=>{commit('loadAllWarehouses')},0)
+        setTimeout(()=>{commit('loadAllSuppliers')},0)
+    },
+    ensureDataLoad({commit}){
+        setTimeout(()=>commit('ensureLoadAll'),0)
     }
 }
 

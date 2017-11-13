@@ -104,7 +104,7 @@
                 })
             },
             addNewFormula(ctx,val){
-                let item = this.allMaterialsMap[val]
+                let item = this.$store.getters.allMaterialsMap.get(val)
                 Object.keys(item).forEach((key)=>{
                     ctx[key]=item[key]
                 })
@@ -112,27 +112,17 @@
             }
         },
         mounted(){
+            this.$store.commit('ensureLoadAll')
             api.queryRecipesByCode(this.$data.form.recipesCode)
             .then((resp)=>{
                 this.$data.form.recipesName = resp.recipesName;
             });
-            api.queryAllMaterials()
-            .then((page)=>{
-                this.$data.allMaterials = page.values;
-            })
             api.queryRecipesFormula(this.$data.form.recipesCode)
             .then((values)=>{
                 this.$data.form.formula = values;
             })
         },
         computed:{
-            allMaterialsMap(){
-                let map = {}
-                this.allMaterials.forEach((item)=>{
-                    map[item.materialCode] = item;
-                })
-                return map;
-            },
             addedMaterials(){
                 let ll = [];
                 this.$data.form.formula.forEach((item)=>ll.push(item.materialCode))
