@@ -20,24 +20,15 @@
                 <el-form-item label="已用数量">
                     <span>{{item.usedStock}}</span>
                 </el-form-item>
-                <el-form-item label="库存类型" class="el-form-item2">
-                    <span>{{stockTypeName}}</span>
+                <el-form-item label="仓库/门店" class="el-form-item2">
+                    <span>{{item.cabinName}}</span>
                 </el-form-item>
                 <el-form-item label="出库数量" >
                      <el-input v-model="outStockAmt" class="input-width-short">
                          <template slot="append">{{item.stockUnit}}</template>
                      </el-input>
                 </el-form-item>
-                <el-form-item label="门店">
-                     <el-select v-model="storeCode" placeholder="请选择">
-                        <el-option
-                          v-for="item in storeSelection"
-                          :key="item.storeCode"
-                          :label="item.storeCode + '-' + item.storeName"
-                          :value="item.storeCode">
-                        </el-option>
-                      </el-select>
-                </el-form-item>
+                
                 <el-form-item class="el-form-item-button">
                       <el-button type="primary" @click="onSubmit">提交</el-button>
                       <span style="margin-right:20px"></span>
@@ -54,9 +45,7 @@
         data: function(){
             return {
                 item:{},
-                outStockAmt:0,
-                storeCode:'',
-                storeSelection:[]
+                outStockAmt:0
             }
         },
         methods: {
@@ -65,9 +54,8 @@
                 api.outstock({
                     id:this.$route.query.stockId,
                     materialCode:$this.item.materialCode,
-                    warehouseCode:$this.item.warehouseCode,
-                    outstockAmt:$this.outStockAmt,
-                    storeCode:$this.storeCode
+                    cabinCode:$this.item.cabinCode,
+                    outstockAmt:$this.outStockAmt
                 }).then((resp)=>{
                     $this.$message("出库成功")
                     $this.$router.go(-1)

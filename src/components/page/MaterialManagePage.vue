@@ -71,7 +71,7 @@
                     canSplit:'',
                     searchKey:'',
                     formulaStr:'',
-                    storageLifeUnit:'',
+                    storageLifeUnit:'D',
                     storageLifeNum:'',
                     splitMaterials:[
                         {id:1,name:'aaaaaaa'},

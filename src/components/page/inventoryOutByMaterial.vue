@@ -27,7 +27,7 @@
             </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位" width="100">
             </el-table-column>
-            <el-table-column prop="warehouseName" label="仓库" width="150">
+            <el-table-column prop="cabinName" label="仓库" width="150">
             </el-table-column>
             <el-table-column prop="modifier" label="修改人" width="150">
             </el-table-column>
@@ -57,17 +57,12 @@
     export default {
         data() {
             return {
-                url: './static/vuetable.json',
                 tableData: [],
                 cur_page: 1,
                 pageSize:5,
                 totalRows:0,
                 multipleSelection: [],
-                select_cate: '',
-                select_word: '',
                 loadingState: false,
-                del_list: [],
-                is_search: false,
                 query:{
                 	materialCode:'',
                     stockType:'2',
@@ -126,6 +121,7 @@
                     },
                     dataType: 'jsonp'
                 }).then(function(resp){
+                    console.log(resp)
                     if(resp.code!=200){
                         self.$message.error(resp.message)
                         return;

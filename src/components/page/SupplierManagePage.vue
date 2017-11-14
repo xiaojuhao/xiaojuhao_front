@@ -27,30 +27,33 @@
                     <el-input v-model="form.supplierEmail" placeholder="供应商邮箱"></el-input>
                 </el-form-item>
                 <el-form-item label="结账模式">
-                    <el-select v-model="form.paidPeriod" style="width:150px" 
+                    <el-select v-model="form.payMode" style="width:150px" 
                             placeholder="请选择">
-                          <el-option label="现结" value="H"></el-option>
-                          <el-option label="周结" value="D"></el-option>
-                          <el-option label="月结" value="M"></el-option>
+                          <el-option label="现结" value="ByNow"></el-option>
+                          <el-option label="周结" value="ByWeek"></el-option>
+                          <el-option label="月结" value="ByMonth"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="支付方式">
                     <template>
                       <el-radio-group v-model="form.payWay">
-                        <el-radio :label="3">支付宝</el-radio>
-                        <el-radio :label="6">银行</el-radio>
+                        <el-radio label="alipay">支付宝</el-radio>
+                        <el-radio label="bank">银行</el-radio>
                       </el-radio-group>
                     </template>
                 </el-form-item>
+                <el-form-item v-if="form.payWay=='bank'" label="银行信息">
+                    <el-input v-model="form.bankName" placeholder="银行信息"></el-input>
+                </el-form-item>
                 <el-form-item label="账户信息">
-                    <el-input v-model="form.account" placeholder="账户信息"></el-input>
+                    <el-input v-model="form.payAccount" placeholder="账户信息"></el-input>
                 </el-form-item>
                 <el-form-item label="供应原料">
                     <el-row :gutter="5">
                         <el-col :span="12"><span class="span-center">原料</span></el-col>
                         <el-col :span="3"><span class="span-center">操作</span></el-col>
                     </el-row>
-                    <el-row v-for="(ff,index) in form.materials" :gutter="5">
+                    <el-row v-for="(ff,index) in materials" :gutter="5">
                         <el-col :span="12">
                             <MaterialSelection 
                                 :value="ff.materialCode" 
@@ -93,24 +96,24 @@
                     supplierTel:'',
                     supplierPhone:'',
                     supplierEmail:'',
-                    materials:[]
+                    payWay:'alipay',
+                    payMode:'',
+                    payAccount:'',
+                    materialJson:''
                 },
-                allMaterials:[],
+                materials:[],
                 loadingState:false
             }
         },
         methods: {
             onSubmit() {
-                let param = {
-                    supplierCode:this.form.supplierCode,
-                    supplierName:this.form.supplierName,
-                    supplierTel:this.form.supplierTel,
-                    supplierPhone: this.form.supplierPhone,
-                    supplierEmail: this.form.supplierEmail,
-                    materialJson: JSON.stringify(this.form.materials)
+                this.form.materialJson = JSON.stringify(this.materials);
+                if(this.form.payWay != 'bank'){
+                    this.form.bankName = this.form.payWay;
                 }
-                api.saveSupplierInfo(param)
+                api.saveSupplierInfo(this.form)
                 .then((val)=>{
+                    this.form.supplierCode = val.supplierCode;
                     this.$message("提交成功")
                 }).fail((resp)=>{
                     this.$message.error(resp.message)
@@ -120,15 +123,15 @@
                 this.$router.go(-1)
             },
             removeMaterials(index){
-                this.$data.form.materials.splice(index,1)
+                this.materials.splice(index,1)
             },
             addMaterialItem(){
-                this.$data.form.materials.push({
+                this.materials.push({
                     materialCode:''
                 })
             },
             materialSelCallback(ctx,val){
-                let item = this.allMaterialsMap[val]
+                let item = this.$store.getters.allMaterialsMap.get(val)
                 Object.keys(item).forEach((key)=>{
                     ctx[key]=item[key]
                 })
@@ -142,31 +145,23 @@
                 this.form.supplierTel = sp.supplierTel;
                 this.form.supplierPhone = sp.supplierPhone;
                 this.form.supplierEmail = sp.supplierEmail;
-            });
-            api.queryAllMaterials()
-            .then((page)=>{
-                this.$data.allMaterials = page.values;
+                this.form.supplierAddr = sp.supplierAddr;
+                this.form.payMode = sp.payMode;
+                this.form.payWay = sp.payWay;
+                this.form.payAccount = sp.payAccount;
             });
             api.queryMaterialSupplerByCode({
                 supplierCode:this.form.supplierCode
             }).then((values)=>{
                 values.forEach((item)=>{
-                    this.form.materials.push({materialCode:item.materialCode})
+                    this.materials.push({materialCode:item.materialCode})
                 })
             })
-            
         },
         computed:{
-            allMaterialsMap(){
-                let map = {}
-                this.allMaterials.forEach((item)=>{
-                    map[item.materialCode] = item;
-                })
-                return map;
-            },
             addedMaterials(){
                 let ll = [];
-                this.$data.form.materials.forEach((item)=>ll.push(item.materialCode))
+                this.materials.forEach((item)=>ll.push(item.materialCode))
                 return ll;
             }
         },
