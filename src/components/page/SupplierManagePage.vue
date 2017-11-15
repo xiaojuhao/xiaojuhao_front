@@ -11,6 +11,9 @@
                 <el-form-item label="供应商名称">
                     <el-input v-model="form.supplierName" placeholder="供应商名称"></el-input>
                 </el-form-item>
+                <el-form-item label="简称">
+                    <el-input v-model="form.shortName" placeholder="简称"></el-input>
+                </el-form-item>
                 <el-form-item label="供应商代码">
                     <el-input disabled v-model="form.supplierCode" placeholder="供应商代码"></el-input>
                 </el-form-item>
@@ -93,6 +96,7 @@
                 form:{
                     supplierCode:this.$route.query.supplierCode,
                     supplierName:'',
+                    shortName:'',
                     supplierTel:'',
                     supplierPhone:'',
                     supplierEmail:'',
