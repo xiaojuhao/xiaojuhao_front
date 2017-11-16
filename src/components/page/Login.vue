@@ -54,11 +54,12 @@
                             }else{
                                 self.$data.tips = "登录成功";
                                 var userinfo = resp.value;
+                                this.$store.commit('setLoginCookie',userinfo.loginCookie)
                                 localStorage.setItem('ms_username',userinfo.userName);
                                 self.$router.push('/home');
                             }
                         }).fail((resp)=>{
-                            console.log(resp)
+                            self.$data.tips = "登录失败,请检查用户名和密码";
                         })
                        return true;
                     } else {

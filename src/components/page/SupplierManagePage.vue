@@ -147,6 +147,7 @@
             .then((sp)=>{
                 this.form.supplierName = sp.supplierName;
                 this.form.supplierTel = sp.supplierTel;
+                this.form.shortName = sp.shortName;
                 this.form.supplierPhone = sp.supplierPhone;
                 this.form.supplierEmail = sp.supplierEmail;
                 this.form.supplierAddr = sp.supplierAddr;

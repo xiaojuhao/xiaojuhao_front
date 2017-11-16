@@ -9,7 +9,8 @@ const state = {
     allStores:[],
     allRecipes:[],
     allWarehouses:[],
-    allSuppliers:[]
+    allSuppliers:[],
+    loginCookie:''
 }
 
 const getters = {
@@ -114,6 +115,10 @@ const mutations = {
                 state.allSuppliers = page.values;
             })
         }
+    },
+    setLoginCookie(state,cookieValue){
+        console.log('set cookieValue:'+cookieValue)
+        state.loginCookie = cookieValue;
     }
 }
 

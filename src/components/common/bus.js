@@ -1,54 +1,91 @@
 import jquery from 'jquery'
+import store from '../../store/store'
+import router from "../../router/index"
+
 
 const config = {
 	//server:'http://47.104.25.105:80/xiaojuhao/'
 	//server:'http://localhost:8080/'
-	server: process.env.REMOTE_SERVER
+	server: function(){
+		if(window.location.href.indexOf("localhost")>0){
+			return "http://localhost:8080/"
+		}
+		return process.env.REMOTE_SERVER
+	}()
 }
 const http = {
 	jsonp(uri,data){
+		if(data){
+			data.requestLoginCookie = store.state.loginCookie;
+		}
 		var df = jquery.Deferred();
 		jquery.ajax({
 			url: config.server + uri,
 			data:data,
-			dataType:'jsonp'
+			method:'POST',
+			crossDomain: true,
+			dataType:'json'
 		})
 		.then((resp)=>df.resolve(resp))
-		.fail((resp)=>df.reject(resp))
+		.fail((resp)=>{
+			df.reject(resp)
+		})
 		return df.promise();
 		
 	},
 	jsonp2(uri,data){
+		if(data){
+			data.requestLoginCookie = store.state.loginCookie;
+		}
 		var df = jquery.Deferred();
 		jquery.ajax({
 			url: config.server + uri,
 			data:data,
-			dataType:'jsonp'
+			method:'POST',
+			dataType:'json',
+			crossDomain: true
 		})
 		.then((resp)=>{
+			if(resp.code == "R401"){
+				router.push("/login")
+				return;
+			}
 			if(resp.code == "200"){
 				df.resolve(resp.value)
 			}else{
 				df.reject(resp);
 			}
+		}).fail((resp)=>{
+			
 		})
 		;
 
 		return df.promise();
 	},
 	post(uri,data){
+		if(data){
+			data.requestLoginCookie = store.state.loginCookie;
+		}
 		var df = jquery.Deferred();
 		jquery.ajax({
 			url: config.server + uri,
 			data:data,
-			dataType:'jsonp'
+			method:'POST',
+			crossDomain: true,
+			dataType:'json'
 		})
 		.then((resp)=>{
+			if(resp.code == "R401"){
+				router.push("/login")
+				return;
+			}
 			if(resp.code == "200"){
 				df.resolve(resp.value)
 			}else{
 				df.reject(resp);
 			}
+		}).fail((resp)=>{
+			
 		});
 		return df.promise();
 	}
@@ -59,13 +96,18 @@ export {config};
 export {http};
 
 export const api = {
+	getMenu(){
+		return http.jsonp2("/menu",{});
+	},
 	signin(data){
 		var df = jquery.Deferred();
 		try{
 			jquery.ajax({
 				url:config.server +'/user/login',
 				data:data,
-				dataType:'jsonp'
+				crossDomain: true,
+				method:'POST',
+				dataType:'json'
 			}).then((resp)=>{
 				df.resolve(resp)
 			});
@@ -86,6 +128,9 @@ export const api = {
 	},
 	getUserByCode(userCode){
 		return http.jsonp2("/user/queryUserByCode",{userCode:userCode})
+	},
+	queryUsersPage(data){
+		return http.jsonp("/user/queryUsers",data)
 	},
 	getAllStoreList(){
 		var df = jquery.Deferred();

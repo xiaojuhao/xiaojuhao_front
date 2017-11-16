@@ -34,6 +34,18 @@
                           <el-option label="无效" value="2"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="授权门店">
+                    <el-checkbox-group v-model="auth_stores">
+                        <el-checkbox v-for="item in myAllStores" :label="item.storeCode" 
+                        :checked="item.checked">{{item.storeName}}</el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
+                <el-form-item label="授权仓库">
+                    <el-checkbox-group v-model="auth_warehouse">
+                        <el-checkbox v-for="item in myAllWarehouse" :label="item.warehouseCode" 
+                        :checked="item.checked">{{item.warehouseName}}</el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">提交</el-button>
                     <el-button @click="onCancel">取消</el-button>
@@ -59,12 +71,18 @@
                     status:'',
                     password:'',
                     userMobile:''
-                }
+                },
+                auth_stores:[],
+                auth_warehouse:[],
+                myAllStoresX:[],
+                myAllWarehouseX:[]
             }
         },
         methods: {
             onSubmit() {
                 this.$data.loading = true;
+                this.form.authStores = JSON.stringify(auth_stores)
+                this.form.authWarehouse = JSON.stringify(auth_warehouse)
                 api.saveUser(this.$data.form)
                 .then((val)=>{
                     this.$message("提交成功")
@@ -85,10 +103,27 @@
                 this.$data.form.userRole = u.userRole;
                 this.$data.form.userMobile = u.userMobile;
                 this.$data.form.status = u.status;
+            });
+            api.queryMyStores()
+            .then((list)=>{
+                this.myAllStoresX = list;
+            })
+            api.queryMyWarehouse()
+            .then((list)=>{
+                this.myAllWarehouseX = list;
             })
         },
         computed:{
-            
+            myAllStores(){
+                return this.myAllStoresX.filter((item)=>{
+                    return true;
+                })
+            },
+            myAllWarehouse() {
+                return this.myAllWarehouseX.filter((item)=>{
+                    return true;
+                })
+            }
         }
     }
 </script>

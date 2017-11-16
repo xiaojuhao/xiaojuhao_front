@@ -11,7 +11,7 @@
             element-loading-spinner="el-icon-loading"
             element-loading-background="rgb(0, 0, 0, 0.8)">
             
-            <el-table-column prop="userCode" label="用户编码" width="120">
+            <el-table-column prop="userCode" label="登录名" width="120">
             </el-table-column>
             <el-table-column prop="userName" label="用户名称">
             </el-table-column>
@@ -80,10 +80,13 @@
                 }
             },
             getData(){
-                let self = this;
-                config.queryUsers(null,(resp)=>{
+                console.log("queryallusers")
+                api.queryUsersPage({})
+                .then((page)=>{
+                    console.log(page)
+                    this.tableData = page.value.values;
+                }).fail((resp)=>{
                     console.log(resp)
-                    self.tableData = resp.value.values;
                 })
             },
             update(index, item) {
