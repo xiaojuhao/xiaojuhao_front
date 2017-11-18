@@ -3,8 +3,7 @@
         <div class="handle-box">
             <el-row :gutter="10">
                 <el-col :span="4">
-                    <el-autocomplete class="inline-input" v-model="query.materialCode" :fetch-suggestions="querySearch" placeholder="原料名称" :trigger-on-focus="false" @select="handleSelect">
-                    </el-autocomplete>
+                    <MaterialSelection @input="(v)=>{this.query.materialCode=v}"></MaterialSelection>
                 </el-col>
                 <el-col :span="4">
                     <MyCabinSelect @input="(val)=>{this.query.cabinCode=val}"></MyCabinSelect>
@@ -57,10 +56,12 @@ import config from '../common/config.vue'
 import jquery from 'jquery'
 import { api } from '../common/bus'
 import MyCabinSelect from '../common/MyCabinSelect'
+import MaterialSelection from '../common/MaterialSelection'
 import Vue from 'vue'
 export default {
     components: {
-        MyCabinSelect
+        MyCabinSelect,
+        MaterialSelection
     },
     data() {
         return {
@@ -110,11 +111,11 @@ export default {
             let self = this;
             self.$data.loadingState = true;
             let param = {
-                pageSize: self.$data.pageSize,
-                pageNo: self.$data.cur_page,
-                materialCode: self.$data.query.materialCode,
-                cabinCode: self.$data.query.cabinCode,
-                stockType: self.$data.query.stockType
+                pageSize: self.pageSize,
+                pageNo: self.cur_page,
+                materialCode: self.query.materialCode,
+                cabinCode: self.query.cabinCode,
+                stockType: self.query.stockType
             };
             api.queryMaterialsStockPage(param)
                 .then((page) => {
@@ -155,6 +156,9 @@ export default {
             } else {
                 this.materialSelection = [];
             }
+        },
+        handleSelect() {
+
         },
         expand(row, expanded) {
             if (expanded) {

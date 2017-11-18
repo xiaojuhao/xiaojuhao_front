@@ -103,7 +103,7 @@
                     materialCode:''
                 })
             },
-            addNewFormula(ctx,val){
+            addNewFormula(val, ctx){
                 let item = this.$store.getters.allMaterialsMap.get(val)
                 Object.keys(item).forEach((key)=>{
                     ctx[key]=item[key]

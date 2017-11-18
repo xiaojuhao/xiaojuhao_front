@@ -58,7 +58,6 @@
 
 <script>
     import {api} from '../common/bus'
-    import MaterialSelection from '../common/MaterialSelection'
     export default {
         data: function(){
             return {

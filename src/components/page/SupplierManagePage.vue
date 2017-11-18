@@ -7,7 +7,7 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form"  label-width="100px" v-loading="loadingState">
+            <el-form ref="form" label-width="100px" v-loading="loadingState">
                 <el-form-item label="供应商名称">
                     <el-input v-model="form.supplierName" placeholder="供应商名称"></el-input>
                 </el-form-item>
@@ -30,19 +30,18 @@
                     <el-input v-model="form.supplierEmail" placeholder="供应商邮箱"></el-input>
                 </el-form-item>
                 <el-form-item label="结账模式">
-                    <el-select v-model="form.payMode" style="width:150px" 
-                            placeholder="请选择">
-                          <el-option label="现结" value="ByNow"></el-option>
-                          <el-option label="周结" value="ByWeek"></el-option>
-                          <el-option label="月结" value="ByMonth"></el-option>
+                    <el-select v-model="form.payMode" style="width:150px" placeholder="请选择">
+                        <el-option label="现结" value="ByNow"></el-option>
+                        <el-option label="周结" value="ByWeek"></el-option>
+                        <el-option label="月结" value="ByMonth"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="支付方式">
                     <template>
-                      <el-radio-group v-model="form.payWay">
-                        <el-radio label="alipay">支付宝</el-radio>
-                        <el-radio label="bank">银行</el-radio>
-                      </el-radio-group>
+                        <el-radio-group v-model="form.payWay">
+                            <el-radio label="alipay">支付宝</el-radio>
+                            <el-radio label="bank">银行</el-radio>
+                        </el-radio-group>
                     </template>
                 </el-form-item>
                 <el-form-item v-if="form.payWay=='bank'" label="银行信息">
@@ -58,11 +57,7 @@
                     </el-row>
                     <el-row v-for="(ff,index) in materials" :gutter="5">
                         <el-col :span="12">
-                            <MaterialSelection 
-                                :value="ff.materialCode" 
-                                :context="ff"
-                                :excludes="addedMaterials"
-                                v-on:input="materialSelCallback">
+                            <MaterialSelection :value="ff.materialCode" :context="ff" :excludes="addedMaterials" v-on:input="materialSelCallback">
                             </MaterialSelection>
                         </el-col>
                         <el-col :span="3">
@@ -83,68 +78,66 @@
                 </el-form-item>
             </el-form>
         </div>
-
     </div>
 </template>
-
 <script>
-    import {api} from '../common/bus'
-    import MaterialSelection from '../common/MaterialSelection'
-    export default {
-        data: function(){
-            return {
-                form:{
-                    supplierCode:this.$route.query.supplierCode,
-                    supplierName:'',
-                    shortName:'',
-                    supplierTel:'',
-                    supplierPhone:'',
-                    supplierEmail:'',
-                    payWay:'alipay',
-                    payMode:'',
-                    payAccount:'',
-                    materialJson:''
-                },
-                materials:[],
-                loadingState:false
+import { api } from '../common/bus'
+import MaterialSelection from '../common/MaterialSelection'
+export default {
+    data: function() {
+        return {
+            form: {
+                supplierCode: this.$route.query.supplierCode,
+                supplierName: '',
+                shortName: '',
+                supplierTel: '',
+                supplierPhone: '',
+                supplierEmail: '',
+                payWay: 'alipay',
+                payMode: '',
+                payAccount: '',
+                materialJson: ''
+            },
+            materials: [],
+            loadingState: false
+        }
+    },
+    methods: {
+        onSubmit() {
+            this.form.materialJson = JSON.stringify(this.materials);
+            if (this.form.payWay != 'bank') {
+                this.form.bankName = this.form.payWay;
             }
-        },
-        methods: {
-            onSubmit() {
-                this.form.materialJson = JSON.stringify(this.materials);
-                if(this.form.payWay != 'bank'){
-                    this.form.bankName = this.form.payWay;
-                }
-                api.saveSupplierInfo(this.form)
-                .then((val)=>{
+            api.saveSupplierInfo(this.form)
+                .then((val) => {
                     this.form.supplierCode = val.supplierCode;
                     this.$message("提交成功")
-                }).fail((resp)=>{
+                }).fail((resp) => {
                     this.$message.error(resp.message)
                 })
-            },
-            onCancel(){
-                this.$router.go(-1)
-            },
-            removeMaterials(index){
-                this.materials.splice(index,1)
-            },
-            addMaterialItem(){
-                this.materials.push({
-                    materialCode:''
-                })
-            },
-            materialSelCallback(ctx,val){
-                let item = this.$store.getters.allMaterialsMap.get(val)
-                Object.keys(item).forEach((key)=>{
-                    ctx[key]=item[key]
-                })
-                ctx.materialUnit = item.stockUnit;
-            }
         },
-        mounted(){
-            api.querySupplierByCode(this.form.supplierCode)
-            .then((sp)=>{
+        onCancel() {
+            this.$router.go(-1)
+        },
+        removeMaterials(index) {
+            this.materials.splice(index, 1)
+        },
+        addMaterialItem() {
+            this.materials.push({
+                materialCode: ''
+            })
+        },
+        materialSelCallback(val, ctx) {
+            let item = this.$store.getters.allMaterialsMap.get(val)
+            Object.keys(item).forEach((key) => {
+                ctx[key] = item[key]
+            })
+            ctx.materialUnit = item.stockUnit;
+        }
+    },
+    mounted() {
+        api.querySupplierByCode(this.form.supplierCode)
+            .then((sp) => {
                 this.form.supplierName = sp.supplierName;
                 this.form.supplierTel = sp.supplierTel;
                 this.form.shortName = sp.shortName;
@@ -155,42 +148,45 @@
                 this.form.payWay = sp.payWay;
                 this.form.payAccount = sp.payAccount;
             });
-            api.queryMaterialSupplerByCode({
-                supplierCode:this.form.supplierCode
-            }).then((values)=>{
-                values.forEach((item)=>{
-                    this.materials.push({materialCode:item.materialCode})
-                })
+        api.queryMaterialSupplerByCode({
+            supplierCode: this.form.supplierCode
+        }).then((values) => {
+            values.forEach((item) => {
+                this.materials.push({ materialCode: item.materialCode })
             })
-        },
-        computed:{
-            addedMaterials(){
-                let ll = [];
-                this.materials.forEach((item)=>ll.push(item.materialCode))
-                return ll;
-            }
-        },
-        components: {
-            MaterialSelection
+        })
+    },
+    computed: {
+        addedMaterials() {
+            let ll = [];
+            this.materials.forEach((item) => ll.push(item.materialCode))
+            return ll;
         }
+    },
+    components: {
+        MaterialSelection
     }
+}
 </script>
 <style scoped>
-    .span-center {
-        display:inline-block;
-        width: 100%;
-        font-weight:bold;
+.span-center {
+    display: inline-block;
+    width: 100%;
+    font-weight: bold;
+}
+
+.grid-content {
+    min-height: 1px;
+}
+
+.el-row {
+    margin-bottom: 4px;
+    &:last-child {
+        margin-bottom: 0;
     }
-    .grid-content {
-        min-height: 1px;
-     }
-    .el-row {
-        margin-bottom: 4px;
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-    .el-col {
-        border-radius: 4px;
-      }
+}
+
+.el-col {
+    border-radius: 4px;
+}
 </style>

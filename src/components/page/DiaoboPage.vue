@@ -42,13 +42,9 @@
 </template>
 <script>
 import config from '../common/config.vue'
-import jquery from 'jquery'
 import { api } from '../common/bus'
-i
+
 export default {
-    components: {
-        MyCabinSelect
-    },
     data: function() {
         return {
             item: {},
@@ -76,9 +72,8 @@ export default {
         },
         initData() {
             var stockId = this.$route.query.stockId;
-            var $data = this;
             config.queryMaterialsStockById(stockId, (resp) => {
-                $data.item = resp.value;
+                this.item = resp.value;
             })
         }
     },

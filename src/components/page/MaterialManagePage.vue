@@ -139,7 +139,7 @@ export default {
                 splitAmt: 0
             })
         },
-        onSelectMaterial(ctx, value) {
+        onSelectMaterial(value, ctx) {
             ctx.materialCode = value;
         }
     },

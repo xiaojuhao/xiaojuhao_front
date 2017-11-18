@@ -199,6 +199,9 @@ export const api = {
     queryMaterialsStockPage(data) {
         return http.jsonp2("/busi/queryMaterialsStock", data);
     },
+    correctStock(data){
+        return http.post("/busi/correctStock",data)
+    },
     queryAllFenkuMaterialsStock(materialCode) {
         let data = {
             materialCode: materialCode,

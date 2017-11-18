@@ -3,8 +3,7 @@
         <div class="handle-box">
             <el-row :gutter="10">
                 <el-col :span="4">
-                    <el-autocomplete class="inline-input" v-model="query.materialCode" :fetch-suggestions="querySearch" placeholder="原料名称" :trigger-on-focus="false" @select="handleSelect">
-                    </el-autocomplete>
+                    <MaterialSelection @input="(v)=>{this.query.materialCode=v}"></MaterialSelection>
                 </el-col>
                 <el-col :span="4">
                     <MyCabinSelect @input="(val)=>{this.query.cabinCode=val}"></MyCabinSelect>
@@ -47,9 +46,11 @@ import OutStock from './OutStock.vue'
 import jquery from 'jquery'
 import { api } from '../common/bus'
 import MyCabinSelect from '../common/MyCabinSelect'
+import MaterialSelection from '../common/MaterialSelection'
 export default {
     components: {
-        MyCabinSelect
+        MyCabinSelect,
+        MaterialSelection
     },
     data() {
         return {
@@ -126,20 +127,17 @@ export default {
                 inputPattern: /^\d+(\.\d{1,2})?$/,
                 inputErrorMessage: '库存数字不正确'
             }).then(({ value }) => {
-                jquery.ajax({
-                    url: config.server + "/busi/correctStock",
-                    data: {
+                //确定提交
+                api.correctStock({
                         id: item.id,
                         materialCode: item.materialCode,
                         realStock: value
-                    },
-                    dataType: 'jsonp'
-                }).then((resp) => {
-                    item.currStock = resp.value.currStock;
-                    this.$message({ type: 'success', message: "库存盘点成功" })
-                }).fail((resp) => {
-                    console.log('fails')
-                })
+                    })
+                    .then((value) => {
+                        this.$message("任务提交成功")
+                    }).fail((resp) => {
+                        this.$message.error("系统异常")
+                    })
             }).catch(() => {
                 //取消操作     
             });

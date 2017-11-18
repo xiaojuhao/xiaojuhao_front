@@ -3,6 +3,7 @@
 		    <el-select v-model="selectedCode"
            placeholder="请选择" 
            filterable
+           clearable
            :filter-method="filterMethod"
            @keyup.enter.native="enterkey"
            @change="setValue"
@@ -37,7 +38,7 @@
     },
 		methods: {
 			setValue(){
-				this.$emit("input",this.$props.context,this.selectedCode)
+				this.$emit("input",this.selectedCode,this.$props.context)
 			},
       initData(){
         this.allValues = this.$store.state.allMaterials;
