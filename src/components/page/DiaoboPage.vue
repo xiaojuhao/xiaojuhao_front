@@ -20,122 +20,124 @@
                 <el-form-item label="仓库/门店">
                     <span>{{item.cabinName}}</span>
                 </el-form-item>
-                <el-form-item label="调拨数量" >
-                     <el-input v-model="diaoboAmt"></el-input>
+                <el-form-item label="调拨数量">
+                    <el-input v-model="diaoboAmt"></el-input>
                 </el-form-item>
                 <el-form-item label="拨入">
-                     <el-select v-model="toCabinCode" placeholder="请选择">
-                        <el-option
-                          v-for="item in allCabins"
-                          :key="item.cabinCode"
-                          :label="item.cabinName"
-                          :value="item.cabinCode">
-                          <span style="float: left">{{ item.cabinName }}</span>
-                          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.type }}</span>
+                    <el-select v-model="toCabinCode" placeholder="请选择">
+                        <el-option v-for="item in allCabins" :key="item.cabinCode" :label="item.cabinName" :value="item.cabinCode">
+                            <span style="float: left">{{ item.cabinName }}</span>
+                            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.type }}</span>
                         </el-option>
-                      </el-select>
+                    </el-select>
                 </el-form-item>
                 <el-form-item class="el-form-item-button">
-                      <el-button type="primary" @click="onSubmit">提交</el-button>
-                      <span style="margin-right:20px"></span>
-                      <el-button @click="onBack">取消</el-button>
-                 </el-form-item>
+                    <el-button type="primary" @click="onSubmit">提交</el-button>
+                    <span style="margin-right:20px"></span>
+                    <el-button @click="onBack">取消</el-button>
+                </el-form-item>
             </el-form>
         </div>
     </div>
 </template>
-
 <script>
-    import config from '../common/config.vue'
-    import jquery from 'jquery'
-    import {api} from '../common/bus'
-    export default {
-        data: function(){
-            return {
-                item:{},
-                diaoboAmt:0,
-                allCabins:[],
-                toCabinCode:''
-            }
-        },
-        methods: {
-            onSubmit() {
-                api.diaobo({
-                    materialCode:self.item.materialCode,
-                    diaoboAmt:self.diaoboAmt,
-                    fromCabCode:self.item.cabinCode,
-                    toCabCode:self.toWarehouseCode
-                }).then((val)=>{
-                    this.$message("提交成功")
-                    this.$router.go(-1)
-                }).fail((resp)=>{
-                    this.$message.error(resp.message)
-                })
-            },
-            onBack(){
+import config from '../common/config.vue'
+import jquery from 'jquery'
+import { api } from '../common/bus'
+i
+export default {
+    components: {
+        MyCabinSelect
+    },
+    data: function() {
+        return {
+            item: {},
+            diaoboAmt: 0,
+            allCabins: [],
+            toCabinCode: ''
+        }
+    },
+    methods: {
+        onSubmit() {
+            api.diaobo({
+                materialCode: this.item.materialCode,
+                diaoboAmt: this.diaoboAmt,
+                fromCabCode: this.item.cabinCode,
+                toCabCode: this.toCabinCode
+            }).then((val) => {
+                this.$message("提交成功")
                 this.$router.go(-1)
-            },
-            initData() {
-                var stockId = this.$route.query.stockId;
-                var $data = this;
-                config.queryMaterialsStockById(stockId,(resp)=>{
-                    $data.item = resp.value;
-                })
-            }
+            }).fail((resp) => {
+                this.$message.error(resp.message)
+            })
         },
-        computed:{
+        onBack() {
+            this.$router.go(-1)
+        },
+        initData() {
+            var stockId = this.$route.query.stockId;
+            var $data = this;
+            config.queryMaterialsStockById(stockId, (resp) => {
+                $data.item = resp.value;
+            })
+        }
+    },
+    computed: {
 
-        },
-        mounted(){
-            this.initData();
-            api.queryMyStores()
-            .then((stores)=>{
-                stores.forEach((s)=>{
+    },
+    mounted() {
+        this.initData();
+        api.getAllStoreList()
+            .then((stores) => {
+                stores.forEach((s) => {
                     let c = {};
-                    c.cabinCode =s.storeCode;
-                    c.cabinName =s.storeName;
-                    c.type="门店"
+                    c.cabinCode = s.storeCode;
+                    c.cabinName = s.storeName;
+                    c.type = "门店"
                     this.allCabins.push(c);
                 })
             })
 
-            api.queryMyWarehouse()
-            .then((wares)=>{
-                wares.forEach((w)=>{
+        api.getAllWarehouseList()
+            .then((wares) => {
+                wares.forEach((w) => {
                     let c = {}
                     c.cabinCode = w.warehouseCode;
                     c.cabinName = w.warehouseName;
-                    c.type="仓库"
+                    c.type = "仓库"
                     this.allCabins.push(c)
                 })
             })
-        },
-        activated(){
+    },
+    activated() {
 
-        }
     }
+}
 </script>
 <style scoped>
-  .table-simple {
+.table-simple {
     font-size: 0;
-  }
-  .table-simple label {
+}
+
+.table-simple label {
     width: 90px;
     color: #99a9bf;
     background-color: red;
+}
 
-  }
-  .table-simple .el-form-item {
+.table-simple .el-form-item {
     margin-right: 0;
     margin-bottom: 0;
     width: 50%;
-  }
-  .table-simple .el-form-item2 {
+}
+
+.table-simple .el-form-item2 {
     width: 90%;
-  }
-  .el-form-item-button {
+}
+
+.el-form-item-button {
     margin-top: 10px;
     margin-left: 20%;
     width: 90%;
-  }
+}
 </style>

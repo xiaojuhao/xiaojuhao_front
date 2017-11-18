@@ -68,9 +68,9 @@
             }
         },
         mounted(){
-            api.getAllWarehouse().
-            then((page)=>{
-                this.$data.allWarehouse = page.values;
+            api.getAllWarehouseList().
+            then((list)=>{
+                this.$data.allWarehouse = list;
             })
             this.queryData();
         },

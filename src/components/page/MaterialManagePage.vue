@@ -20,10 +20,8 @@
                 <el-form-item label="保质期">
                     <el-input v-model="form.storageLifeNum" style="width:160px">
                         <el-select v-model="form.storageLifeUnit" slot="append" style="width:80px" placeholder="请选择">
-                            <el-option label="小时" value="H"></el-option>
                             <el-option label="天" value="D"></el-option>
                             <el-option label="月" value="M"></el-option>
-                            <el-option label="年" value="Y"></el-option>
                         </el-select>
                     </el-input>
                 </el-form-item>

@@ -55,6 +55,7 @@
                                 self.$data.tips = "登录成功";
                                 var userinfo = resp.value;
                                 this.$store.commit('setLoginCookie',userinfo.loginCookie)
+                                this.$store.commit('setUserRole',userinfo.userRole)
                                 localStorage.setItem('ms_username',userinfo.userName);
                                 self.$router.push('/home');
                             }

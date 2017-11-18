@@ -10,7 +10,8 @@ const state = {
     allRecipes:[],
     allWarehouses:[],
     allSuppliers:[],
-    loginCookie:''
+    loginCookie:'',
+    userRole:''
 }
 
 const getters = {
@@ -71,9 +72,9 @@ const mutations = {
         })
     },
     loadAllWarehouses(state){
-        api.getAllWarehouse()
-        .then((page)=>{
-            state.allWarehouses = page.values;
+        api.getAllWarehouseList()
+        .then((list)=>{
+            state.allWarehouses = list;
         })
     },
     loadAllSuppliers(state){
@@ -103,7 +104,7 @@ const mutations = {
             })
         }
         if(!state.allWarehouses || state.allWarehouses.length ==0){
-            api.getAllWarehouse()
+            api.getAllWarehouseList()
             .then((page)=>{
                 state.allWarehouses = page.values;
             })
@@ -117,8 +118,10 @@ const mutations = {
         }
     },
     setLoginCookie(state,cookieValue){
-        console.log('set cookieValue:'+cookieValue)
         state.loginCookie = cookieValue;
+    },
+    setUserRole(state,role){
+        state.userRole = role;
     }
 }
 

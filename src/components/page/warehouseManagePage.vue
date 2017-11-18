@@ -7,7 +7,7 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form"  label-width="80px">
+            <el-form ref="form" label-width="80px">
                 <el-form-item label="门店名称">
                     <el-input v-model="form.warehouseName" placeholder="仓库名称"></el-input>
                 </el-form-item>
@@ -29,61 +29,53 @@
                 </el-form-item>
             </el-form>
         </div>
-
     </div>
 </template>
-
 <script>
-    import jquery from 'jquery'
-    import config from '../common/config.vue'
-    export default {
-        data: function(){
-            return {
-                form:{
-                    id:'',
-                    warehouseCode:this.$route.query.warehouseCode,
-                    warehouseName:'',
-                    warehouseAddr:'',
-                    warehouseManager:'',
-                    managerPhone:'',
-                    managerEmail:''
-                }
-                
+import { api } from '../common/bus'
+import jquery from 'jquery'
+import config from '../common/config.vue'
+export default {
+    data: function() {
+        return {
+            form: {
+                id: '',
+                warehouseCode: this.$route.query.warehouseCode,
+                warehouseName: '',
+                warehouseAddr: '',
+                warehouseManager: '',
+                managerPhone: '',
+                managerEmail: ''
             }
-        },
-        methods: {
-            onSubmit() {
-                var $data = this.$data;
-                jquery.ajax({
-                    url:config.server+"/warehouse/saveWarehouse",
-                    data:this.$data.form,
-                    dataType:'jsonp'
-                }).then((resp)=>{
+
+        }
+    },
+    methods: {
+        onSubmit() {
+            api.saveWarehouse(this.form)
+                .then((respVal) => {
                     this.$message("新增成功")
                     this.$router.go(-1)
+                }).fail((resp) => {
+                    this.$message.error(resp.message);
                 })
-            },
-            onCancel(){
-                this.$router.go(-1)
-            }
         },
-        mounted(){
-            jquery.ajax({
-                url:config.server+"/warehouse/queryWarehouseByCode",
-                data:{warehouseCode:this.$data.form.warehouseCode},
-                dataType:'jsonp'
-            }).then((resp)=>{
-                if(resp && resp.value){
-                    var v = resp.value;
-                    this.$data.form.id = v.id;
-                    this.$data.form.warehouseCode = v.warehouseCode;
-                    this.$data.form.warehouseName = v.warehouseName;
-                    this.$data.form.warehouseAddr = v.warehouseAddr;
-                    this.$data.form.warehouseManager = v.warehouseManager;
-                    this.$data.form.managerPhone = v.managerPhone;
-                    this.$data.form.managerEmail = v.managerEmail;
-                }
-            })
+        onCancel() {
+            this.$router.go(-1)
         }
+    },
+    mounted() {
+        api.getWarehouseByCode(this.$data.form.warehouseCode)
+            .then((v) => {
+                this.$data.form.id = v.id;
+                this.$data.form.warehouseCode = v.warehouseCode;
+                this.$data.form.warehouseName = v.warehouseName;
+                this.$data.form.warehouseAddr = v.warehouseAddr;
+                this.$data.form.warehouseManager = v.warehouseManager;
+                this.$data.form.managerPhone = v.managerPhone;
+                this.$data.form.managerEmail = v.managerEmail;
+            })
+
     }
+}
 </script>

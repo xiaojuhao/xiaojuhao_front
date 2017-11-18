@@ -46,9 +46,9 @@
                 let self = this;
                 self.queryList = [];
                 self.$data.loadingState = true;
-                api.getAllWarehouse()
-                .then((page)=>{
-                    self.queryList = page.values;
+                api.getAllWarehouseList()
+                .then((list)=>{
+                    self.queryList = list;
                 }).fail(function(resp){
                     self.$message.error("请求出错")
                 }).always(function(resp){

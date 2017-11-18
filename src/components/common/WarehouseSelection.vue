@@ -25,9 +25,9 @@
 		},
 		mounted(){
 			let $data = this.$data;
-			api.getAllWarehouse()
-			.then((value)=>{
-				$data.allValues = value.values;
+			api.getAllWarehouseList()
+			.then((list)=>{
+				$data.allValues = list;
 			});
 		},
 		methods: {

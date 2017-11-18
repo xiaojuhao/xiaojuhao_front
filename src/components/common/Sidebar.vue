@@ -1,6 +1,6 @@
 <template>
     <div class="sidebar">
-        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" unique-opened router>
+        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="light" unique-opened router>
             <template v-for="item in menus">
                 <template v-if="item.subs">
                     <el-submenu :index="item.menuIndex">
@@ -150,7 +150,7 @@
     .sidebar{
         display: block;
         position: absolute;
-        width: 250px;
+        width: 200px;
         left: 0;
         top: 70px;
         bottom:0;

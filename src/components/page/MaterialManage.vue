@@ -1,28 +1,23 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-autocomplete class="inline-input" v-model="queryCond.materialCode"
-                :fetch-suggestions="querySearch" placeholder="原料编码"
-                :trigger-on-focus="false"
-                @select="handleSelect">
+            <el-autocomplete class="inline-input" v-model="queryCond.materialCode" :fetch-suggestions="querySearch" placeholder="原料编码" :trigger-on-focus="false" @select="handleSelect">
             </el-autocomplete>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
             <div style="position:relative; float:right; ">
                 <el-button round @click="edit()">增加原料</el-button>
             </div>
         </div>
-        <el-table :data="queryList" border style="width: 100%"
-            v-loading="loadingState"
-            element-loading-text="拼命加载中"
-            element-loading-spinner="el-icon-loading"
-            element-loading-background="rgb(0, 0, 0, 0.8)">
+        <el-table :data="queryList" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column prop="materialCode" label="原料编码" width="150">
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="200">
             </el-table-column>
-            <el-table-column v-if="canshow" prop="utilizationRatio" label="利用率(%)" width="120">
+            <el-table-column v-if="userRole == '1'" prop="utilizationRatio" label="利用率(%)" width="120">
             </el-table-column>
             <el-table-column prop="storageLife" label="保质期" width="120" :formatter="formatStorageLife">
+            </el-table-column>
+            <el-table-column prop="warningThreshold" label="预警" width="150" :formatter="formatWarning">
             </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位" width="120">
             </el-table-column>
@@ -35,130 +30,114 @@
             </el-table-column>
         </el-table>
         <div class="pagination">
-            <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next"
-                    :total="totalRows" :page-size="pageSize">
+            <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="totalRows" :page-size="pageSize">
             </el-pagination>
         </div>
     </div>
 </template>
-
 <script>
-    import config from '../common/config.vue'
-    import OutStock from './OutStock.vue'
-    import jquery from 'jquery'
-    export default {
-        data() {
-            return {
-                url: './static/vuetable.json',
-                tableData: [],
-                pageNo: 1,
-                pageSize: 5,
-                totalRows:0,
-                loadingState: false,
-                queryCond:{
-                    materialCode:''
-                },
-                queryList:[]
-            }
-        },
-        created(){
-            
-        },
-        mounted(){
+import { api } from '../common/bus'
+import config from '../common/config.vue'
+import OutStock from './OutStock.vue'
+import jquery from 'jquery'
+export default {
+    data() {
+        return {
+            tableData: [],
+            pageNo: 1,
+            pageSize: 5,
+            totalRows: 0,
+            loadingState: false,
+            queryCond: {
+                materialCode: ''
+            },
+            queryList: [],
+            userRole: this.$store.state.userRole
+        }
+    },
+    mounted() {
+        this.queryData();
+    },
+    methods: {
+        handleCurrentChange(val) {
+            this.pageNo = val;
             this.queryData();
         },
-        activated(){
-           
-        },
-        computed: {
-            canshow(){
-                return true;
-            }
-        },
-        methods: {
-            handleCurrentChange(val){
-                this.pageNo = val;
-                this.queryData();
-            },
-            formatStorageLife(row){
-                let re = /(\d+)(\w)/ig;
-                let r = re.exec(row.storageLife);
-                let ret = "";
-                if(r){
-                    ret = r[1];
-                    switch(r[2]){
-                        case "D": ret = ret + "天"; break;
-                        case "H": ret = ret + "小时"; break;
-                        case "Y": ret = ret + "年"; break;
-                        case "M": ret = ret + "月"; break;
-                    }
+        formatStorageLife(row) {
+            let re = /(\d+)(\w)/ig;
+            let r = re.exec(row.storageLife);
+            let ret = "";
+            if (r) {
+                ret = r[1];
+                switch (r[2]) {
+                    case "D":
+                        ret = ret + "天";
+                        break;
+                    case "M":
+                        ret = ret + "月";
+                        break;
                 }
-                return ret;
-            },
-            queryData(){
-                let self = this;
-                self.$data.loadingState = true;
-                jquery.ajax({
-                    url:config.server+'/busi/queryMaterials',
-                    data:{
-                        pageSize:self.$data.pageSize,
-                        pageNo:self.$data.pageNo,
-                        materialCode:self.$data.materialCode
-                    },
-                    dataType: 'jsonp'
-                }).then(function(resp){
-                    if(resp.code!=200){
-                        self.$message.error(resp.message)
-                        return;
-                    }
-                    var value = resp.value;
-                    if(!value){
-                       self.$message.error("服务端没有返回数据")
-                       return;
-                    }
-                    self.queryList = value.values;
-                    self.totalRows = value.totalRows;
-                }).fail(function(resp){
+            }
+            return ret;
+        },
+        formatWarning(row) {
+            if (row.warningThreshold) {
+                let w = JSON.parse(row.warningThreshold)
+                return "高峰:" + w.high + ",低峰:" + w.low;
+            }
+            return "";
+        },
+        queryData() {
+            let self = this;
+            self.$data.loadingState = true;
+            api.queryMaterialsPage({
+                    pageSize: self.$data.pageSize,
+                    pageNo: self.$data.pageNo,
+                    materialCode: self.$data.materialCode
+                })
+                .then((page) => {
+                    this.queryList = page.values;
+                    this.totalRows = page.totalRows;
+                }).fail(function(resp) {
                     self.$message.error("请求出错")
-                }).always(function(resp){
+                }).always(function(resp) {
                     self.$data.loadingState = false;
                 })
-            },
-            search(){
-                this.queryList = [];
-                this.queryData();
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-            },
-            handleSelect(item){
-                this.$data.query.name=item.value;
-            },
-            querySearch(queryString,cb){
-                var data = [];
-                data.push({id:1,value:'aaaaa'})
-                data.push({id:2,value:'bbbbb'})
-                data.push({id:3,value:'ccccc'})
-                console.log(this.$data.query)
-                cb(data)
-            },
-            edit(index, item){
-                this.$router.push({path:"/materialManagePage",query:{mid:item && item.id}})
-            }
+        },
+        search() {
+            this.queryList = [];
+            this.queryData();
+        },
+        handleSelectionChange(val) {
+            this.multipleSelection = val;
+        },
+        handleSelect(item) {
+            this.$data.query.name = item.value;
+        },
+        querySearch(queryString, cb) {
+            var data = [];
+            data.push({ id: 1, value: 'aaaaa' })
+            data.push({ id: 2, value: 'bbbbb' })
+            data.push({ id: 3, value: 'ccccc' })
+            console.log(this.$data.query)
+            cb(data)
+        },
+        edit(index, item) {
+            this.$router.push({ path: "/materialManagePage", query: { mid: item && item.id } })
         }
     }
+}
 </script>
-
 <style scoped>
-.handle-box{
+.handle-box {
     margin-bottom: 20px;
 }
-.handle-select{
+
+.handle-select {
     width: 120px;
 }
-.handle-input{
+
+.handle-input {
     width: 300px;
     display: inline-block;
 }

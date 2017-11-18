@@ -1,7 +1,7 @@
 import jquery from 'jquery'
 import store from '../../store/store'
 import router from "../../router/index"
-import {Message} from 'element-ui';
+import { Message } from 'element-ui';
 
 const config = {
     //server:'http://47.104.25.105:80/xiaojuhao/'
@@ -150,6 +150,9 @@ export const api = {
     queryMyStores() {
         return http.jsonp2("/store/getMyStore", {})
     },
+    saveStore(data){
+        return http.post("/store/saveStore",data)
+    },
     outstock(data) {
         var df = jquery.Deferred();
         http.jsonp('/busi/outstock', data)
@@ -182,21 +185,7 @@ export const api = {
         return http.post("/busi/diaobo", data);
     },
     addRecipes(data) {
-        var df = jquery.Deferred();
-        jquery.ajax({
-            url: config.server + "/recipes/addRecipes",
-            data: data,
-            dataType: 'jsonp'
-        }).then((resp) => {
-            if (resp.code == "200") {
-                df.resolve(resp.value);
-            } else {
-                df.reject(resp);
-            }
-        }).fail((resp) => {
-            df.reject(resp);
-        });
-        return df.promise();
+        return http.post("/recipes/addRecipes",data);
     },
     queryRecipesPage(data) {
         return http.jsonp2("/recipes/queryRecipes", data)
@@ -226,7 +215,7 @@ export const api = {
 
         return df.promise();
     },
-    queryMaterialsStockHistory(data) {
+    queryMaterialsStockHistoryPage(data) {
         return http.jsonp2("/busi/queryMaterialsStockHistory", data);
     },
     queryMaterialsStockById(id) {
@@ -239,6 +228,9 @@ export const api = {
         }
         return http.jsonp2("/busi/queryMaterials", data);
     },
+    queryMaterialsPage(data) {
+        return http.jsonp2("/busi/queryMaterials", data);
+    },
     addMaterials(data) {
         return http.post("/busi/addMaterials", data)
     },
@@ -249,8 +241,15 @@ export const api = {
         let data = { recipesCode: recipesCode }
         return http.jsonp2("/recipes/queryRecipesFormula", data)
     },
-    getAllWarehouse() {
-        return http.jsonp2("/warehouse/queryWarehouses", { pageSize: 1000 })
+    getAllWarehouseList() {
+        let df = new jquery.Deferred();
+        http.jsonp2("/warehouse/queryWarehouses", { pageSize: 1000 })
+        .then((page)=>{
+            df.resolve(page.values)
+        }).fail((resp)=>{
+            df.reject(resp)
+        })
+        return df;
     },
     queryWarehousesPage(param) {
         return http.jsonp("/warehouse/queryWarehouses", param)
@@ -260,6 +259,9 @@ export const api = {
     },
     queryMyWarehouse() {
         return http.jsonp2("/warehouse/queryMyWarehouse", {});
+    },
+    saveWarehouse(data){
+        return http.post("/warehouse/saveWarehouse",data)
     },
     saveSupplierInfo(param) {
         return http.jsonp2("/supplier/saveSupplier", param)
