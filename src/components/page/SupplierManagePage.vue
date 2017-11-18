@@ -29,6 +29,12 @@
                 <el-form-item label="供应商邮箱">
                     <el-input v-model="form.supplierEmail" placeholder="供应商邮箱"></el-input>
                 </el-form-item>
+                <el-form-item label="有效性">
+                    <el-select v-model="form.status" placeholder="有效性">
+                        <el-option label="有效" value="1"></el-option>
+                        <el-option label="无效" value="2"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="结账模式">
                     <el-select v-model="form.payMode" style="width:150px" placeholder="请选择">
                         <el-option label="现结" value="ByNow"></el-option>
@@ -49,6 +55,9 @@
                 </el-form-item>
                 <el-form-item label="账户信息">
                     <el-input v-model="form.payAccount" placeholder="账户信息"></el-input>
+                </el-form-item>
+                <el-form-item label="备注">
+                    <el-input v-model="form.remark" placeholder="备注信息"></el-input>
                 </el-form-item>
                 <el-form-item label="供应原料">
                     <el-row :gutter="5">
@@ -96,7 +105,9 @@ export default {
                 payWay: 'alipay',
                 payMode: '',
                 payAccount: '',
-                materialJson: ''
+                materialJson: '',
+                remark:'',
+                status:''
             },
             materials: [],
             loadingState: false
@@ -147,6 +158,8 @@ export default {
                 this.form.payMode = sp.payMode;
                 this.form.payWay = sp.payWay;
                 this.form.payAccount = sp.payAccount;
+                this.form.remark = sp.remark;
+                this.form.status = sp.status;
             });
         api.queryMaterialSupplerByCode({
             supplierCode: this.form.supplierCode

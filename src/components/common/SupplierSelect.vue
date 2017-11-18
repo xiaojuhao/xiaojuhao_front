@@ -1,7 +1,9 @@
 <template>
     <div>
-        <el-select v-model="selectedCode" placeholder="请选择" filterable clearable :filter-method="filterMethod"  @change="setValue" @visible-change="visualChange">
-            <el-option v-for="item in valuesShow" :key="item.recipesCode" :label="item.recipesName" :value="item.recipesCode">
+        <el-select v-model="selectedCode" placeholder="供应商" filterable clearable :filter-method="filterMethod" @keyup.enter.native="enterkey" @change="setValue" @visible-change="visualChange">
+            <el-option v-for="item in valuesShow" :key="item.code" :label="item.name" :value="item.code">
+                <span style="float: left">{{ item.name }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.type }}</span>
             </el-option>
         </el-select>
     </div>
@@ -30,18 +32,24 @@ export default {
             this.$emit("input", this.selectedCode, this.$props.context)
         },
         initData() {
-            let $data = this.$data;
-            api.queryAllRecipes()
-                .then((value) => {
-                    $data.allValues = value;
-                    $data.selectedCode = this.$props.value;
-                });
+            api.querySupplierPage({
+                pageSize: 2000
+            }).then((page) => {
+                page.values.forEach((item) => {
+                    console.log(item)
+                    let ii = {};
+                    ii.code = item.supplierCode;
+                    ii.name = item.supplierName;
+                    ii.type = "供应商"
+                    this.allValues.push(ii);
+                })
+            })
         },
         filterMethod(input) {
             let $data = this.$data;
             setTimeout(() => {
                 $data.valuesShow = $data.allValues.filter((item) => {
-                    var key = [item.recipesCode, item.recipesName, item.searchKey].join(',')
+                    var key = [item.code, item.name, item.searchKey].join(',')
                     if (key.indexOf(input) >= 0) {
                         return true;
                     }
@@ -52,7 +60,7 @@ export default {
         visualChange(visible) {
             if (visible) {
                 this.$data.valuesShow = this.$data.allValues.filter((item) => {
-                    if (this.excludesMap[item.recipesCode]) {
+                    if (this.excludesMap[item.code]) {
                         return false;
                     }
                     return true;

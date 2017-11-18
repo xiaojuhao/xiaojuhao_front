@@ -1,12 +1,19 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-autocomplete class="inline-input" v-model="queryCond.materialCode" :fetch-suggestions="querySearch" placeholder="原料编码" :trigger-on-focus="false" @select="handleSelect">
-            </el-autocomplete>
-            <el-button type="primary" icon="search" @click="search">搜索</el-button>
-            <div style="position:relative; float:right; ">
-                <el-button round @click="edit()">增加原料</el-button>
-            </div>
+            <el-row :gutter="10">
+                <el-col :span="4">
+                    <MaterialSelection @input="(val)=>{this.queryCond.materialCode=val;}"></MaterialSelection>
+                </el-col>
+                <el-col :span="4">
+                    <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                </el-col>
+                <el-col :span="16">
+                    <div style="position:relative; float:right; ">
+                        <el-button round @click="edit()">增加原料</el-button>
+                    </div>
+                </el-col>
+            </el-row>
         </div>
         <el-table :data="queryList" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column prop="materialCode" label="原料编码" width="150">
@@ -37,10 +44,12 @@
 </template>
 <script>
 import { api } from '../common/bus'
-import config from '../common/config.vue'
-import OutStock from './OutStock.vue'
-import jquery from 'jquery'
+import MaterialSelection from '../common/MaterialSelection'
+
 export default {
+    components: {
+        MaterialSelection
+    },
     data() {
         return {
             tableData: [],
@@ -93,7 +102,7 @@ export default {
             api.queryMaterialsPage({
                     pageSize: self.$data.pageSize,
                     pageNo: self.$data.pageNo,
-                    materialCode: self.$data.materialCode
+                    materialCode: self.queryCond.materialCode
                 })
                 .then((page) => {
                     this.queryList = page.values;
