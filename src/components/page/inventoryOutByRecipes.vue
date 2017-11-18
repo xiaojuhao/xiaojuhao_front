@@ -34,7 +34,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">提交</el-button>
-                    <el-button @click="onCancel">取消</el-button>
+                    <el-button @click="onCancel">清空</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -57,7 +57,7 @@
         },
         methods: {  
             onCancel(){
-                this.$router.go(-1)
+                this.recipesList = []
             },
             onSubmit(){
                 this.$data.loadingState = true;

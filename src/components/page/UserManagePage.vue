@@ -81,8 +81,14 @@
         methods: {
             onSubmit() {
                 this.$data.loading = true;
-                this.form.authStores = JSON.stringify(auth_stores)
-                this.form.authWarehouse = JSON.stringify(auth_warehouse)
+                this.form.authStores = this.auth_stores.filter((item)=>{
+                    if(this.allStoreMap.get(item)) return true;
+                    return false;
+                }).join(',')
+                this.form.authWarehouse = this.auth_warehouse.filter((item)=>{
+                    if(this.myAllWarehouseMap.get(item)) return true;
+                    return false;
+                }).join(',')
                 api.saveUser(this.$data.form)
                 .then((val)=>{
                     this.$message("提交成功")
@@ -103,6 +109,12 @@
                 this.$data.form.userRole = u.userRole;
                 this.$data.form.userMobile = u.userMobile;
                 this.$data.form.status = u.status;
+                if(u.authStores){
+                    this.auth_stores = u.authStores.split(',')
+                }
+                if(u.authWarehouse){
+                    this.auth_warehouse = u.authWarehouse.split(',')
+                }
             });
             api.queryMyStores()
             .then((list)=>{
@@ -123,6 +135,20 @@
                 return this.myAllWarehouseX.filter((item)=>{
                     return true;
                 })
+            },
+            allStoreMap(){
+                let map = new Map()
+                this.myAllStores.forEach((item)=>{
+                    map.set(item.storeCode,item);
+                })
+                return map;
+            },
+            myAllWarehouseMap(){
+                let map = new Map()
+                this.myAllWarehouse.forEach((item)=>{
+                    map.set(item.warehouseCode,item)
+                })
+                return map;
             }
         }
     }

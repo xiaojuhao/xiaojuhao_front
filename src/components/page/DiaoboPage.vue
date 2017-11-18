@@ -17,19 +17,21 @@
                 <el-form-item label="当前库存">
                     <span>{{item.currStock}}</span>
                 </el-form-item>
-                <el-form-item label="仓库">
-                    <span>{{item.warehouseName}}</span>
+                <el-form-item label="仓库/门店">
+                    <span>{{item.cabinName}}</span>
                 </el-form-item>
                 <el-form-item label="调拨数量" >
                      <el-input v-model="diaoboAmt"></el-input>
                 </el-form-item>
-                <el-form-item label="拨出仓库">
-                     <el-select v-model="toWarehouseCode" placeholder="请选择">
+                <el-form-item label="拨入">
+                     <el-select v-model="toCabinCode" placeholder="请选择">
                         <el-option
-                          v-for="item in warehouseSelection"
-                          :key="item.warehouseCode"
-                          :label="item.warehouseName"
-                          :value="item.warehouseCode">
+                          v-for="item in allCabins"
+                          :key="item.cabinCode"
+                          :label="item.cabinName"
+                          :value="item.cabinCode">
+                          <span style="float: left">{{ item.cabinName }}</span>
+                          <span style="float: right; color: #8492a6; font-size: 13px">{{ item.type }}</span>
                         </el-option>
                       </el-select>
                 </el-form-item>
@@ -46,35 +48,29 @@
 <script>
     import config from '../common/config.vue'
     import jquery from 'jquery'
+    import {api} from '../common/bus'
     export default {
         data: function(){
             return {
                 item:{},
                 diaoboAmt:0,
-                allWarehouse:[],
-                toWarehouseCode:''
+                allCabins:[],
+                toCabinCode:''
             }
         },
         methods: {
             onSubmit() {
-                var self = this;
-                jquery.ajax({
-                    url:config.server+"/busi/diaobo",
-                    data:{
-                        materialCode:self.item.materialCode,
-                        diaoboAmt:self.diaoboAmt,
-                        fromCabCode:self.item.cabinCode,
-                        toCabCode:self.toWarehouseCode
-                    },
-                    dataType:'jsonp'
-                }).then(function(resp){
-                    if(resp.code != 200){
-                        self.$message.error(resp.message)
-                        return;
-                    }
-                    self.$message(resp.message)
-                    self.$router.go(-1);
-                });
+                api.diaobo({
+                    materialCode:self.item.materialCode,
+                    diaoboAmt:self.diaoboAmt,
+                    fromCabCode:self.item.cabinCode,
+                    toCabCode:self.toWarehouseCode
+                }).then((val)=>{
+                    this.$message("提交成功")
+                    this.$router.go(-1)
+                }).fail((resp)=>{
+                    this.$message.error(resp.message)
+                })
             },
             onBack(){
                 this.$router.go(-1)
@@ -88,18 +84,31 @@
             }
         },
         computed:{
-            warehouseSelection:function(p){
-                return this.allWarehouse.filter((d)=>{
-                    //过滤拨出仓库
-                    if(d.warehouseCode != this.item.warehouseCode){
-                        return d;
-                    }
-                });
-            }
+
         },
         mounted(){
             this.initData();
-            config.getWarehouse({},(resp)=>this.allWarehouse=resp.value.values);
+            api.queryMyStores()
+            .then((stores)=>{
+                stores.forEach((s)=>{
+                    let c = {};
+                    c.cabinCode =s.storeCode;
+                    c.cabinName =s.storeName;
+                    c.type="门店"
+                    this.allCabins.push(c);
+                })
+            })
+
+            api.queryMyWarehouse()
+            .then((wares)=>{
+                wares.forEach((w)=>{
+                    let c = {}
+                    c.cabinCode = w.warehouseCode;
+                    c.cabinName = w.warehouseName;
+                    c.type="仓库"
+                    this.allCabins.push(c)
+                })
+            })
         },
         activated(){
 

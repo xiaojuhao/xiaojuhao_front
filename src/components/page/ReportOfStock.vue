@@ -92,6 +92,7 @@
                         storeCode:'M000',
                         stockType:'1'
                 }).then((page)=>{
+                    console.log(page)
                     page.values.forEach((item)=>item.fenku=[])
                     self.tableData = page.values;
                     self.totalRows = page.totalRows;

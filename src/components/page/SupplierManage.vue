@@ -17,11 +17,7 @@
             element-loading-spinner="el-icon-loading"
             element-loading-background="rgb(0, 0, 0, 0.8)"
             @expand="expand">
-            <el-table-column type="expand">
-                <template scope="props">
-                    供应商供应的原料
-                </template>
-            </el-table-column>
+            
             <el-table-column prop="supplierCode" label="供应商编码" width="120">
             </el-table-column>
             <el-table-column prop="supplierName" label="供应商名称" width="150">

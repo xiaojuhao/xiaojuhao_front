@@ -32,7 +32,7 @@
             </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位" width="100">
             </el-table-column>
-            <el-table-column prop="warehouseName" label="仓库" width="200">
+            <el-table-column prop="cabinName" label="仓库" width="200">
             </el-table-column>
             <el-table-column prop="modifier" label="修改人" width="100">
             </el-table-column>
@@ -57,6 +57,7 @@
     import config from '../common/config.vue'
     import OutStock from './OutStock.vue'
     import jquery from 'jquery'
+    import {api} from '../common/bus'
     export default {
         data() {
             return {
@@ -79,13 +80,10 @@
         },
         mounted(){
             this.getData();
-            var $this = this;
-            jquery.ajax({
-                url:config.server+"/warehouse/queryWarehouses",
-                dataType:'jsonp'
-            }).then((resp)=>{
-                console.log(resp)
-                $this.warehouseSelection = resp.value.values;
+            let param = {};
+            api.queryWarehousesPage(param)
+            .then((page)=>{
+                this.warehouseSelection = page.values;
             })
         },
         activated(){
@@ -107,28 +105,18 @@
             getData(){
                 let self = this;
                 self.$data.loadingState = true;
-                jquery.ajax({
-                    url:config.server+'/busi/queryMaterialsStock',
-                    data:{
+                let param = {
                         pageSize:self.$data.pageSize,
                         pageNo:self.$data.cur_page,
                         materialCode:self.$data.query.materialCode,
                         warehouseCode:self.$data.query.warehouseCode,
                         stockType:'2'
-                    },
-                    dataType: 'jsonp'
-                }).then(function(resp){
-                    if(resp.code!=200){
-                        self.$message.error(resp.message)
-                        return;
-                    }
-                    var value = resp.value;
-                    if(!value){
-                       self.$message.error("服务端没有返回数据")
-                       return;
-                    }
-                    self.tableData = value.values;
-                    self.totalRows = value.totalRows;
+                    };
+
+                api.queryMaterialsStockPage(param)
+                .then((page)=>{
+                    self.tableData = page.values;
+                    self.totalRows = page.totalRows;
                 }).fail(function(resp){
                     self.$message.error("请求出错")
                 }).always(function(resp){
