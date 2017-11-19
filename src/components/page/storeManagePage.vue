@@ -7,18 +7,18 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form" label-width="80px">
+            <el-form ref="form" label-width="100px">
                 <el-form-item label="门店名称">
                     <el-input v-model="form.storeName" placeholder="门店名称"></el-input>
                 </el-form-item>
+                <el-form-item label="门店编码">
+                    <el-input disabled v-model="form.storeCode" placeholder="门店编码"></el-input>
+                </el-form-item>
+                <el-form-item label="外部系统编码">
+                    <el-input v-model="form.outCode" placeholder="外部系统编码"></el-input>
+                </el-form-item>
                 <el-form-item label="门店地址">
                     <el-input v-model="form.storeAddr" placeholder="门店地址"></el-input>
-                </el-form-item>
-                <el-form-item label="默认仓库">
-                    <el-select v-model="form.defaultWarehouse" placeholder="请选择">
-                        <el-option v-for="item in warehouseSelection" :key="item.warehouseCode" :label="item.warehouseName" :value="item.warehouseCode">
-                        </el-option>
-                    </el-select>
                 </el-form-item>
                 <el-form-item label="负责人">
                     <el-input v-model="form.storeManager" placeholder="负责人"></el-input>

@@ -150,8 +150,8 @@ export const api = {
     queryMyStores() {
         return http.jsonp2("/store/getMyStore", {})
     },
-    saveStore(data){
-        return http.post("/store/saveStore",data)
+    saveStore(data) {
+        return http.post("/store/saveStore", data)
     },
     outstock(data) {
         var df = jquery.Deferred();
@@ -185,7 +185,7 @@ export const api = {
         return http.post("/busi/diaobo", data);
     },
     addRecipes(data) {
-        return http.post("/recipes/addRecipes",data);
+        return http.post("/recipes/addRecipes", data);
     },
     queryRecipesPage(data) {
         return http.jsonp2("/recipes/queryRecipes", data)
@@ -199,8 +199,8 @@ export const api = {
     queryMaterialsStockPage(data) {
         return http.jsonp2("/busi/queryMaterialsStock", data);
     },
-    correctStock(data){
-        return http.post("/busi/correctStock",data)
+    correctStock(data) {
+        return http.post("/busi/correctStock", data)
     },
     queryAllFenkuMaterialsStock(materialCode) {
         let data = {
@@ -234,6 +234,9 @@ export const api = {
     queryMaterialsPage(data) {
         return http.jsonp2("/busi/queryMaterials", data);
     },
+    queryMaterialById(id) {
+        return http.post("/busi/queryMaterialById", { id: id })
+    },
     addMaterials(data) {
         return http.post("/busi/addMaterials", data)
     },
@@ -247,11 +250,11 @@ export const api = {
     getAllWarehouseList() {
         let df = new jquery.Deferred();
         http.jsonp2("/warehouse/queryWarehouses", { pageSize: 1000 })
-        .then((page)=>{
-            df.resolve(page.values)
-        }).fail((resp)=>{
-            df.reject(resp)
-        })
+            .then((page) => {
+                df.resolve(page.values)
+            }).fail((resp) => {
+                df.reject(resp)
+            })
         return df;
     },
     queryWarehousesPage(param) {
@@ -263,8 +266,8 @@ export const api = {
     queryMyWarehouse() {
         return http.jsonp2("/warehouse/queryMyWarehouse", {});
     },
-    saveWarehouse(data){
-        return http.post("/warehouse/saveWarehouse",data)
+    saveWarehouse(data) {
+        return http.post("/warehouse/saveWarehouse", data)
     },
     saveSupplierInfo(param) {
         return http.jsonp2("/supplier/saveSupplier", param)
@@ -280,5 +283,11 @@ export const api = {
     },
     queryAllMaterialSuppler() {
         return http.jsonp2("/busi/queryAllMaterialSuppler", {})
+    },
+    commitPurchaseOrder(data){
+        return http.post("/purchase/commitPurchaseOrder",data)
+    },
+    queryMyPurchaseOrderPage(data){
+        return http.post("/purchase/queryMyPurchaseOrder",data)
     }
 }

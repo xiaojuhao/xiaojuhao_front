@@ -14,6 +14,9 @@
                 <el-form-item label="菜品代码">
                     <el-input disabled v-model="form.recipesCode" placeholder="菜品代码"></el-input>
                 </el-form-item>
+                <el-form-item label="外部系统编码">
+                    <el-input v-model="form.outCode" placeholder="外部系统编码"></el-input>
+                </el-form-item>
                 <el-form-item label="配方">
                     <el-row :gutter="5">
                         <el-col :span="12"><span class="span-center">原料</span></el-col>
@@ -68,6 +71,7 @@
                     id:'',
                     recipesCode:this.$route.query.code,
                     recipesName:'',
+                    outCode:'',
                     formula:[]
                 },
                 allMaterials:[],
@@ -76,17 +80,17 @@
         },
         methods: {
             onSubmit() {
-                this.$data.loadingState  = true;
-                var $data = this.$data;
+                this.loadingState  = true;
                 api.addRecipes({
-                    recipesCode:$data.form.recipesCode,
-                    recipesName:$data.form.recipesName,
-                    formulaJson:JSON.stringify($data.form.formula)
+                    recipesCode:this.form.recipesCode,
+                    recipesName:this.form.recipesName,
+                    outCode:this.form.outCode,
+                    formulaJson:JSON.stringify(this.form.formula)
                 }).then((resp)=>{
                     this.$message("操作成功")
                     this.$router.go(-1)
                 }).always(()=>{
-                    this.$data.loadingState  = false;
+                    this.loadingState  = false;
                 })
             },
             onCancel(){

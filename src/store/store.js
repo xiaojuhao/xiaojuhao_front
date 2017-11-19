@@ -1,140 +1,142 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import {api} from 'components/common/bus'
+import { api } from 'components/common/bus'
 Vue.use(Vuex)
 
 const state = {
     sideBarOppened: false,
-    allMaterials:[],
-    allStores:[],
-    allRecipes:[],
-    allWarehouses:[],
-    allSuppliers:[],
-    loginCookie:'',
-    userRole:''
+    allMaterials: [],
+    allStores: [],
+    allRecipes: [],
+    allWarehouses: [],
+    allSuppliers: [],
+    loginCookie: '',
+    userRole: ''
 }
 
 const getters = {
     allMaterialsMap: (state) => {
         var map = new Map();
-        state.allMaterials.forEach((item)=>{
-            map.set(item.materialCode,item)
+        state.allMaterials.forEach((item) => {
+            map.set(item.materialCode, item)
         })
         return map;
     },
-    allStoresMap:(state)=>{
+    allStoresMap: (state) => {
         var map = new Map();
-        state.allStores.forEach((item)=>{
-            map.set(item.storeCode,item)
+        state.allStores.forEach((item) => {
+            map.set(item.storeCode, item)
         })
         return map;
     },
-    allRecipesMap: (state)=>{
+    allRecipesMap: (state) => {
         var map = new Map();
-        state.allRecipes.forEach((item)=>{
-            map.set(item.recipesCode,item)
+        state.allRecipes.forEach((item) => {
+            map.set(item.recipesCode, item)
         })
         return map;
     },
-    allWarehousesMap: (state)=>{
+    allWarehousesMap: (state) => {
         var map = new Map();
-        state.allWarehouses.forEach((item)=>{
-            map.set(item.warehouseCode,item)
+        state.allWarehouses.forEach((item) => {
+            map.set(item.warehouseCode, item)
         })
         return map;
     },
-    allSuppliersMap: (state)=>{
+    allSuppliersMap: (state) => {
         var map = new Map();
-        state.allSuppliers.forEach((item)=>{
-            map.set(item.suppliersCode,item)
+        state.allSuppliers.forEach((item) => {
+            map.set(item.suppliersCode, item)
         })
         return map;
     }
 }
 
 const mutations = {
-    loadAllMaterials(state){
+    loadAllMaterials(state) {
         api.queryAllMaterials()
-        .then((page)=>{
-            state.allMaterials = page.values;
-        })
+            .then((page) => {
+                state.allMaterials = page.values;
+            })
     },
-    loadAllStores(state){
+    loadAllStores(state) {
         api.getAllStoreList()
-        .then((list)=>{
-            state.allStores = list;
-        })
+            .then((list) => {
+                state.allStores = list;
+            })
     },
-    loadAllRecipes(state){
+    loadAllRecipes(state) {
         api.queryAllRecipes()
-        .then((page)=>{
-            state.allRecipes = page.values;
-        })
+            .then((page) => {
+                state.allRecipes = page.values;
+            })
     },
-    loadAllWarehouses(state){
+    loadAllWarehouses(state) {
         api.getAllWarehouseList()
-        .then((list)=>{
-            state.allWarehouses = list;
-        })
+            .then((list) => {
+                state.allWarehouses = list;
+            })
     },
-    loadAllSuppliers(state){
+    loadAllSuppliers(state) {
         api.querySupplierPage({
-            pageSize:1000
-        }).then((page)=>{
+            pageSize: 1000
+        }).then((page) => {
             state.allSuppliers = page.values;
         })
     },
-    ensureLoadAll(state){
-        if(!state.allMaterials || state.allMaterials.length ==0){
+    ensureLoadAll(state) {
+        if (!state.allMaterials || state.allMaterials.length == 0) {
             api.queryAllMaterials()
-            .then((page)=>{
-                state.allMaterials = page.values;
-            })
+                .then((page) => {
+                    state.allMaterials = page.values;
+                })
         }
-        if(!state.allStores || state.allStores.length ==0){
+        if (!state.allStores || state.allStores.length == 0) {
             api.getAllStoreList()
-            .then((list)=>{
-                state.allStores = list;
-            })
+                .then((list) => {
+                    state.allStores = list;
+                })
         }
-        if(!state.allRecipes || state.allRecipes.length ==0){
+        if (!state.allRecipes || state.allRecipes.length == 0) {
             api.queryAllRecipes()
-            .then((page)=>{
-                state.allRecipes = page.values;
-            })
+                .then((page) => {
+                    state.allRecipes = page.values;
+                })
         }
-        if(!state.allWarehouses || state.allWarehouses.length ==0){
+        if (!state.allWarehouses || state.allWarehouses.length == 0) {
             api.getAllWarehouseList()
-            .then((page)=>{
-                state.allWarehouses = page.values;
-            })
+                .then((page) => {
+                    state.allWarehouses = page.values;
+                })
         }
-        if(!state.allSuppliers || state.allSuppliers.length ==0){
+        if (!state.allSuppliers || state.allSuppliers.length == 0) {
             api.querySupplierPage({
-                pageSize:1000
-            }).then((page)=>{
+                pageSize: 1000
+            }).then((page) => {
                 state.allSuppliers = page.values;
             })
         }
     },
-    setLoginCookie(state,cookieValue){
+    setLoginCookie(state, cookieValue) {
         state.loginCookie = cookieValue;
     },
-    setUserRole(state,role){
+    setUserRole(state, role) {
         state.userRole = role;
     }
 }
 
 const actions = {
-    loadAllData({commit}){
-        setTimeout(()=>{commit('loadAllMaterials')},0)
-        setTimeout(()=>{commit('loadAllStores')},0)
-        setTimeout(()=>{commit('loadAllRecipes')},0)
-        setTimeout(()=>{commit('loadAllWarehouses')},0)
-        setTimeout(()=>{commit('loadAllSuppliers')},0)
+    loadAllData({ commit }) {
+        setTimeout(() => {
+            commit('loadAllMaterials')
+            commit('loadAllStores')
+            commit('loadAllRecipes')
+            commit('loadAllWarehouses')
+            commit('loadAllSuppliers')
+        }, 0)
     },
-    ensureDataLoad({commit}){
-        setTimeout(()=>commit('ensureLoadAll'),0)
+    ensureDataLoad({ commit }) {
+        setTimeout(() => commit('ensureLoadAll'), 0)
     }
 }
 

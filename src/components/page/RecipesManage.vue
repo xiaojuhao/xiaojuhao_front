@@ -27,7 +27,9 @@
             </el-table-column>
             <el-table-column prop="recipesCode" label="菜品编码" width="120">
             </el-table-column>
-            <el-table-column prop="recipesName" label="菜品名称" width="">
+            <el-table-column prop="recipesName" label="菜品名称" width="250">
+            </el-table-column>
+            <el-table-column prop="outCode" label="外部系统编号" width="">
             </el-table-column>
             <el-table-column label="操作" width="120">
                 <template scope="scope">

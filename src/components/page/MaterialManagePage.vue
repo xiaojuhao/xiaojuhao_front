@@ -25,52 +25,32 @@
                         </el-select>
                     </el-input>
                 </el-form-item>
-                <el-form-item label="单位">
+                <el-form-item label="规格">
+                    <el-select v-model="form.specUnit" style="width:80px" placeholder="请选择">
+                        <el-option label="无" value="无"></el-option>
+                        <el-option label="包" value="包"></el-option>
+                        <el-option label="箱" value="箱"></el-option>
+                    </el-select>
+                    <span v-if="form.specUnit != '无'">
+                    <el-input v-model="form.specQty" style="width:140px">
+                        <el-select v-model="form.stockUnit" slot="append" style="width:80px" placeholder="请选择">
+                            <el-option key="A" label="个" value="个"></el-option>
+                            <el-option key="KG" label="千克" value="千克"></el-option>
+                            <el-option key="G" label="克" value="克"></el-option>
+                        </el-select>
+                    </el-input>
+                    <span>说明:规格单位，如10KG/包，20个/箱等</span>
+                    </span>
+                </el-form-item>
+                <el-form-item label="库存单位">
                     <el-select v-model="form.stockUnit" style="width:160px" placeholder="请选择">
                         <el-option key="A" label="个" value="个"></el-option>
                         <el-option key="KG" label="千克" value="千克"></el-option>
                         <el-option key="G" label="克" value="克"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="预警值">
-                    <el-row :gutter="6">
-                        <el-col :span="6">
-                            <el-input v-model="highThreshold">
-                                <template slot="prepend">高峰</template>
-                            </el-input>
-                        </el-col>
-                        <el-col :span="6">
-                            <el-input v-model="lowThreashold">
-                                <template slot="prepend">低峰</template>
-                            </el-input>
-                        </el-col>
-                    </el-row>
-                </el-form-item>
                 <el-form-item label="搜索短语">
                     <el-input v-model="form.searchKey"></el-input>
-                </el-form-item>
-                <el-form-item label="是否可拆">
-                    <el-switch v-model="form.canSplit" on-text="是" off-text="否" on-value="Y" off-value="N">
-                    </el-switch>
-                </el-form-item>
-                <el-form-item label="拆分原料" v-if="form.canSplit == 'Y'">
-                    <ul>
-                        <li v-for="ss in splitMaterials" style="list-style-type:none">
-                            <el-row>
-                                <el-col :span="6">
-                                    <MaterialSelection :value="ss.materialCode" :context="ss" @input="onSelectMaterial">
-                                    </MaterialSelection>
-                                </el-col>
-                                <el-col :span="6">
-                                    <el-input v-model="ss.splitAmt">
-                                        <template slot="prepend">每</template>
-                                        <template slot="append">单位</template>
-                                    </el-input>
-                                </el-col>
-                            </el-row>
-                        </li>
-                    </ul>
-                    <el-button type="primary" @click="addSplitMaterial">增加原料</el-button>
                 </el-form-item>
                 <el-row>
                     <el-col>
@@ -85,7 +65,6 @@
     </div>
 </template>
 <script>
-import MaterialSelection from '../common/MaterialSelection'
 import config from '../common/config.vue'
 import jquery from 'jquery'
 import { api } from '../common/bus'
@@ -97,98 +76,53 @@ export default {
                 materialName: '',
                 materialCode: '',
                 utilizationRatio: 100,
+                specUnit: 'NONE',
+                specQty: 0,
                 stockUnit: '',
-                canSplit: '',
                 searchKey: '',
-                formulaStr: '',
                 storageLifeUnit: 'D',
-                storageLifeNum: '',
-
+                storageLifeNum: ''
             },
             rules: {
 
             },
             loadingState: false,
-            splitMaterials: [],
-            highThreshold: 0,
-            lowThreashold: 0
+            splitMaterials: []
         }
     },
     methods: {
         onSubmit() {
             this.loadingState = true;
-            let self = this;
-            this.form.splitMaterialsStr = JSON.stringify(this.splitMaterials);
-            this.form.warningThreshold = JSON.stringify({ high: this.highThreshold, low: this.lowThreashold })
             api.addMaterials(this.form)
                 .then((resp) => {
-                    self.$message.success("操作成功");
-                    self.$router.go(-1)
+                    this.$message.success("操作成功");
+                    this.$router.go(-1)
                 }).always(() => {
                     this.loadingState = false;
                 })
         },
         onCancel() {
             this.$router.go(-1)
-        },
-        addSplitMaterial() {
-            this.splitMaterials.push({
-                id: 0,
-                materialName: '',
-                materialCode: '',
-                splitAmt: 0
-            })
-        },
-        onSelectMaterial(value, ctx) {
-            ctx.materialCode = value;
         }
     },
-    computed: {
-
-    },
-    created() {
-
-    },
     mounted() {
-        let form = this.$data.form;
-        jquery.ajax({
-            url: config.server + '/busi/queryMaterialById',
-            data: { id: this.$data.form.id },
-            dataType: 'jsonp'
-        }).then((resp) => {
-            console.log(resp)
-            if (resp.code == 200 && resp.value) {
+        api.queryMaterialById(this.form.id)
+            .then((v) => {
                 let re = /(\d+)(\w)/ig;
-                let v = resp.value;
-                form.materialName = v.materialName;
-                form.materialCode = v.materialCode;
-                form.stockUnit = v.stockUnit;
-                form.searchKey = v.searchKey;
-                form.canSplit = v.canSplit;
-                form.utilizationRatio = v.utilizationRatio;
-                if (v.warningThreshold) {
-                    let threshold = JSON.parse(v.warningThreshold)
-                    this.lowThreashold = threshold.low;
-                    this.highThreshold = threshold.high;
-                }
-
+                console.log(v)
+                this.form.materialName = v.materialName;
+                this.form.materialCode = v.materialCode;
+                this.form.stockUnit = v.stockUnit;
+                this.form.searchKey = v.searchKey;
+                this.form.specUnit = v.specUnit;
+                this.form.specQty = v.specQty || 0;
+                this.form.utilizationRatio = v.utilizationRatio;
                 let r = re.exec(v.storageLife)
                 if (r) {
-                    form.storageLifeNum = r[1];
-                    form.storageLifeUnit = r[2];
+                    this.form.storageLifeNum = r[1];
+                    this.form.storageLifeUnit = r[2];
                 }
-                api.queryMaterialSplitByMaterialCode(this.form.materialCode)
-                    .then((list) => {
-                        console.log(list)
-                        this.splitMaterials = list;
-                    })
-            }
-        })
-
-
-    },
-    components: {
-        MaterialSelection
+            })
     }
 }
 </script>

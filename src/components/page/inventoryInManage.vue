@@ -1,225 +1,109 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-autocomplete class="inline-input" v-model="query.materialCode"
-      			:fetch-suggestions="querySearch" placeholder="原料编码"
-      			:trigger-on-focus="false"
-      			@select="handleSelect">
-      		</el-autocomplete>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
-        <el-table :data="data" border style="width: 100%"
-            v-loading="loadingState"
-            element-loading-text="拼命加载中"
-            element-loading-spinner="el-icon-loading"
-            element-loading-background="rgb(0, 0, 0, 0.8)"
-            @expand="expand">
-            <el-table-column type="expand">
-                <template scope="props">
-                   <table class="gridtable">
-                        <tr>
-                            <th>时间</th><th>操作类型</th><th>数量</th>
-                        </tr>
-                        <tr v-for="item in props.row.extras">
-                            <td>{{item.time}}</td><td>{{item.op}}</td><td>{{item.remark}}</td>
-                        </tr>
-                        
-                    </table>
-                </template>
+        <el-table :data="data" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
+            <el-table-column prop="cabinCode" label="采购单位编码" width="150">
             </el-table-column>
-            <el-table-column prop="materialCode" label="原料编码" width="120">
+            <el-table-column prop="cabinName" label="采购单位名称" width="150">
             </el-table-column>
-            <el-table-column prop="materialName" label="原料名称" width="220">
+            <el-table-column prop="proposer" label="申请人" width="120">
             </el-table-column>
-            <el-table-column prop="currStock" label="当前库存量" width="120">
+            <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
             </el-table-column>
-            <el-table-column prop="usedStock" label="已用数量" width="120">
-            </el-table-column>
-            <el-table-column label="总数量" width="120" :formatter="calcTotalStock">
-            </el-table-column>
-            <el-table-column prop="modifier" label="修改人" width="">
+            <el-table-column prop="orderNum" label="采购单号" width="">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
-                    <el-button size="small" type="primary" @click="instock(scope.$index, scope.row)">入库</el-button>
+                    <el-button size="small" type="primary" @click="confirmOrder(scope.$index, scope.row)">采购单确认</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <div class="pagination">
-            <el-pagination
-                    @current-change ="handleCurrentChange"
-                    layout="prev, pager, next"
-                    :total="totalRows" :page-size="pageSize">
+            <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="totalRows" :page-size="pageSize">
             </el-pagination>
         </div>
     </div>
 </template>
-
 <script>
-	import config from '../common/config.vue'
-	import OutStock from './OutStock.vue'
-    import jquery from 'jquery'
-    export default {
+import { api } from '../common/bus'
+export default {
+    data() {
+        return {
+            tableData: [],
+            cur_page: 1,
+            pageSize: 5,
+            totalRows: 0,
+            loadingState: false,
+            query: {
+                materialCode: ''
+            },
+            showOutStock: false
+        }
+    },
+    mounted() {
+        this.getData();
+    },
+    computed: {
         data() {
-            return {
-                url: './static/vuetable.json',
-                tableData: [],
-                cur_page: 1,
-                pageSize:5,
-                totalRows:0,
-                multipleSelection: [],
-                select_cate: '',
-                select_word: '',
-                loadingState: false,
-                del_list: [],
-                is_search: false,
-                query:{
-                	materialCode:''
-                },
-                showOutStock:false
+            const self = this;
+            return self.tableData.filter(function(d) {
+                return d;
+            })
+        }
+    },
+    methods: {
+        formatStatus(row){
+            switch(row.status){
+                case "4": return '配送中'
+                default: return '未知'
             }
         },
-        created(){
-            console.log('created......')
+        handleCurrentChange(val) {
+            this.cur_page = val;
+            this.getData();
         },
-        mounted(){
-			this.getData();
-        },
-        activated(){
-            console.log("activated......");
-        },
-        computed: {
-            data(){
-                const self = this;
-                return self.tableData.filter(function(d){
-                	return d;
+        getData() {
+            api.queryMyPurchaseOrderPage()
+                .then((page) => {
+                    this.tableData = page.values;
                 })
-            }
         },
-        methods: {
-            handleCurrentChange(val){
-                this.cur_page = val;
-                this.getData();
-            },
-            getData(){
-                let self = this;
-                self.$data.loadingState = true;
-                jquery.ajax({
-                    url:config.server+'/busi/queryMaterialsStock',
-                    data:{
-                        pageSize:self.$data.pageSize,
-                        pageNo:self.$data.cur_page,
-                        materialCode:self.$data.materialCode,
-                        storeCode:'M000',
-                        stockType:'1'
-                    },
-                    dataType: 'jsonp'
-                }).then(function(resp){
-                    if(resp.code!=200){
-                        self.$message.error(resp.message)
-                        return;
-                    }
-                    var value = resp.value;
-                    if(!value){
-                       self.$message.error("服务端没有返回数据")
-                       return;
-                    }
-                    self.tableData = value.values;
-                    self.totalRows = value.totalRows;
-                }).fail(function(resp){
-                    self.$message.error("请求出错")
-                }).always(function(resp){
-                    // self.$notify({
-                    //     title:'请求数据',message:'请求完成',duration:1000,position: 'bottom-right'
-                    // });
-                    self.$data.loadingState = false;
-                })
-            },
-            search(){
-                this.tableData = [];
-                this.getData();
-            },
-            formatStockType(row, column) {
-                return row.stockType==1?"总库":"分库";
-            },
-            calcTotalStock(row,column) {
-                return row.currStock + row.usedStock;
-            },
-            filterTag(value, row) {
-                return row.tag === value;
-            },
-            outstock(index, item) {
-                // this.$message('编辑第'+(index+1)+'行');
-                //console.log(row)
-                this.$router.push({path:"/outStock",query:{stockId:item.id}})
-               // this.$data.showOutStock=true;
-            },
-            instock(index, item) {
-                this.$router.push({path:"/inStock",query:{stockId:item.id}})
-            },
-            handleEdit(index, row) {
-                this.$message('编辑第'+(index+1)+'行');
-            },
-            handleDelete(index, row) {
-                this.$message.error('删除第'+(index+1)+'行');
-            },
-            delAll(){
-                const self = this,
-                    length = self.multipleSelection.length;
-                let str = '';
-                self.del_list = self.del_list.concat(self.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += self.multipleSelection[i].name + ' ';
-                }
-                self.$message.error('删除了'+str);
-                self.multipleSelection = [];
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-            },
-            handleSelect(item){
-            	this.$data.query.name=item.value;
-            },
-            querySearch(queryString,cb){
-            	var data = [];
-            	data.push({id:1,value:'aaaaa'})
-            	data.push({id:2,value:'bbbbb'})
-            	data.push({id:3,value:'ccccc'})
-            	console.log(this.$data.query)
-            	cb(data)
-            },
-            expand(row){
-                row.extras = [
-                    {time:'2017-01-01',op:'入库',remark:'100斤'},
-                    {time:'2017-01-02',op:'入库',remark:'200斤'},
-                    {time:'2017-01-03',op:'入库',remark:'300斤'},
-                    {time:'2017-01-04',op:'入库',remark:'400斤'},
-                ]
-            }
+        search() {
+            this.tableData = [];
+            this.getData();
+        },
+        confirmOrder(){
+            this.$message("厨师长确认采购单功能")
         }
     }
+}
 </script>
-
 <style scoped>
-.handle-box{
+.handle-box {
     margin-bottom: 20px;
 }
-.handle-select{
+
+.handle-select {
     width: 120px;
 }
-.handle-input{
+
+.handle-input {
     width: 300px;
     display: inline-block;
 }
+
 table.gridtable {
     width: 80%;
     height: 8px;
-    font-family: verdana,arial,sans-serif;
-    color:#333333;
+    font-family: verdana, arial, sans-serif;
+    color: #333333;
     border-width: 1px;
     border-color: #666666;
     border-collapse: collapse;
 }
+
 table.gridtable th {
     border-width: 1px;
     height: 8px;
@@ -228,6 +112,7 @@ table.gridtable th {
     border-color: #666666;
     background-color: #dedede;
 }
+
 table.gridtable td {
     border-width: 1px;
     height: 8px;
