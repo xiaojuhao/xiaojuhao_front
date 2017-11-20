@@ -1,6 +1,11 @@
 <template>
     <div class="table">
         <div class="handle-box">
+            <el-select v-model="query.status">
+                <el-option label="配送中" value="4"></el-option>
+                <el-option label="已入库" value="5"></el-option>
+                <el-option label="撤销" value="6"></el-option>
+            </el-select>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
         <el-table :data="data" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
@@ -16,7 +21,7 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
-                    <el-button size="small" type="primary" @click="confirmOrder(scope.$index, scope.row)">采购单确认</el-button>
+                    <el-button size="small" type="primary" @click="confirmOrder(scope.row)">采购单确认</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -37,7 +42,7 @@ export default {
             totalRows: 0,
             loadingState: false,
             query: {
-                materialCode: ''
+                status: '4'
             },
             showOutStock: false
         }
@@ -54,10 +59,16 @@ export default {
         }
     },
     methods: {
-        formatStatus(row){
-            switch(row.status){
-                case "4": return '配送中'
-                default: return '未知'
+        formatStatus(row) {
+            switch (row.status) {
+                case "4":
+                    return '配送中'
+                case "5":
+                    return "已入库"
+                case "6":
+                    return "撤销"
+                default:
+                    return '未知'
             }
         },
         handleCurrentChange(val) {
@@ -65,7 +76,10 @@ export default {
             this.getData();
         },
         getData() {
-            api.queryMyPurchaseOrderPage()
+            let param = {
+                status: this.query.status
+            }
+            api.queryMyPurchaseOrderPage(param)
                 .then((page) => {
                     this.tableData = page.values;
                 })
@@ -74,8 +88,8 @@ export default {
             this.tableData = [];
             this.getData();
         },
-        confirmOrder(){
-            this.$message("厨师长确认采购单功能")
+        confirmOrder(item) {
+            this.$router.push({ path: "/inventoryInConfirm", query: { ordernum: item && item.orderNum } })
         }
     }
 }

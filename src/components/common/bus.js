@@ -13,6 +13,12 @@ const config = {
         return process.env.REMOTE_SERVER
     }()
 }
+export const util = {
+    formatDate(ms) {
+        let date = new Date(ms);
+        return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    }
+}
 const http = {
     jsonp(uri, data) {
         if (data) {
@@ -88,7 +94,7 @@ const http = {
             });
         return df.promise();
     }
-}
+};
 
 export { config };
 
@@ -284,10 +290,13 @@ export const api = {
     queryAllMaterialSuppler() {
         return http.jsonp2("/busi/queryAllMaterialSuppler", {})
     },
-    commitPurchaseOrder(data){
-        return http.post("/purchase/commitPurchaseOrder",data)
+    commitPurchaseOrder(data) {
+        return http.post("/purchase/commitPurchaseOrder", data)
     },
-    queryMyPurchaseOrderPage(data){
-        return http.post("/purchase/queryMyPurchaseOrder",data)
+    queryMyPurchaseOrderPage(data) {
+        return http.post("/purchase/queryMyPurchaseOrder", data)
+    },
+    queryPurchaseOrderDetailByOrderNum(orderNum) {
+        return http.post("/purchase/queryPurchaseOrderDetail", { orderNum: orderNum })
     }
 }
