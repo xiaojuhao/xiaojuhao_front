@@ -1,8 +1,8 @@
 <template>
     <div class="sidebar">
-        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="light" unique-opened router>
+        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" unique-opened router>
             <template v-for="item in menus">
-                <template v-if="item.subs">
+                <template v-if="item.type=='nav'">
                     <el-submenu :index="item.menuIndex">
                         <template slot="title"><i :class="item.menuIcon"></i>{{ item.menuName }}</template>
                         <el-menu-item v-for="(subItem,i) in item.subs" :key="i" :index="subItem.menuIndex">{{ subItem.menuName }}
@@ -43,7 +43,7 @@ export default {
 .sidebar {
     display: block;
     position: absolute;
-    width: 200px;
+    width: 180px;
     left: 0;
     top: 70px;
     bottom: 0;

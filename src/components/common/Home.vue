@@ -21,6 +21,6 @@ export default {
 </script>
 <style scoped>
     .content{
-        left:200px;
+        left:180px;
     }
 </style>
