@@ -89,11 +89,18 @@ export default {
         onSubmit() {
             this.isShowMessage = false;
             this.loadingState = true;
-            api.addMaterials(this.form)
+            let param = {
+                dataJson: JSON.stringify(this.details),
+                orderNum: this.ordernum
+            }
+            api.confirmInventory(param)
                 .then((resp) => {
                     this.$message.success("操作成功");
                     this.$router.go(-1)
-                }).always(() => {
+                }).fail((resp) => {
+                    this.$message.error(resp.message)
+                })
+                .always(() => {
                     this.loadingState = false;
                 })
         },
@@ -131,7 +138,7 @@ export default {
 .pop-message-sub {
     width: 80%;
     height: 90%;
-    z-index:99999;
+    z-index: 99999;
     background: white;
 }
 </style>

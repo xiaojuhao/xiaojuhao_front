@@ -7,7 +7,7 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form"  label-width="80px" v-loading="loadingState">
+            <el-form ref="form"  label-width="100px" v-loading="loadingState">
                 <el-form-item label="菜品名称">
                     <el-input v-model="form.recipesName" placeholder="菜品名称"></el-input>
                 </el-form-item>
@@ -119,7 +119,8 @@
             this.$store.commit('ensureLoadAll')
             api.queryRecipesByCode(this.$data.form.recipesCode)
             .then((resp)=>{
-                this.$data.form.recipesName = resp.recipesName;
+                this.form.recipesName = resp.recipesName;
+                this.form.outCode = resp.outCode;
             });
             api.queryRecipesFormula(this.$data.form.recipesCode)
             .then((values)=>{

@@ -1,25 +1,33 @@
 <template>
     <div v-loading="loadingState">
         <div class="handbox">
-            <MyCabinSelect @input="(val)=>{this.cabinCode=val;}"></MyCabinSelect>
+            <span>
+            采购单位：<MyCabinSelect @input="(val)=>{this.cabinCode=val;}"></MyCabinSelect>
+            </span>
+            &nbsp&nbsp&nbsp&nbsp
+            采购原料：
             <el-autocomplete id="handbox" v-model="storeCode" :fetch-suggestions="querySearchAsync" placeholder="搜索原料" @select="handleSelect">
             </el-autocomplete>
             <span>搜索内容后回车或选中添加记录</span>
         </div>
         <div class="form-box">
             <el-table :data="materialList" border style="width: 120%">
-                <el-table-column prop="materialName" label="原料名称" width="200">
+                <el-table-column prop="materialName" label="原料名称" width="150">
                 </el-table-column>
-                <el-table-column prop="supplierName" label="供应商" width="130">
+                <el-table-column prop="supplierName" label="供应商" width="150">
                 </el-table-column>
-                <el-table-column label="数量" width="120">
+                <el-table-column label="数量" width="130">
                     <template scope="scope">
-                        <el-input size="small" v-model="scope.row.amt"></el-input>
+                        <el-input size="small" v-model="scope.row.specAmt">
+                            <template slot="append">{{scope.row.specUnit}}</template>
+                        </el-input>
                     </template>
                 </el-table-column>
-                <el-table-column label="单价" width="130">
+                <el-table-column label="规格" :formatter="formatSpec">
+                </el-table-column>
+                <el-table-column label="单价" width="100">
                     <template scope="scope">
-                        <el-input size="small" v-model="scope.row.unitPrice"></el-input>
+                        <el-input size="small" v-model="scope.row.specPrice"></el-input>
                     </template>
                 </el-table-column>
                 <el-table-column label="生产日期" width="130">
@@ -38,7 +46,7 @@
                         </el-input>
                     </template>
                 </el-table-column>
-                <el-table-column prop="price" label="总金额" width="120" :formatter="calcTotalPrice">
+                <el-table-column prop="totalPrice" label="总金额" width="120" :formatter="calcTotalPrice">
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="100">
                     <template scope="scope">
@@ -68,12 +76,15 @@ export default {
             materialList: [],
             currSelectAlts: [],
             loadingState: false,
-            currDate: '20171113',
             cabinCode: '',
             allMaterialSupplier: []
         }
     },
     methods: {
+        formatSpec(row) {
+            if (row.specUnit == '无') return row.stockUnit
+            return row.specQty + row.stockUnit;
+        },
         onClear() {
             let self = this;
             this.$confirm('是否清空当前页内容?', '提示', {
@@ -85,6 +96,10 @@ export default {
             })
         },
         onSubmit() {
+            if (!this.cabinCode) {
+                this.$message.error("请先选择采购仓库或门店")
+                return
+            }
             let self = this;
             this.$confirm('是否提交入库?', '提示', {
                 confirmButtonText: '确定',
@@ -97,8 +112,7 @@ export default {
                 setTimeout(() => {
                     this.loadingState = false;
                     this.$message("提交采购单成功")
-                }, 2000)
-
+                }, 1000)
             }).catch(() => {
                 this.$message({
                     type: 'info',
@@ -112,9 +126,7 @@ export default {
                 dataJson: JSON.stringify(this.materialList)
             }
             api.commitPurchaseOrder(param)
-                .then((val) => {
-                    console.log(val)
-                })
+                .then((val) => {})
         },
         removeRows(index) {
             this.$data.materialList.splice(index, 1)
@@ -125,11 +137,13 @@ export default {
                 queryString = jquery.trim(queryString)
                 let counter = 0;
                 let result = this.allMaterialSupplier.map((item) => {
+                    let sk = item.materialName + "," + item.supplierName + "," + item.searchKey;
+                    Vue.set(item, "sk", sk)
                     Vue.set(item, 'value', item.materialName + "-" + item.supplierName)
                     return item;
                 }).filter((item) => {
                     counter++;
-                    return counter <= 20 && item.value.indexOf(queryString) >= 0;
+                    return counter <= 20 && item.sk.indexOf(queryString) >= 0;
                 })
 
                 this.$data.currSelectAlts = result;
@@ -155,10 +169,13 @@ export default {
                             Vue.set(item, 'storageLifeUnit', r[2])
                             Vue.set(item, 'storageLifeNum', r[1])
                         }
+                        Vue.set(item, "specUnit", mm.specUnit)
+                        Vue.set(item, "specQty", mm.specQty)
+                        Vue.set(item, "stockUnit", mm.stockUnit)
                     }
-                    Vue.set(item, 'amt', 0)
-                    Vue.set(item, 'price', 0)
-                    Vue.set(item, 'unitPrice', 0)
+                    Vue.set(item, 'specAmt', 0)
+                    Vue.set(item, 'totalPrice', 0)
+                    Vue.set(item, 'specPrice', 0)
                     Vue.set(item, 'cabinCode', this.cabinCode)
                     Vue.set(item, 'prodDate', today)
                     Vue.set(item, 'materialCode', item.materialCode)
@@ -183,8 +200,8 @@ export default {
         },
         calcTotalPrice(row) {
             var total = 0.00;
-            if (row.amt && row.unitPrice) {
-                total = row.amt * row.unitPrice;
+            if (row.specAmt && row.specPrice) {
+                total = row.specAmt * row.specPrice;
                 return total.toFixed(2);
             }
             return total;

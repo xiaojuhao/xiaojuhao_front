@@ -73,18 +73,19 @@ export default {
     mounted() {
         api.queryStoreByCode(this.form.storeCode)
             .then((v) => {
-                this.$data.form.id = v.id;
-                this.$data.form.storeCode = v.storeCode;
-                this.$data.form.storeName = v.storeName;
-                this.$data.form.storeAddr = v.storeAddr;
-                this.$data.form.storeManager = v.storeManager;
-                this.$data.form.managerPhone = v.managerPhone;
-                this.$data.form.managerEmail = v.managerEmail;
-                this.$data.form.defaultWarehouse = v.defaultWarehouse;
+                this.form.id = v.id;
+                this.form.storeCode = v.storeCode;
+                this.form.storeName = v.storeName;
+                this.form.storeAddr = v.storeAddr;
+                this.form.storeManager = v.storeManager;
+                this.form.managerPhone = v.managerPhone;
+                this.form.managerEmail = v.managerEmail;
+                this.form.defaultWarehouse = v.defaultWarehouse;
+                this.form.outCode = v.outCode;
             })
         api.getAllWarehouseList()
             .then((val) => {
-                this.$data.warehouseSelection = val;
+                this.warehouseSelection = val;
             })
     }
 }

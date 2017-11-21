@@ -6,7 +6,7 @@
                 <el-option label="已入库" value="5"></el-option>
                 <el-option label="撤销" value="6"></el-option>
             </el-select>
-            <el-button type="primary" icon="search" @click="search">搜索</el-button>
+            <el-button type="primary" icon="search" @click="search">搜索采购单</el-button>
         </div>
         <el-table :data="data" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column prop="cabinCode" label="采购单位编码" width="150">
@@ -17,7 +17,9 @@
             </el-table-column>
             <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
             </el-table-column>
-            <el-table-column prop="orderNum" label="采购单号" width="">
+            <el-table-column prop="orderType" label="采购单号" width="">
+            </el-table-column>
+            <el-table-column prop="applyNum" label="采购单号" width="">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">

@@ -208,22 +208,6 @@ export const api = {
     correctStock(data) {
         return http.post("/busi/correctStock", data)
     },
-    queryAllFenkuMaterialsStock(materialCode) {
-        let data = {
-            materialCode: materialCode,
-            pageSize: 1000,
-            stockType: '2'
-        }
-        var df = jquery.Deferred();
-        http.jsonp2("/busi/queryMaterialsStock", data)
-            .then((page) => {
-                df.resolve(page.values);
-            }).fail((resp) => {
-                df.reject(resp);
-            });
-
-        return df.promise();
-    },
     queryMaterialsStockHistoryPage(data) {
         return http.jsonp2("/busi/queryMaterialsStockHistory", data);
     },
@@ -291,12 +275,18 @@ export const api = {
         return http.jsonp2("/busi/queryAllMaterialSuppler", {})
     },
     commitPurchaseOrder(data) {
-        return http.post("/purchase/commitPurchaseOrder", data)
+        return http.post("/inventoryOrder/commitPurchaseOrder", data)
     },
     queryMyPurchaseOrderPage(data) {
-        return http.post("/purchase/queryMyPurchaseOrder", data)
+        return http.post("/inventoryOrder/queryMyPurchaseOrder", data)
     },
     queryPurchaseOrderDetailByOrderNum(orderNum) {
-        return http.post("/purchase/queryPurchaseOrderDetail", { orderNum: orderNum })
+        return http.post("/inventoryOrder/queryPurchaseOrderDetail", { orderNum: orderNum })
+    },
+    confirmInventory(data){
+        return http.post("/inventoryOrder/confirmInventory",data)
+    },
+    commitDiaobo(data){
+        return http.post("/diaobo/commit",data)
     }
 }
