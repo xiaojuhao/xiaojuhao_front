@@ -5,7 +5,7 @@
                 <el-breadcrumb separator="/">
                     <el-breadcrumb-item><i class="el-icon-date"></i> 进销存管理</el-breadcrumb-item>
                     <el-breadcrumb-item>入库</el-breadcrumb-item>
-                    <el-breadcrumb-item>采购单{{ordernum}}</el-breadcrumb-item>
+                    <el-breadcrumb-item>单号{{applyNum}}</el-breadcrumb-item>
                 </el-breadcrumb>
             </div>
             <el-table :data="details" border style="width: 150%">
@@ -40,7 +40,7 @@
         </div>
         <div v-if="isShowMessage" class="pop-message">
             <div class="pop-message-sub">
-                <el-table :data="details" style="width:100%" max-height="400">
+                <el-table :data="details" style="width:100%" max-height="400" row-class-name="info-row">
                     <el-table-column prop="materialName" label="原料名称" width="">
                     </el-table-column>
                     <el-table-column prop="supplierName" label="供应商" width="">
@@ -64,7 +64,7 @@ import { api, util } from '../common/bus'
 export default {
     data: function() {
         return {
-            ordernum: this.$route.query.ordernum,
+            applyNum: this.$route.query.applyNum,
             details: [],
             loadingState: false,
             splitMaterials: [],
@@ -91,7 +91,7 @@ export default {
             this.loadingState = true;
             let param = {
                 dataJson: JSON.stringify(this.details),
-                orderNum: this.ordernum
+                applyNum: this.applyNum
             }
             api.confirmInventory(param)
                 .then((resp) => {
@@ -118,7 +118,7 @@ export default {
         }
     },
     mounted() {
-        api.queryPurchaseOrderDetailByOrderNum(this.ordernum)
+        api.queryInventoryApplyByApplyNum(this.applyNum)
             .then((list) => {
                 this.details = list;
             })
@@ -132,13 +132,18 @@ export default {
     width: 100%;
     height: 100%;
     z-index: 99998;
-    border: solid 1px;
 }
 
 .pop-message-sub {
-    width: 80%;
-    height: 90%;
+    width: 60%;
+    height: 75%;
+    margin-left: 40px;
     z-index: 99999;
     background: white;
+    border: solid 1px;
+}
+
+.info-row {
+    background: red;
 }
 </style>

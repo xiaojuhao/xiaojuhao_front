@@ -280,8 +280,8 @@ export const api = {
     queryMyPurchaseOrderPage(data) {
         return http.post("/inventoryOrder/queryMyPurchaseOrder", data)
     },
-    queryPurchaseOrderDetailByOrderNum(orderNum) {
-        return http.post("/inventoryOrder/queryPurchaseOrderDetail", { orderNum: orderNum })
+    queryInventoryApplyByApplyNum(orderNum) {
+        return http.post("/inventoryOrder/queryPurchaseOrderDetail", { applyNum: orderNum })
     },
     confirmInventory(data){
         return http.post("/inventoryOrder/confirmInventory",data)

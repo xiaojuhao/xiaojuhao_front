@@ -125,10 +125,6 @@ export default new Router({
                     component: resolve => require(['../components/page/Diaobo.vue'], resolve) // 
                 },
                 {
-                    path: '/diaobopage',
-                    component: resolve => require(['../components/page/DiaoboPage.vue'], resolve) // 
-                },
-                {
                     path: '/waitingTask',
                     component: resolve => require(['../components/page/IndexInfo.vue'], resolve) // 
                 },

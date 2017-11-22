@@ -134,9 +134,6 @@ const actions = {
             commit('loadAllWarehouses')
             commit('loadAllSuppliers')
         }, 0)
-    },
-    ensureDataLoad({ commit }) {
-        setTimeout(() => commit('ensureLoadAll'), 0)
     }
 }
 

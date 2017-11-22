@@ -2,19 +2,21 @@
     <div v-loading="loadingState">
         <div class="handbox">
             <el-row>
-                <el-col :span="24">
+                <el-col :span="7">
                     拨出单位：
                     <MyCabinSelect @input="onSelectOutCabin"></MyCabinSelect>
-                    &nbsp&nbsp 拨出原料：
-                    <el-autocomplete id="handbox" v-model="storeCode" :fetch-suggestions="querySearchAsync" placeholder="搜索原料" @select="handleSelect">
-                    </el-autocomplete>
-                    <span>搜索内容后回车或选中添加记录</span>
+                </el-col>
+                <el-col :span="7">
+                    拨入单位：
+                    <MyCabinSelect @input="(val)=>{this.inCabinCode=val;}"></MyCabinSelect>
                 </el-col>
             </el-row>
             <el-row>
                 <el-col :span="24">
-                    拨入单位：
-                    <MyCabinSelect @input="(val)=>{this.inCabinCode=val;}"></MyCabinSelect>
+                    添加原料：
+                    <el-autocomplete id="handbox" v-model="storeCode" :fetch-suggestions="querySearchAsync" placeholder="搜索原料" @select="handleSelect">
+                    </el-autocomplete>
+                    <span>搜索内容后回车或选中添加记录</span>
                 </el-col>
             </el-row>
         </div>
@@ -33,7 +35,7 @@
                 </el-table-column>
                 <el-table-column prop="stockUnit" label="单位" width="100">
                 </el-table-column>
-                <el-table-column label="操作"  width="">
+                <el-table-column label="操作" width="">
                     <template scope="scope">
                         <el-button size="small" type="primary" @click="removeRows(scope.$index)">删除</el-button>
                     </template>
@@ -61,8 +63,8 @@ export default {
             materialList: [],
             currSelectAlts: [],
             loadingState: false,
-            outCabinCode:'',
-            inCabinCode:'',
+            outCabinCode: '',
+            inCabinCode: '',
             cabinMaterialStock: []
         }
     },
@@ -83,8 +85,18 @@ export default {
         },
         onSubmit() {
             if (!this.inCabinCode) {
-                this.$message.error("请先选择采购仓库或门店")
+                this.$message.error("请拨入单位")
                 return
+            }
+            let check = true;
+            this.materialList.forEach((item) => {
+                if (item.cabinCode != this.outCabinCode) {
+                    check = false;
+                }
+            })
+            if (!check) {
+                this.$message.error("拨出仓库和数据不一致")
+                return ;
             }
             let self = this;
             this.$confirm('是否提交入库?', '提示', {
@@ -119,7 +131,7 @@ export default {
             this.$data.materialList.splice(index, 1)
         },
         querySearchAsync(queryString, cb) {
-            if(!this.outCabinCode){
+            if (!this.outCabinCode) {
                 this.$message.error("请选选择拨出单位")
                 return;
             }
@@ -201,7 +213,7 @@ export default {
             api.queryMaterialsStockPage(param)
                 .then((page) => {
                     this.cabinMaterialStock = page.values;
-                    if(!this.cabinMaterialStock || this.cabinMaterialStock.length==0){
+                    if (!this.cabinMaterialStock || this.cabinMaterialStock.length == 0) {
                         this.$message.error("仓库没有库存数据")
                     }
                 })

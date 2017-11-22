@@ -9,21 +9,22 @@
             <el-button type="primary" icon="search" @click="search">搜索采购单</el-button>
         </div>
         <el-table :data="data" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
-            <el-table-column prop="cabinCode" label="采购单位编码" width="150">
+            <el-table-column prop="cabinCode" label="单位编码" width="150">
             </el-table-column>
-            <el-table-column prop="cabinName" label="采购单位名称" width="150">
+            <el-table-column prop="cabinName" label="单位名称" width="150">
             </el-table-column>
             <el-table-column prop="proposer" label="申请人" width="120">
             </el-table-column>
             <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
             </el-table-column>
-            <el-table-column prop="orderType" label="采购单号" width="">
+            <el-table-column prop="applyType" label="申请单类型" width="100" :formatter="formatApplyType">
             </el-table-column>
             <el-table-column prop="applyNum" label="采购单号" width="">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
-                    <el-button size="small" type="primary" @click="confirmOrder(scope.row)">采购单确认</el-button>
+                    <el-button size="small" type="primary" @click="confirmOrder(scope.row)">确认</el-button>
+                    <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -34,7 +35,7 @@
     </div>
 </template>
 <script>
-import { api } from '../common/bus'
+import { api,config } from '../common/bus'
 export default {
     data() {
         return {
@@ -73,6 +74,18 @@ export default {
                     return '未知'
             }
         },
+        formatApplyType(row) {
+            switch (row.applyType) {
+                case "purchase":
+                    return "采购单"
+                case "allocate_in":
+                    return "拨入"
+                case "allocate_out":
+                    return "拨出"
+                default:
+                    return "未知"
+            }
+        },
         handleCurrentChange(val) {
             this.cur_page = val;
             this.getData();
@@ -91,7 +104,10 @@ export default {
             this.getData();
         },
         confirmOrder(item) {
-            this.$router.push({ path: "/inventoryInConfirm", query: { ordernum: item && item.orderNum } })
+            this.$router.push({ path: "/inventoryInConfirm", query: { applyNum: item && item.applyNum } })
+        },
+        printBill(item){
+            window.open(config.server+"/print?applyNum="+item.applyNum)
         }
     }
 }

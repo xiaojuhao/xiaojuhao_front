@@ -20,8 +20,6 @@
             </el-table-column>
             <el-table-column prop="currStock" label="当前库存" width="100">
             </el-table-column>
-            <el-table-column prop="usedStock" label="已用数量" width="100">
-            </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位" width="100">
             </el-table-column>
             <el-table-column prop="cabinName" label="仓库" width="200">
