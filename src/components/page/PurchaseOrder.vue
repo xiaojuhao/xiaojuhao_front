@@ -16,19 +16,21 @@
                 </el-table-column>
                 <el-table-column prop="supplierName" label="供应商" width="150">
                 </el-table-column>
-                <el-table-column label="数量" width="130">
+                <el-table-column label="数量" width="140">
                     <template scope="scope">
                         <el-input size="small" v-model="scope.row.specAmt">
-                            <template slot="append">{{scope.row.specUnit}}</template>
+                            <template slot="append">{{scope.row.specUnit=='无'?scope.row.stockUnit:scope.row.specUnit}}</template>
+                        </el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="单价" width="130">
+                    <template scope="scope">
+                        <el-input size="small" v-model="scope.row.specPrice">
+                            <template slot="append">元</template>
                         </el-input>
                     </template>
                 </el-table-column>
                 <el-table-column label="规格" :formatter="formatSpec">
-                </el-table-column>
-                <el-table-column label="单价" width="100">
-                    <template scope="scope">
-                        <el-input size="small" v-model="scope.row.specPrice"></el-input>
-                    </template>
                 </el-table-column>
                 <el-table-column label="生产日期" width="130">
                     <template scope="scope">
