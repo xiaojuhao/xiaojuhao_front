@@ -117,12 +117,24 @@ export default new Router({
                     component: resolve => require(['../components/page/Pandian.vue'], resolve) // 
                 },
                 {
+                    path: '/pandianPage',
+                    component: resolve => require(['../components/page/PandianPage.vue'], resolve) // 
+                },
+                {
                     path: '/baosun',
                     component: resolve => require(['../components/page/Baosun.vue'], resolve)
                 },
                 {
+                    path: '/baosunPage',
+                    component: resolve => require(['../components/page/BaosunPage.vue'], resolve)
+                },
+                {
                     path: '/diaobo',
                     component: resolve => require(['../components/page/Diaobo.vue'], resolve) // 
+                },
+                {
+                    path: '/diaoboPage',
+                    component: resolve => require(['../components/page/DiaoboPage.vue'], resolve) // 
                 },
                 {
                     path: '/waitingTask',
@@ -139,6 +151,10 @@ export default new Router({
                 {
                     path: '/purchaseOrder',
                     component: resolve => require(['../components/page/PurchaseOrder.vue'], resolve)
+                },
+                {
+                    path: '/purchaseOrderPage',
+                    component: resolve => require(['../components/page/PurchaseOrderPage.vue'], resolve)
                 }
             ]
         }

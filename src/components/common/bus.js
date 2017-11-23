@@ -283,10 +283,13 @@ export const api = {
     queryInventoryApplyByApplyNum(orderNum) {
         return http.post("/inventoryOrder/queryPurchaseOrderDetail", { applyNum: orderNum })
     },
-    confirmInventory(data){
-        return http.post("/inventoryOrder/confirmInventory",data)
+    confirmInventory(data) {
+        return http.post("/inventoryOrder/confirmInventory", data)
     },
-    commitDiaobo(data){
-        return http.post("/diaobo/commit",data)
+    commitDiaobo(data) {
+        return http.post("/diaobo/commit", data)
+    },
+    getCabinByCode(code) {
+        return http.post("/busi/getCabinByCode", { cabinCode: code })
     }
 }
