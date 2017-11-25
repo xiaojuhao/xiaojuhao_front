@@ -1,7 +1,7 @@
 <template>
     <div class="table">
         <div class="handle-box">
-            <el-select v-model="query.status">
+            报损单状态 <el-select v-model="query.status">
                 <el-option label="配送中" value="4"></el-option>
                 <el-option label="已入库" value="5"></el-option>
                 <el-option label="撤销" value="6"></el-option>
@@ -46,7 +46,7 @@ export default {
             totalRows: 0,
             loadingState: false,
             query: {
-                status: '4'
+                status: ''
             },
             showOutStock: false
         }

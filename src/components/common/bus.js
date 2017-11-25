@@ -151,7 +151,7 @@ export const api = {
         return http.post("/busi/queryMaterialsStock", data);
     },
     correctStock(data) {
-        return http.post("/busi/correctStock", data)
+        return http.post("/inventoryApply/correctStock", data)
     },
     queryMaterialsStockHistoryPage(data) {
         return http.post("/busi/queryMaterialsStockHistory", data);
@@ -220,25 +220,25 @@ export const api = {
         return http.post("/busi/queryAllMaterialSuppler", {})
     },
     commitPurchaseOrder(data) {
-        return http.post("/inventoryOrder/commitPurchaseOrder", data)
+        return http.post("/inventoryApply/commitPurchaseOrder", data)
     },
     queryInventoryApplyPage(data) {
-        return http.post("/inventoryOrder/queryInventoryApply", data)
+        return http.post("/inventoryApply/queryInventoryApply", data)
     },
     queryMyPurchaseOrderPage(data) {
-        return http.post("/inventoryOrder/queryMyPurchaseOrder", data)
+        return http.post("/inventoryApply/queryMyPurchaseOrder", data)
     },
     queryMyLossApply(data) {
-        return http.post("/inventoryOrder/queryMyLossApply", data)
+        return http.post("/inventoryApply/queryMyLossApply", data)
     },
     queryMyAllocate(data) {
-        return http.post("/inventoryOrder/queryMyAllocate", data)
+        return http.post("/inventoryApply/queryMyAllocate", data)
     },
     queryInventoryApplyByApplyNum(orderNum) {
-        return http.post("/inventoryOrder/queryPurchaseOrderDetail", { applyNum: orderNum })
+        return http.post("/inventoryApply/queryPurchaseOrderDetail", { applyNum: orderNum })
     },
     confirmInventory(data) {
-        return http.post("/inventoryOrder/confirmInventory", data)
+        return http.post("/inventoryApply/confirmInventory", data)
     },
     commitDiaobo(data) {
         return http.post("/diaobo/commit", data)
@@ -250,6 +250,6 @@ export const api = {
         return http.post("/busi/getCabinByCode", { cabinCode: code })
     },
     claimLoss(data) {
-        return http.post("/inventoryOrder/claimLoss", data)
+        return http.post("/inventoryApply/claimLoss", data)
     }
 }
