@@ -179,6 +179,10 @@ export default new Router({
                 {
                     path: '/purchaseOrderPage',
                     component: resolve => require(['../components/page/PurchaseOrderPage.vue'], resolve)
+                },
+                {
+                    path: '/stockHistory',
+                    component: resolve => require(['../components/page/StockHistory.vue'], resolve)
                 }
             ]
         }
