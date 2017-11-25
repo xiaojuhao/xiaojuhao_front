@@ -25,7 +25,7 @@
                         </el-select>
                     </el-input>
                 </el-form-item>
-                <el-form-item label="规格">
+                <el-form-item label="采购单位">
                     <el-select v-model="form.specUnit" style="width:80px" placeholder="请选择">
                         <el-option label="无" value="无"></el-option>
                         <el-option label="包" value="包"></el-option>
@@ -42,8 +42,8 @@
                     <span>说明:规格单位，如10KG/包，20个/箱等</span>
                     </span>
                 </el-form-item>
-                <el-form-item label="库存单位">
-                    <el-select v-model="form.stockUnit" style="width:160px" placeholder="请选择">
+                <el-form-item label="使用单位">
+                    <el-select v-model="form.stockUnit" style="width:80px" placeholder="请选择">
                         <el-option key="A" label="个" value="个"></el-option>
                         <el-option key="KG" label="千克" value="千克"></el-option>
                         <el-option key="G" label="克" value="克"></el-option>

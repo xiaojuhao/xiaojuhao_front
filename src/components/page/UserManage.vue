@@ -80,13 +80,11 @@
                 }
             },
             getData(){
-                console.log("queryallusers")
                 api.queryUsersPage({})
                 .then((page)=>{
-                    console.log(page)
-                    this.tableData = page.value.values;
+                    this.tableData = page.values;
                 }).fail((resp)=>{
-                    console.log(resp)
+                    this.$message.error(resp.message)
                 })
             },
             update(index, item) {

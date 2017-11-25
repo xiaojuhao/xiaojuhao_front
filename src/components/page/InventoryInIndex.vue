@@ -8,9 +8,8 @@
             <el-card :body-style="{ padding: '0px' }" class="card">
               <img src="http://mpic.tiankong.com/78d/54e/78d54e55e4fde172c4ab53b39b3d9677/640.jpg" class="image">
               <div style="padding: 14px;">
-                <div class="bottom clearfix">
+                <div class="bottom clearfix align-center">
                   <span>{{item.warehouseName}}</span>
-                  <el-button type="text" class="button">入库操作</el-button>
                 </div>
               </div>
             </el-card>
@@ -19,9 +18,8 @@
             <el-card :body-style="{ padding: '0px' }" class="card">
               <img src="http://img1.sooshong.com/pics/201605/15/2016515144858810.png" class="image">
               <div style="padding: 14px;">
-                <div class="bottom clearfix">
+                <div class="bottom clearfix align-center">
                   <span>{{item.storeName}}</span>
-                  <el-button type="text" class="button">入库操作</el-button>
                 </div>
               </div>
             </el-card>
@@ -100,5 +98,8 @@ header,section {
   
   .clearfix:after {
       clear: both
+  }
+  .align-center{
+    text-align: center;
   }
 </style>

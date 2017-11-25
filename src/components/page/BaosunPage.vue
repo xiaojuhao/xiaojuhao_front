@@ -114,7 +114,8 @@ export default {
             return row.tag === value;
         },
         baosun(index, item) {
-            this.$message.error("还未实现")
+            //this.$message.error("还未实现")
+            this.$router.push({ path: "/baosunDetail", query: { id: item.id } })
         },
         handleSelect(item) {
             this.$data.query.name = item.value;

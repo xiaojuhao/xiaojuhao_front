@@ -10,8 +10,10 @@ import 'element-ui/lib/theme-default/index.css';    // 默认主题
 // import '../static/css/theme-green/index.css';       // 浅绿色主题
 import "babel-polyfill";
 //import config from 'components/common/config.vue'
+import uploader from 'vue-simple-uploader'
 Vue.use(ElementUI);
 Vue.use(Vuex)
+Vue.use(uploader)
 Vue.prototype.$axios = axios;
 new Vue({
     router,

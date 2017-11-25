@@ -129,6 +129,10 @@ export default new Router({
                     component: resolve => require(['../components/page/BaosunPage.vue'], resolve)
                 },
                 {
+                    path: '/baosunDetail',
+                    component: resolve => require(['../components/page/BaosunDetail.vue'], resolve)
+                },
+                {
                     path: '/diaobo',
                     component: resolve => require(['../components/page/Diaobo.vue'], resolve) // 
                 },
@@ -143,6 +147,14 @@ export default new Router({
                 {
                     path: '/myTask',
                     component: resolve => require(['../components/page/MyTask.vue'], resolve) // 
+                },
+                {
+                    path: '/myPurchaseOrder',
+                    component: resolve => require(['../components/page/MyPurchaseOrder.vue'], resolve) // 
+                },
+                {
+                    path: '/myLossApply',
+                    component: resolve => require(['../components/page/MyLossApply.vue'], resolve) // 
                 },
                 {
                     path: '/reportOfStock',

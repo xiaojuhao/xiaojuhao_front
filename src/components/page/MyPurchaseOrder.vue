@@ -23,7 +23,6 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
-                    <el-button size="small" v-if="scope.row.status == '4'" type="primary" @click="confirmOrder(scope.row)">确认</el-button>
                     <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
                 </template>
             </el-table-column>
@@ -35,7 +34,7 @@
     </div>
 </template>
 <script>
-import { api, config } from '../common/bus'
+import { api,config } from '../common/bus'
 export default {
     data() {
         return {
@@ -65,7 +64,7 @@ export default {
         formatStatus(row) {
             switch (row.status) {
                 case "4":
-                    return '配送中'
+                    return '处理中'
                 case "5":
                     return "已入库"
                 case "6":
@@ -82,8 +81,6 @@ export default {
                     return "拨入"
                 case "allocate_out":
                     return "拨出"
-                case "claim_loss":
-                    return "报损"
                 default:
                     return "未知"
             }
@@ -96,7 +93,7 @@ export default {
             let param = {
                 status: this.query.status
             }
-            api.queryInventoryApplyPage(param)
+            api.queryMyPurchaseOrderPage(param)
                 .then((page) => {
                     this.tableData = page.values;
                 })
@@ -108,8 +105,8 @@ export default {
         confirmOrder(item) {
             this.$router.push({ path: "/inventoryInConfirm", query: { applyNum: item && item.applyNum } })
         },
-        printBill(item) {
-            window.open(config.server + "/print?applyNum=" + item.applyNum)
+        printBill(item){
+            window.open(config.server+"/print?applyNum="+item.applyNum)
         }
     }
 }

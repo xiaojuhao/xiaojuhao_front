@@ -20,53 +20,6 @@ export const util = {
     }
 }
 const http = {
-    jsonp(uri, data) {
-        if (data) {
-            data.requestLoginCookie = store.state.loginCookie;
-        }
-        var df = jquery.Deferred();
-        jquery.ajax({
-                url: config.server + uri,
-                data: data,
-                method: 'POST',
-                crossDomain: true,
-                dataType: 'json'
-            })
-            .then((resp) => df.resolve(resp))
-            .fail((resp) => {
-                df.reject(resp)
-            })
-        return df.promise();
-
-    },
-    jsonp2(uri, data) {
-        if (data) {
-            data.requestLoginCookie = store.state.loginCookie;
-        }
-        var df = jquery.Deferred();
-        jquery.ajax({
-                url: config.server + uri,
-                data: data,
-                method: 'POST',
-                dataType: 'json',
-                crossDomain: true
-            })
-            .then((resp) => {
-                if (resp.code == "R401") {
-                    router.push("/login")
-                    return;
-                }
-                if (resp.code == "200") {
-                    df.resolve(resp.value)
-                } else {
-                    df.reject(resp);
-                }
-            }).fail((resp) => {
-
-            });
-
-        return df.promise();
-    },
     post(uri, data) {
         if (data) {
             data.requestLoginCookie = store.state.loginCookie;
@@ -102,7 +55,7 @@ export { http };
 
 export const api = {
     getMenu() {
-        return http.jsonp2("/menu", {});
+        return http.post("/menu", {});
     },
     signin(data) {
         var df = jquery.Deferred();
@@ -126,42 +79,37 @@ export const api = {
         return df.promise();
     },
     saveUser(data) {
-        return http.jsonp2("/user/saveUser", data);
+        return http.post("/user/saveUser", data);
     },
     resetPassword(userCode) {
-        return http.jsonp2("/user/resetPassword", { userCode: userCode })
+        return http.post("/user/resetPassword", { userCode: userCode })
     },
     getUserByCode(userCode) {
-        return http.jsonp2("/user/queryUserByCode", { userCode: userCode })
+        return http.post("/user/queryUserByCode", { userCode: userCode })
     },
     queryUsersPage(data) {
-        return http.jsonp("/user/queryUsers", data)
+        return http.post("/user/queryUsers", data)
     },
     getAllStoreList() {
         var df = jquery.Deferred();
-        http.jsonp('/store/getAllStore', { pageSize: 1000 })
-            .then((resp) => {
-                if (resp.code == "200") {
-                    var values = resp.value && resp.value.values;
-                    df.resolve(values);
-                } else {
-                    df.reject(resp)
-                }
+        http.post('/store/getAllStore')
+            .then((page) => {
+                df.resolve(page.values);
             }).fail((resp) => df.reject(resp))
         return df.promise();
     },
     queryStoreByCode(code) {
-        return http.jsonp2("/store/getStoreByCode", { storeCode: code })
+        return http.post("/store/getStoreByCode", { storeCode: code })
     },
     queryMyStores() {
-        return http.jsonp2("/store/getMyStore", {})
+        return http.post("/store/getMyStore", {})
     },
     saveStore(data) {
         return http.post("/store/saveStore", data)
     },
     outstock(data) {
         var df = jquery.Deferred();
-        http.jsonp('/busi/outstock', data)
+        http.post('/busi/outstock', data)
             .then((resp) => {
                 if (resp.code == "200") {
                     df.resolve(resp.value);
@@ -175,7 +123,7 @@ export const api = {
     },
     instock(data) {
         var df = jquery.Deferred();
-        http.jsonp('/busi/instock', data)
+        http.post('/busi/instock', data)
             .then((resp) => {
                 if (resp.code == "200") {
                     df.resolve(resp.value);
@@ -194,35 +142,35 @@ export const api = {
         return http.post("/recipes/addRecipes", data);
     },
     queryRecipesPage(data) {
-        return http.jsonp2("/recipes/queryRecipes", data)
+        return http.post("/recipes/queryRecipes", data)
     },
     queryAllRecipes() {
-        return http.jsonp2("/recipes/queryAllRecipes", { pageSize: 1000 })
+        return http.post("/recipes/queryAllRecipes", { pageSize: 1000 })
     },
     queryRecipesByCode(code) {
-        return http.jsonp2("/recipes/queryRecipesByCode", { recipesCode: code })
+        return http.post("/recipes/queryRecipesByCode", { recipesCode: code })
     },
     queryMaterialsStockPage(data) {
-        return http.jsonp2("/busi/queryMaterialsStock", data);
+        return http.post("/busi/queryMaterialsStock", data);
     },
     correctStock(data) {
         return http.post("/busi/correctStock", data)
     },
     queryMaterialsStockHistoryPage(data) {
-        return http.jsonp2("/busi/queryMaterialsStockHistory", data);
+        return http.post("/busi/queryMaterialsStockHistory", data);
     },
     queryMaterialsStockById(id) {
-        return http.jsonp2("/busi/queryMaterialsStockById", { id: id });
+        return http.post("/busi/queryMaterialsStockById", { id: id });
     },
     queryAllMaterials() {
         let data = {
             pageNo: 1,
             pageSize: 2000
         }
-        return http.jsonp2("/busi/queryMaterials", data);
+        return http.post("/busi/queryMaterials", data);
     },
     queryMaterialsPage(data) {
-        return http.jsonp2("/busi/queryMaterials", data);
+        return http.post("/busi/queryMaterials", data);
     },
     queryMaterialById(id) {
         return http.post("/busi/queryMaterialById", { id: id })
@@ -235,11 +183,11 @@ export const api = {
     },
     queryRecipesFormula(recipesCode) {
         let data = { recipesCode: recipesCode }
-        return http.jsonp2("/recipes/queryRecipesFormula", data)
+        return http.post("/recipes/queryRecipesFormula", data)
     },
     getAllWarehouseList() {
         let df = new jquery.Deferred();
-        http.jsonp2("/warehouse/queryWarehouses", { pageSize: 1000 })
+        http.post("/warehouse/queryWarehouses", { pageSize: 1000 })
             .then((page) => {
                 df.resolve(page.values)
             }).fail((resp) => {
@@ -248,37 +196,43 @@ export const api = {
         return df;
     },
     queryWarehousesPage(param) {
-        return http.jsonp("/warehouse/queryWarehouses", param)
+        return http.post("/warehouse/queryWarehouses", param)
     },
     getWarehouseByCode(code) {
-        return http.jsonp2("/warehouse/queryWarehouseByCode", { warehouseCode: code })
+        return http.post("/warehouse/queryWarehouseByCode", { warehouseCode: code })
     },
     queryMyWarehouse() {
-        return http.jsonp2("/warehouse/queryMyWarehouse", {});
+        return http.post("/warehouse/queryMyWarehouse", {});
     },
     saveWarehouse(data) {
         return http.post("/warehouse/saveWarehouse", data)
     },
     saveSupplierInfo(param) {
-        return http.jsonp2("/supplier/saveSupplier", param)
+        return http.post("/supplier/saveSupplier", param)
     },
     querySupplierPage(param) {
-        return http.jsonp2("/supplier/querySupplierPage", param)
+        return http.post("/supplier/querySupplierPage", param)
     },
     querySupplierByCode(code) {
-        return http.jsonp2("/supplier/querySupplierByCode", { supplierCode: code })
+        return http.post("/supplier/querySupplierByCode", { supplierCode: code })
     },
     queryMaterialSupplerByCode(param) {
-        return http.jsonp2("/busi/queryMaterialSupplerByCode", param)
+        return http.post("/busi/queryMaterialSupplerByCode", param)
     },
     queryAllMaterialSuppler() {
-        return http.jsonp2("/busi/queryAllMaterialSuppler", {})
+        return http.post("/busi/queryAllMaterialSuppler", {})
     },
     commitPurchaseOrder(data) {
         return http.post("/inventoryOrder/commitPurchaseOrder", data)
     },
+    queryInventoryApplyPage(data) {
+        return http.post("/inventoryOrder/queryInventoryApply", data)
+    },
     queryMyPurchaseOrderPage(data) {
         return http.post("/inventoryOrder/queryMyPurchaseOrder", data)
+    },
+    queryMyLossApply(data) {
+        return http.post("/inventoryOrder/queryMyLossApply", data)
     },
     queryInventoryApplyByApplyNum(orderNum) {
         return http.post("/inventoryOrder/queryPurchaseOrderDetail", { applyNum: orderNum })
@@ -291,5 +245,8 @@ export const api = {
     },
     getCabinByCode(code) {
         return http.post("/busi/getCabinByCode", { cabinCode: code })
+    },
+    claimLoss(data) {
+        return http.post("/inventoryOrder/claimLoss", data)
     }
 }
