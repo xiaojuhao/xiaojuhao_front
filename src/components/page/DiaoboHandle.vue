@@ -19,7 +19,7 @@
             </el-table-column>
             <el-table-column prop="applyType" label="类型" width="100" :formatter="formatApplyType">
             </el-table-column>
-            <el-table-column prop="applyNum" label="采购单号" width="350">
+            <el-table-column prop="applyNum" label="单号" width="350">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
@@ -40,7 +40,7 @@ export default {
     data() {
         return {
             tableData: [],
-            cur_page: 1,
+            pageNo: 1,
             pageSize: 5,
             totalRows: 0,
             loadingState: false,
@@ -78,10 +78,8 @@ export default {
             switch (row.applyType) {
                 case "purchase":
                     return "采购单"
-                case "allocate_in":
-                    return "拨入"
-                case "allocate_out":
-                    return "拨出"
+                case "allocation":
+                    return "调拨单"
                 case "claim_loss":
                     return "报损"
                 default:
@@ -89,15 +87,19 @@ export default {
             }
         },
         handleCurrentChange(val) {
-            this.cur_page = val;
+            this.pageNo = val;
             this.getData();
         },
         getData() {
             let param = {
-                status: this.query.status
+                status: this.query.status,
+                pageNo: this.pageNo,
+                pageSize:this.pageSize,
+                applyTypes:'allocation'
             }
             api.queryInventoryApplyPage(param)
                 .then((page) => {
+                    this.totalRows = page.totalRows;
                     this.tableData = page.values;
                 })
         },
@@ -106,7 +108,7 @@ export default {
             this.getData();
         },
         confirmOrder(item) {
-            this.$router.push({ path: "/inventoryInConfirm", query: { applyNum: item && item.applyNum } })
+            this.$router.push({ path: "/diaoboHandlePage", query: { applyNum: item && item.applyNum } })
         },
         printBill(item) {
             window.open(config.server + "/print?applyNum=" + item.applyNum)

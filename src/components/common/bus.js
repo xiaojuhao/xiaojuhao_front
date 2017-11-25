@@ -135,9 +135,6 @@ export const api = {
             })
         return df.promise();
     },
-    diaobo(data) {
-        return http.post("/busi/diaobo", data);
-    },
     addRecipes(data) {
         return http.post("/recipes/addRecipes", data);
     },
@@ -234,6 +231,9 @@ export const api = {
     queryMyLossApply(data) {
         return http.post("/inventoryOrder/queryMyLossApply", data)
     },
+    queryMyAllocate(data) {
+        return http.post("/inventoryOrder/queryMyAllocate", data)
+    },
     queryInventoryApplyByApplyNum(orderNum) {
         return http.post("/inventoryOrder/queryPurchaseOrderDetail", { applyNum: orderNum })
     },
@@ -242,6 +242,9 @@ export const api = {
     },
     commitDiaobo(data) {
         return http.post("/diaobo/commit", data)
+    },
+    confirmDiaobo(data) {
+        return http.post("/diaobo/confirm", data)
     },
     getCabinByCode(code) {
         return http.post("/busi/getCabinByCode", { cabinCode: code })

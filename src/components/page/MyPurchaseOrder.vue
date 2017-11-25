@@ -19,9 +19,11 @@
             </el-table-column>
             <el-table-column prop="applyType" label="类型" width="100" :formatter="formatApplyType">
             </el-table-column>
+            <el-table-column prop="gmtCreated" label="操作日期" width="120" :formatter="formatCreate">
+            </el-table-column>
             <el-table-column prop="applyNum" label="采购单号" width="350">
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="150">
+            <el-table-column label="操作" fixed="right" width="80">
                 <template scope="scope">
                     <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
                 </template>
@@ -39,7 +41,7 @@ export default {
     data() {
         return {
             tableData: [],
-            cur_page: 1,
+            pageNo: 1,
             pageSize: 5,
             totalRows: 0,
             loadingState: false,
@@ -85,17 +87,24 @@ export default {
                     return "未知"
             }
         },
+        formatCreate(row){
+            let date = new Date(row.gmtCreated)
+            return date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()
+        },
         handleCurrentChange(val) {
-            this.cur_page = val;
+            this.pageNo = val;
             this.getData();
         },
         getData() {
             let param = {
-                status: this.query.status
+                status: this.query.status,
+                pageNo: this.pageNo,
+                pageSize:this.pageSize
             }
             api.queryMyPurchaseOrderPage(param)
                 .then((page) => {
                     this.tableData = page.values;
+                    this.totalRows = page.totalRows;
                 })
         },
         search() {

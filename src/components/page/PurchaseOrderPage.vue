@@ -21,23 +21,23 @@
                 </el-table-column>
                 <el-table-column prop="supplierName" label="供应商" width="150">
                 </el-table-column>
-                <el-table-column label="数量" width="140">
+                <el-table-column label="采购数量" width="140">
                     <template scope="scope">
                         <el-input size="small" v-model="scope.row.specAmt">
                             <template slot="append">{{scope.row.specUnit=='无'?scope.row.stockUnit:scope.row.specUnit}}</template>
                         </el-input>
                     </template>
                 </el-table-column>
-                <el-table-column label="单价" width="130">
+                <el-table-column label="采购单价" width="130">
                     <template scope="scope">
                         <el-input size="small" v-model="scope.row.specPrice">
                             <template slot="append">元</template>
                         </el-input>
                     </template>
                 </el-table-column>
-                <el-table-column label="规格" :formatter="formatSpec">
+                <el-table-column label="规格" :formatter="formatSpec" width="100">
                 </el-table-column>
-                <el-table-column label="生产日期" width="130">
+                <el-table-column label="生产日期" width="150">
                     <template scope="scope">
                         <el-date-picker v-model="scope.row.prodDate" class="data-picker" size="small" type="date" placeholder="选择日期">
                         </el-date-picker>
@@ -90,7 +90,7 @@ export default {
     },
     methods: {
         formatSpec(row) {
-            if (row.specUnit == '无') return row.stockUnit
+            if (row.specUnit == '无') return "1"+row.stockUnit
             return row.specQty + row.stockUnit;
         },
         onClear() {

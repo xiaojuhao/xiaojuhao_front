@@ -76,7 +76,16 @@ export default {
             }
         },
         formatApplyType(row) {
-            return "报损单"
+            switch (row.applyType) {
+                case "purchase":
+                    return "采购单"
+                case "allocate_in":
+                    return "拨入"
+                case "allocate_out":
+                    return "拨出"
+                default:
+                    return "未知"
+            }
         },
         handleCurrentChange(val) {
             this.pageNo = val;
@@ -92,7 +101,7 @@ export default {
                 pageNo: this.pageNo,
                 pageSize:this.pageSize
             }
-            api.queryMyLossApply(param)
+            api.queryMyAllocate(param)
                 .then((page) => {
                     this.tableData = page.values;
                     this.totalRows = page.totalRows;

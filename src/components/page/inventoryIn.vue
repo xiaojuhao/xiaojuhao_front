@@ -19,12 +19,11 @@
             </el-table-column>
             <el-table-column prop="applyType" label="类型" width="100" :formatter="formatApplyType">
             </el-table-column>
-            <el-table-column prop="gmtCreated" label="操作日期" width="120" :formatter="formatCreate">
-            </el-table-column>
             <el-table-column prop="applyNum" label="采购单号" width="350">
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="80">
+            <el-table-column label="操作" fixed="right" width="150">
                 <template scope="scope">
+                    <el-button size="small" v-if="scope.row.status == '4'" type="primary" @click="confirmOrder(scope.row)">确认</el-button>
                     <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
                 </template>
             </el-table-column>
@@ -36,13 +35,13 @@
     </div>
 </template>
 <script>
-import { api,config } from '../common/bus'
+import { api, config } from '../common/bus'
 export default {
     data() {
         return {
             tableData: [],
+            pageNo: 1,
             pageSize: 5,
-            pageNo:1,
             totalRows: 0,
             loadingState: false,
             query: {
@@ -76,26 +75,34 @@ export default {
             }
         },
         formatApplyType(row) {
-            return "报损单"
+            switch (row.applyType) {
+                case "purchase":
+                    return "采购单"
+                case "allocate_in":
+                    return "拨入"
+                case "allocate_out":
+                    return "拨出"
+                case "claim_loss":
+                    return "报损"
+                default:
+                    return "未知"
+            }
         },
         handleCurrentChange(val) {
             this.pageNo = val;
             this.getData();
         },
-        formatCreate(row){
-            let date = new Date(row.gmtCreated)
-            return date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()
-        },
         getData() {
             let param = {
                 status: this.query.status,
                 pageNo: this.pageNo,
-                pageSize:this.pageSize
+                pageSize:this.pageSize,
+                applyTypes:'purchase'
             }
-            api.queryMyLossApply(param)
+            api.queryInventoryApplyPage(param)
                 .then((page) => {
-                    this.tableData = page.values;
                     this.totalRows = page.totalRows;
+                    this.tableData = page.values;
                 })
         },
         search() {
@@ -105,8 +112,8 @@ export default {
         confirmOrder(item) {
             this.$router.push({ path: "/inventoryInConfirm", query: { applyNum: item && item.applyNum } })
         },
-        printBill(item){
-            window.open(config.server+"/print?applyNum="+item.applyNum)
+        printBill(item) {
+            window.open(config.server + "/print?applyNum=" + item.applyNum)
         }
     }
 }

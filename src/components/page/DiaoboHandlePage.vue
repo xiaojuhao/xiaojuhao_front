@@ -9,27 +9,21 @@
                 </el-breadcrumb>
             </div>
             <el-table :data="details" border style="width: 150%">
-                <el-table-column prop="materialName" label="原料名称" width="200">
+                <el-table-column prop="materialName" label="原料名称" width="150">
                 </el-table-column>
-                <el-table-column prop="supplierName" label="供应商" width="130">
+                <el-table-column prop="cabinName" label="拨入单位" width="130">
                 </el-table-column>
-                <el-table-column prop="cabinName" label="门店/仓库" width="130">
+                <el-table-column prop="fromCabinName" label="拨出单位" width="130">
                 </el-table-column>
-                <el-table-column label="采购规格" width="100" :formatter="formatSpec">
+                <el-table-column label="拨出数量" width="100" :formatter="formatStockAmt">
                 </el-table-column>
-                <el-table-column label="采购数量" width="100" :formatter="formatPurchaseAmt">
-                </el-table-column>
-                <el-table-column label="实际数量" width="150">
+                <el-table-column label="实际入库数量" width="150">
                     <template scope="scope">
                         <el-input size="small" v-model="scope.row.realStockAmt">
                         </el-input>
                     </template>
                 </el-table-column>
-                <el-table-column prop="specPrice" label="采购价" width="80">
-                </el-table-column>
-                <el-table-column prop="totalPrice" label="总价" width="80">
-                </el-table-column>
-                <el-table-column label="生产日期" width="130" :formatter="formateProdDate">
+                <el-table-column label="操作日期" width="130" :formatter="formatCreateDate">
                 </el-table-column>
             </el-table>
             <div style="margin-top: 10px; margin-left: 300px;">
@@ -43,11 +37,9 @@
                 <el-table :data="details" style="width:100%" max-height="400" row-class-name="info-row">
                     <el-table-column prop="materialName" label="原料名称" width="">
                     </el-table-column>
-                    <el-table-column prop="supplierName" label="供应商" width="">
+                    <el-table-column label="拨出数量" width="" :formatter="formatStockAmt">
                     </el-table-column>
-                    <el-table-column label="规格数量" width="" :formatter="formatSpec">
-                    </el-table-column>
-                    <el-table-column prop="realStockAmt" label="接收数量" width="">
+                    <el-table-column prop="realStockAmt" label="实际入库数量" width="">
                     </el-table-column>
                 </el-table>
                 <div style="margin-top: 10px; margin-left: 300px;">
@@ -73,18 +65,14 @@ export default {
         }
     },
     methods: {
-        formatSpec(row) {
-            if (row.specUnit != '无') {
-                return row.specAmt + row.specUnit
-            } else {
-                return row.stockAmt + row.stockUnit
-            }
+        formatStockAmt(row) {
+            return row.stockAmt + row.stockUnit
         },
         formatPurchaseAmt(row) {
             return row.stockAmt + row.stockUnit
         },
-        formateProdDate(row) {
-            return util.formatDate(row.prodDate)
+        formatCreateDate(row) {
+            return util.formatDate(row.gmtCreated)
         },
         onSubmit() {
             this.isShowMessage = false;
@@ -93,7 +81,7 @@ export default {
                 dataJson: JSON.stringify(this.details),
                 applyNum: this.applyNum
             }
-            api.confirmInventory(param)
+            api.confirmDiaobo(param)
                 .then((resp) => {
                     this.$message.success("操作成功");
                     this.$router.go(-1)

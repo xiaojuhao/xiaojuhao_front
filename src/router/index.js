@@ -98,7 +98,7 @@ export default new Router({
                 },
                 {
                     path: '/inventoryIn',
-                    component: resolve => require(['../components/page/inventoryInManage.vue'], resolve) // 
+                    component: resolve => require(['../components/page/inventoryIn.vue'], resolve) // 
                 },
                 {
                     path: '/inventoryInConfirm',
@@ -141,6 +141,14 @@ export default new Router({
                     component: resolve => require(['../components/page/DiaoboPage.vue'], resolve) // 
                 },
                 {
+                    path: '/diaoboHandle',
+                    component: resolve => require(['../components/page/DiaoboHandle.vue'], resolve) // 
+                },
+                {
+                    path: '/diaoboHandlePage',
+                    component: resolve => require(['../components/page/DiaoboHandlePage.vue'], resolve) // 
+                },
+                {
                     path: '/waitingTask',
                     component: resolve => require(['../components/page/IndexInfo.vue'], resolve) // 
                 },
@@ -155,6 +163,10 @@ export default new Router({
                 {
                     path: '/myLossApply',
                     component: resolve => require(['../components/page/MyLossApply.vue'], resolve) // 
+                },
+                {
+                    path: '/myAllocate',
+                    component: resolve => require(['../components/page/MyAllocate.vue'], resolve) // 
                 },
                 {
                     path: '/reportOfStock',
