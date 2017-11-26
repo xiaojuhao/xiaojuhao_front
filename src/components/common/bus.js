@@ -231,6 +231,9 @@ export const api = {
     queryMyLossApply(data) {
         return http.post("/inventoryApply/queryMyLossApply", data)
     },
+    queryMyLossApplyDetail(data){
+        return http.post("/inventoryApply/queryMyLossApplyDetail",data)
+    },
     queryMyAllocate(data) {
         return http.post("/inventoryApply/queryMyAllocate", data)
     },

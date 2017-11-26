@@ -46,6 +46,7 @@
 <script>
 import { api } from '../common/bus.js'
 import RecipesSelection from '../common/RecipesSelection'
+import Vue from 'vue'
 export default {
     components: {
         RecipesSelection
@@ -63,17 +64,8 @@ export default {
             queryList: []
         }
     },
-    created() {
-
-    },
     mounted() {
         this.queryData();
-    },
-    activated() {
-
-    },
-    computed: {
-
     },
     methods: {
         handleCurrentChange(val) {
@@ -81,20 +73,21 @@ export default {
             this.queryData();
         },
         queryData() {
-            let self = this;
-            self.$data.loadingState = true;
+            this.loadingState = true;
             api.queryRecipesPage({
+                    pageNo:this.pageNo,
+                    pageSize:this.pageSize,
                     recipesCode: this.queryCond.recipesCode
                 })
                 .then((page) => {
-                    self.$data.totalRows = page.totalRows;
-                    Object.keys(page.values).forEach((index) => {
-                        let item = page.values[index];
-                        item.formulas = ''
-                        self.$data.queryList.push(item)
+                    this.totalRows = page.totalRows;
+                    this.queryList = [];
+                    page.values.forEach((item)=>{
+                        Vue.set(item,"formulas",[])
+                        this.queryList.push(item)
                     })
                 }).always(() => {
-                    self.$data.loadingState = false;
+                    this.loadingState = false;
                 })
         },
         search() {
