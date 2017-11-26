@@ -27,7 +27,9 @@
                     <el-input v-model="form.remark" placehoder="备注"></el-input>
                 </el-form-item>
                 <el-form-item label="添加图片">
-                    <el-upload class="upload-demo" :action="actionUrl" :on-remove="handleRemove" :on-success="handleSuccess" :file-list="fileList" :data="form">
+                    <el-upload class="upload-demo" :action="actionUrl" :on-remove="handleRemove" 
+                    accept="image/*"
+                    :on-success="handleSuccess" :file-list="fileList" :data="form">
                         <el-button size="small" type="primary">添加文件</el-button>
                         <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
                     </el-upload>
