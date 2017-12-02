@@ -30,7 +30,7 @@
             <el-table-column prop="supplierAddr" label="地址" width="300">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="120">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">编辑</el-button>
                 </template>
             </el-table-column>
@@ -51,7 +51,7 @@ export default {
     data() {
         return {
             pageNo: 1,
-            pageSize: 5,
+            pageSize: 10,
             totalRows: 0,
             loadingState: false,
             queryCond: {
@@ -87,11 +87,14 @@ export default {
         edit(index, item) {
             this.$router.push({ path: "/supplierManagePage", query: { supplierCode: item && item.supplierCode } })
         },
-        formatStatus(row){
-            switch(row.status){
-                case "1": return '有效';
-                case "2": return '无效';
-                default: return '未知'
+        formatStatus(row) {
+            switch (row.status) {
+                case "1":
+                    return '有效';
+                case "2":
+                    return '无效';
+                default:
+                    return '未知'
             }
         }
     }

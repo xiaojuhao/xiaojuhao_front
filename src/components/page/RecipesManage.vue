@@ -17,7 +17,7 @@
         </div>
         <el-table :data="queryList" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)" @expand="expand">
             <el-table-column type="expand">
-                <template scope="props">
+                <template slot-scope="props">
                     <el-row v-for="item in props.row.formulas">
                         <el-col :span="3">{{item.materialName}}</el-col>
                         <el-col :span="1">{{item.materialAmt}}</el-col>
@@ -32,7 +32,7 @@
             <el-table-column prop="outCode" label="外部系统编号" width="">
             </el-table-column>
             <el-table-column label="操作" width="120">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">编辑</el-button>
                 </template>
             </el-table-column>
@@ -55,7 +55,7 @@ export default {
         return {
             tableData: [],
             pageNo: 1,
-            pageSize: 5,
+            pageSize: 10,
             totalRows: 0,
             loadingState: false,
             queryCond: {
@@ -75,15 +75,15 @@ export default {
         queryData() {
             this.loadingState = true;
             api.queryRecipesPage({
-                    pageNo:this.pageNo,
-                    pageSize:this.pageSize,
+                    pageNo: this.pageNo,
+                    pageSize: this.pageSize,
                     recipesCode: this.queryCond.recipesCode
                 })
                 .then((page) => {
                     this.totalRows = page.totalRows;
                     this.queryList = [];
-                    page.values.forEach((item)=>{
-                        Vue.set(item,"formulas",[])
+                    page.values.forEach((item) => {
+                        Vue.set(item, "formulas", [])
                         this.queryList.push(item)
                     })
                 }).always(() => {

@@ -30,14 +30,14 @@
                 <el-table-column prop="currStock" label="当前库存" width="100">
                 </el-table-column>
                 <el-table-column label="拨出数量" width="100">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-input size="small" v-model="scope.row.outAmt"></el-input>
                     </template>
                 </el-table-column>
                 <el-table-column prop="stockUnit" label="单位" width="100">
                 </el-table-column>
                 <el-table-column label="操作" width="">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-button size="small" type="primary" @click="removeRows(scope.$index)">删除</el-button>
                     </template>
                 </el-table-column>

@@ -10,7 +10,7 @@
             <div class="title">请选择对应的仓库或门店进行操作</div>
         </header>
         <section>
-            <router-link v-for="item in mywarehouse" :to="'pandianPage?CODE='+item.warehouseCode">
+            <router-link v-for="item in mywarehouse" :key="item.id"  :to="'pandianNewPage?CODE='+item.warehouseCode">
                 <el-card :body-style="{ padding: '0px' }" class="card">
                     <img src="../../assets/warehouse.jpg" class="image">
                     <div style="padding: 14px;">
@@ -20,7 +20,7 @@
                     </div>
                 </el-card>
             </router-link>
-            <router-link v-for="item in myStores" :to="'pandianPage?CODE='+item.storeCode">
+            <router-link v-for="item in myStores" :key="item.id"  :to="'pandianNewPage?CODE='+item.storeCode">
                 <el-card :body-style="{ padding: '0px' }" class="card">
                     <img src="../../assets/store.png" class="image">
                     <div style="padding: 14px;">

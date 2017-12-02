@@ -9,7 +9,7 @@
             </el-select>
             <el-button type="primary" icon="search" @click="search">搜索采购单</el-button>
         </div>
-        <el-card v-for="item in data" :body-style="{ padding: '0px' }" class="card">
+        <el-card v-for="item in data" :key="item.id"  :body-style="{ padding: '0px' }" class="card">
             <div style="position:relative;margin:20px;">
                 <span><strong>门店：</strong>{{item.cabinName}}</span>
                 <span><strong>原料：</strong>{{item.materialName}}</span>
@@ -36,7 +36,7 @@ export default {
     data() {
         return {
             tableData: [],
-            pageSize: 5,
+            pageSize: 10,
             pageNo: 1,
             server: config.server,
             query: {

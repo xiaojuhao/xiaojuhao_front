@@ -31,7 +31,7 @@
             <el-table-column prop="modifier" label="修改人" width="100">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="200">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button size="small" type="primary" @click="correctStock(scope.$index, scope.row)">盘点库存</el-button>
                     <el-button size="small" type="primary" @click="showStockHistory(scope.$index, scope.row)">库存流水</el-button>
                 </template>
@@ -59,7 +59,7 @@ export default {
         return {
             tableData: [],
             cur_page: 1,
-            pageSize: 5,
+            pageSize: 10,
             totalRows: 0,
             loadingState: false,
             query: {

@@ -13,7 +13,7 @@
                     </el-row>
                 </el-form-item>
                 <el-form-item>
-                    <div v-for="(item,index) in recipesList">
+                    <div v-for="(item,index) in recipesList" :key="item.id" >
                         <el-row>
                             <el-col :span="10">
                                 <RecipesSelection :value="item.recipesCode" v-on:input="addNewRecipes" :context="item" :excludes="addedRecipesCode"></RecipesSelection>

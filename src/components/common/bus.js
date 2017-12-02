@@ -231,8 +231,8 @@ export const api = {
     queryMyLossApply(data) {
         return http.post("/inventoryApply/queryMyLossApply", data)
     },
-    queryMyLossApplyDetail(data){
-        return http.post("/inventoryApply/queryMyLossApplyDetail",data)
+    queryMyLossApplyDetail(data) {
+        return http.post("/inventoryApply/queryMyLossApplyDetail", data)
     },
     queryMyAllocate(data) {
         return http.post("/inventoryApply/queryMyAllocate", data)
@@ -254,5 +254,14 @@ export const api = {
     },
     claimLoss(data) {
         return http.post("/inventoryApply/claimLoss", data)
+    },
+    startCorrect(cabinCode) {
+        return http.post("/inventoryApply/startCorrect", {cabinCode:cabinCode})
+    },
+    finishCorrect(cabinCode){
+        return http.post("/inventoryApply/finishCorrect",{cabinCode:cabinCode})
+    },
+    getNoticePage(data){
+        return http.post("/notice/latest",data)
     }
 }

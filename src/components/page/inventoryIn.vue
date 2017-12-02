@@ -22,7 +22,7 @@
             <el-table-column prop="applyNum" label="采购单号" width="350">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button size="small" v-if="scope.row.status == '4'" type="primary" @click="confirmOrder(scope.row)">确认</el-button>
                     <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
                 </template>
@@ -41,7 +41,7 @@ export default {
         return {
             tableData: [],
             pageNo: 1,
-            pageSize: 5,
+            pageSize: 10,
             totalRows: 0,
             loadingState: false,
             query: {

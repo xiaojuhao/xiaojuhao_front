@@ -121,6 +121,10 @@ export default new Router({
                     component: resolve => require(['../components/page/PandianPage.vue'], resolve) // 
                 },
                 {
+                    path: '/pandianNewPage',
+                    component: resolve => require(['../components/page/PandianNewPage.vue'], resolve) // 
+                },
+                {
                     path: '/baosun',
                     component: resolve => require(['../components/page/Baosun.vue'], resolve)
                 },

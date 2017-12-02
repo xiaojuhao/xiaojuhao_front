@@ -4,7 +4,7 @@
             <div class="title">请选择对应的仓库或门店进行操作</div>
         </header>
         <section>
-          <router-link v-for="item in mywarehouse" :to="'inventoryInPage?CODE='+item.warehouseCode">
+          <router-link v-for="item in mywarehouse" :key="item.id" :to="'inventoryInPage?CODE='+item.warehouseCode">
             <el-card :body-style="{ padding: '0px' }" class="card">
               <img src="http://mpic.tiankong.com/78d/54e/78d54e55e4fde172c4ab53b39b3d9677/640.jpg" class="image">
               <div style="padding: 14px;">
@@ -14,7 +14,7 @@
               </div>
             </el-card>
         </router-link>
-        <router-link v-for="item in myStores" :to="'inventoryInPage?CODE='+item.storeCode">
+        <router-link v-for="item in myStores" :key="item.id" :to="'inventoryInPage?CODE='+item.storeCode">
             <el-card :body-style="{ padding: '0px' }" class="card">
               <img src="http://img1.sooshong.com/pics/201605/15/2016515144858810.png" class="image">
               <div style="padding: 14px;">

@@ -5,11 +5,11 @@
         </div>
         <div style="margin-left: 40px; margin-bottom: 40px;">
             <table border="1" bordercolor="#a0c6e5" style="border-collapse: collapse; min-width: 80%">
-                <tr v-for="item in messages">
+                <tr v-for="item in messages" :key="item.id" >
                     <td align="center" style="width:50px;">{{item.id}}</td>
-                    <td style="width:100px;">{{item.type}}</td>
-                    <td>测试测试！！！{{item.message}}</td>
-                    <td>2017-11-11</td>
+                    <td style="width:100px;">告警信息</td>
+                    <td>{{item.content}}</td>
+                    <td>{{formatDate(item)}}</td>
                 </tr>
             </table>
         </div>
@@ -18,47 +18,23 @@
     </div>
 </template>
 <script>
+import { api, util } from '../common/bus'
 export default {
     data() {
         return {
-            messages: [ //messages
-                {
-                    id: 1,
-                    type: "库存警告",
-                    message: '常州仓库三文鱼库存不足100，请及时补货'
-                },
-                {
-                    id: 2,
-                    type: "库存警告",
-                    message: '常州仓库三文鱼库存不足100，请及时补货'
-                },
-                {
-                    id: 4,
-                    type: "库存警告",
-                    message: '常州仓库三文鱼库存不足100，请及时补货'
-                },
-                {
-                    id: 5,
-                    type: "库存警告",
-                    message: '常州仓库三文鱼库存不足100，请及时补货'
-                },
-                {
-                    id: 6,
-                    type: "库存警告",
-                    message: '常州仓库三文鱼库存不足100，请及时补货'
-                },
-                {
-                    id: 31,
-                    type: "库存警告",
-                    message: '常州仓库三文鱼库存不足100，请及时补货'
-                },
-                {
-                    id: 32,
-                    type: "库存警告",
-                    message: '常州仓库三文鱼库存不足100，请及时补货'
-                }
-            ]
+            messages: []
         }
+    },
+    methods: {
+        formatDate(item) {
+            return util.formatDate(item.gmtCreated);
+        }
+    },
+    mounted() {
+        api.getNoticePage({})
+            .then((page) => {
+                this.messages = page.values;
+            })
     }
 }
 </script>

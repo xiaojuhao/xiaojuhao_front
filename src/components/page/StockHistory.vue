@@ -40,7 +40,7 @@ export default {
         return {
             tableData: [],
             cur_page: 1,
-            pageSize: 5,
+            pageSize: 10,
             totalRows: 0,
             loadingState: false,
             query: {

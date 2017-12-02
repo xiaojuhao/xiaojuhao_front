@@ -24,7 +24,7 @@
             <el-table-column prop="managerEmail" label="负责人邮箱" width="250">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="100">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">编辑</el-button>
                 </template>
             </el-table-column>

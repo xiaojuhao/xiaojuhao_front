@@ -64,7 +64,7 @@
                         <el-col :span="12"><span class="span-center">原料</span></el-col>
                         <el-col :span="3"><span class="span-center">操作</span></el-col>
                     </el-row>
-                    <el-row v-for="(ff,index) in materials" :gutter="5">
+                    <el-row v-for="(ff,index) in materials" :key="ff.materialCode" :gutter="5">
                         <el-col :span="12">
                             <MaterialSelection :value="ff.materialCode" :context="ff" :excludes="addedMaterials" v-on:input="materialSelCallback">
                             </MaterialSelection>

@@ -18,7 +18,7 @@
                 </el-form-item>
                 <el-form-item label="报损额">
                     <el-input v-model="form.lossAmt" placehoder="报损额" style="width:120px">
-                        <template slot="append">
+                        <template slot-slot="append">
                             {{form.stockUnit}}
                         </template>
                     </el-input>

@@ -13,7 +13,7 @@
             element-loading-spinner="el-icon-loading"
             element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column type="expand">
-                <template scope="props">
+                <template slot-scope="props">
                  【待实现】展示{{props.row.materialName}}最近几条出库记录
                 </template>
             </el-table-column>
@@ -32,7 +32,7 @@
             <el-table-column prop="modifier" label="修改人" width="150">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
-                <template scope="scope">
+                <template slot-scope="scope">
                 	<el-button size="small" type="primary" 
                         @click="outstock(scope.$index, scope.row)">出库</el-button>
                     
@@ -58,29 +58,12 @@
     export default {
         data() {
             return {
-                tableData: [],
-                cur_page: 1,
-                pageSize:5,
-                totalRows:0,
-                multipleSelection: [],
-                loadingState: false,
-                query:{
-                	materialCode:'',
-                    stockType:'2',
-                    storeCode:''
-                },
-                warehouseSelection:[],
-                materialSelection:[],
-                showOutStock:false,
-                radio:''
+                
             }
         },
         components:{
             StoreSelection,
             WarehouseSelection
-        },
-        created(){
-            
         },
         mounted(){
 			this.getData();
@@ -91,9 +74,6 @@
             }).then((resp)=>{
                 $this.warehouseSelection = resp.value.values;
             })
-        },
-        activated(){
-            
         },
         computed: {
             data(){
@@ -132,43 +112,11 @@
                 this.tableData = [];
                 this.getData();
             },
-            formatStockType(row, column) {
-                return row.stockType==1?"总库":"分库";
-            },
-            filterTag(value, row) {
-                return row.tag === value;
-            },
             outstock(index, item) {
                 // this.$message('编辑第'+(index+1)+'行');
                 //console.log(row)
                 this.$router.push({path:"/outStock",query:{stockId:item.id}})
                // this.$data.showOutStock=true;
-            },
-            instock(index, item) {
-                this.$router.push({path:"/inStock",query:{stockId:item.id}})
-            },
-            handleEdit(index, row) {
-                this.$message('编辑第'+(index+1)+'行');
-            },
-            handleDelete(index, row) {
-                this.$message.error('删除第'+(index+1)+'行');
-            },
-            delAll(){
-                const self = this,
-                    length = self.multipleSelection.length;
-                let str = '';
-                self.del_list = self.del_list.concat(self.multipleSelection);
-                for (let i = 0; i < length; i++) {
-                    str += self.multipleSelection[i].name + ' ';
-                }
-                self.$message.error('删除了'+str);
-                self.multipleSelection = [];
-            },
-            handleSelectionChange(val) {
-                this.multipleSelection = val;
-            },
-            handleSelect(item){
-            	this.$data.query.name=item.value;
             },
             querySearch(queryString,cb){
             	var data = [];

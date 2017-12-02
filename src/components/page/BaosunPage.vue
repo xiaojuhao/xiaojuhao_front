@@ -31,7 +31,7 @@
             <el-table-column prop="modifier" label="修改人" width="100">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button size="small" type="primary" @click="baosun(scope.$index, scope.row)">报损</el-button>
                 </template>
             </el-table-column>
@@ -58,7 +58,7 @@ export default {
         return {
             tableData: [],
             cur_page: 1,
-            pageSize: 5,
+            pageSize: 10,
             totalRows: 0,
             loadingState: false,
             query: {

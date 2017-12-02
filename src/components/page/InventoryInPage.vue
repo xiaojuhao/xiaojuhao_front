@@ -15,23 +15,23 @@
                 <el-table-column prop="supplierName" label="供应商" width="130">
                 </el-table-column>
                 <el-table-column label="数量" width="120">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-input size="small" v-model="scope.row.amt"></el-input>
                     </template>
                 </el-table-column>
                 <el-table-column label="单价" width="130">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-input size="small" v-model="scope.row.unitPrice"></el-input>
                     </template>
                 </el-table-column>
                 <el-table-column label="生产日期" width="130">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-date-picker v-model="scope.row.productDate" class="data-picker" size="small" type="date" placeholder="选择日期">
                         </el-date-picker>
                     </template>
                 </el-table-column>
                 <el-table-column label="保质期" width="150">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-input v-model="scope.row.storageLifeNum" style="width:120px">
                             <el-select v-model="scope.row.storageLifeUnit" slot="append" style="width:60px">
                                 <el-option label="天" value="D"></el-option>
@@ -43,7 +43,7 @@
                 <el-table-column prop="price" label="总金额" width="120" :formatter="calcTotalPrice">
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="100">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-button size="small" type="primary" @click="removeRows(scope.$index)">删除</el-button>
                     </template>
                 </el-table-column>

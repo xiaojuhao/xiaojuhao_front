@@ -20,7 +20,7 @@
                 <el-table-column label="采购数量" width="100" :formatter="formatPurchaseAmt">
                 </el-table-column>
                 <el-table-column label="实际数量" width="150">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-input size="small" v-model="scope.row.realStockAmt">
                         </el-input>
                     </template>

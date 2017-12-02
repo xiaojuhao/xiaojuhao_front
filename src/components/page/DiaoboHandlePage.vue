@@ -18,7 +18,7 @@
                 <el-table-column label="拨出数量" width="100" :formatter="formatStockAmt">
                 </el-table-column>
                 <el-table-column label="实际入库数量" width="150">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         <el-input size="small" v-model="scope.row.realStockAmt">
                         </el-input>
                     </template>
