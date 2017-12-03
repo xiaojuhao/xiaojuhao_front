@@ -24,7 +24,7 @@
                         <el-col :span="3"><span class="span-center">单位</span></el-col>
                         <el-col :span="3"><span class="span-center">操作</span></el-col>
                     </el-row>
-                    <el-row v-for="(ff,index) in form.formula" :gutter="5">
+                    <el-row v-for="(ff,index) in form.formula" :key="ff.materialCode" :gutter="5">
                         <el-col :span="12">
                             <MaterialSelection 
                                 :value="ff.materialCode" 

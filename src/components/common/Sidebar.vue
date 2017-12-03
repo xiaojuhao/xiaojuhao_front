@@ -32,7 +32,7 @@ export default {
         }
     },
     mounted() {
-        api.getMenu()
+        api.getMenu2()
             .then((list) => {
                 this.menus = list;
             })
@@ -48,8 +48,8 @@ export default {
     top: 70px;
     bottom: 0;
     background: #2E363F;
-    overflow-y:scroll;
-    overflow-x:hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .sidebar>ul {

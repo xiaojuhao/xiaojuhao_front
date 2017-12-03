@@ -57,6 +57,9 @@ export const api = {
     getMenu() {
         return http.post("/menu", {});
     },
+    getMenu2() {
+        return http.post("/menu2", {});
+    },
     signin(data) {
         var df = jquery.Deferred();
         try {
@@ -256,12 +259,30 @@ export const api = {
         return http.post("/inventoryApply/claimLoss", data)
     },
     startCorrect(cabinCode) {
-        return http.post("/inventoryApply/startCorrect", {cabinCode:cabinCode})
+        return http.post("/inventoryApply/startCorrect", { cabinCode: cabinCode })
     },
-    finishCorrect(cabinCode){
-        return http.post("/inventoryApply/finishCorrect",{cabinCode:cabinCode})
+    finishCorrect(cabinCode) {
+        return http.post("/inventoryApply/finishCorrect", { cabinCode: cabinCode })
     },
-    getNoticePage(data){
-        return http.post("/notice/latest",data)
+    getNoticePage(data) {
+        return http.post("/notice/latest", data)
+    },
+    saveRole(data) {
+        return http.post("/role/saveRole", data)
+    },
+    queryRoleById(id) {
+        return http.post("/role/queryRoleById", { id, id })
+    },
+    queryRolesPage(data) {
+        return http.post("/role/queryRoles", data)
+    },
+    queryRoleMenuByRoleId(roleId) {
+        return http.post("/role/queryRoleMenuByRoleId", { roleId: roleId })
+    },
+    getUserRoles(userCode) {
+        return http.post("/role/getUserRoles", { userCode: userCode })
+    },
+    menuTree() {
+        return http.post("/menuTree", {})
     }
 }

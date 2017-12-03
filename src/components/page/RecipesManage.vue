@@ -18,7 +18,7 @@
         <el-table :data="queryList" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)" @expand="expand">
             <el-table-column type="expand">
                 <template slot-scope="props">
-                    <el-row v-for="item in props.row.formulas">
+                    <el-row v-for="item in props.row.formulas" :key="item.materialCode">
                         <el-col :span="3">{{item.materialName}}</el-col>
                         <el-col :span="1">{{item.materialAmt}}</el-col>
                         <el-col :span="1">{{item.materialUnit}}</el-col>

@@ -10,8 +10,6 @@
             </el-table-column>
             <el-table-column prop="userName" label="用户名称">
             </el-table-column>
-            <el-table-column prop="userRole" label="角色" :formatter="formatRole">
-            </el-table-column>
             <el-table-column prop="status" label="用户状态" :formatter="formatStatus">
             </el-table-column>
             <el-table-column label="操作" width="250">
@@ -77,9 +75,13 @@ export default {
             }
         },
         getData() {
-            api.queryUsersPage({})
+            api.queryUsersPage({
+                pageNo:this.cur_page,
+                pageSize:this.pageSize
+            })
                 .then((page) => {
                     this.tableData = page.values;
+                    this.totalRows = page.totalRows;
                 }).fail((resp) => {
                     this.$message.error(resp.message)
                 })

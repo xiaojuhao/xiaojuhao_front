@@ -37,7 +37,11 @@ export default new Router({
                 },
                 {
                     path: '/roleManage',
-                    component: resolve => require(['../components/page/IndexInfo.vue'], resolve) // 
+                    component: resolve => require(['../components/page/RoleManage.vue'], resolve) // 
+                },
+                {
+                    path: '/roleEdit',
+                    component: resolve => require(['../components/page/RoleEdit.vue'], resolve) // 
                 },
                 {
                     path: '/sysConfig',

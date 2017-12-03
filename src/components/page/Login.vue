@@ -17,97 +17,98 @@
         </div>
     </div>
 </template>
-
 <script>
-    import {api} from '../common/bus'
-    export default {
-        data: function(){
-            return {
-                ruleForm: {
-                    username: '',
-                    password: ''
-                },
-                rules: {
-                    username: [
-                        { required: true, message: '请输入用户名', trigger: 'blur' }
-                    ],
-                    password: [
-                        { required: true, message: '请输入密码', trigger: 'blur' }
-                    ]
-                },
-                tips:'输入用户名和密码'
-            }
-        },
-        methods: {
-            submitForm(formName) {
-                const self = this;
-                self.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        self.$data.tips = "登录中.....";
-                        var data = {
-                            userCode:self.$data.ruleForm.username,
-                            password:self.$data.ruleForm.password
-                        }
-                        api.signin(data).then((resp)=>{
-                            if(resp.code != 200){
-                                self.$data.tips = resp.message;
-                            }else{
-                                self.$data.tips = "登录成功";
-                                var userinfo = resp.value;
-                                this.$store.commit('setLoginCookie',userinfo.loginCookie)
-                                this.$store.commit('setUserRole',userinfo.userRole)
-                                localStorage.setItem('ms_username',userinfo.userName);
-                                self.$router.push('/home');
-                            }
-                        }).fail((resp)=>{
-                            self.$data.tips = "登录失败,请检查用户名和密码";
-                        })
-                       return true;
-                    } else {
-                        return false;
-                    }
-                });
-            }
-        },
-        mounted(){
-            //console.log(process.env)
-            //console.log(this)
+import { api } from '../common/bus'
+export default {
+    data: function() {
+        return {
+            ruleForm: {
+                username: '',
+                password: ''
+            },
+            rules: {
+                username: [
+                    { required: true, message: '请输入用户名', trigger: 'blur' }
+                ],
+                password: [
+                    { required: true, message: '请输入密码', trigger: 'blur' }
+                ]
+            },
+            tips: '输入用户名和密码'
         }
+    },
+    methods: {
+        submitForm(formName) {
+            const self = this;
+            self.$refs[formName].validate((valid) => {
+                if (valid) {
+                    self.$data.tips = "登录中.....";
+                    var data = {
+                        userCode: self.$data.ruleForm.username,
+                        password: self.$data.ruleForm.password
+                    }
+                    api.signin(data).then((resp) => {
+                        if (resp.code != 200) {
+                            self.$data.tips = resp.message;
+                        } else {
+                            self.$data.tips = "登录成功";
+                            var userinfo = resp.value;
+                            this.$store.commit('setLoginCookie', userinfo.loginCookie)
+                            this.$store.commit('setUserRole', userinfo.userRole)
+                            localStorage.setItem('ms_username', userinfo.userName);
+                            self.$router.push('/home');
+                        }
+                    }).fail((resp) => {
+                        self.$data.tips = "登录失败,请检查用户名和密码";
+                    })
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        }
+    },
+    mounted() {
+        //console.log(process.env)
+        //console.log(this)
     }
+}
 </script>
-
 <style scoped>
-    .login-wrap{
-        position: relative;
-        width:100%;
-        height:100%;
-    }
-    .ms-title{
-        position: absolute;
-        top:50%;
-        width:100%;
-        margin-top: -230px;
-        text-align: center;
-        font-size:30px;
-        color: #fff;
+.login-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
 
-    }
-    .ms-login{
-        position: absolute;
-        left:50%;
-        top:50%;
-        width:300px;
-        height:160px;
-        margin:-150px 0 0 -190px;
-        padding:40px;
-        border-radius: 5px;
-        background: #fff;
-    }
-    .login-btn{
-        text-align: center;
-    }
-    .login-btn button{
-        width:100%;
-        height:36px;
-    }
+.ms-title {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    margin-top: -230px;
+    text-align: center;
+    font-size: 30px;
+    color: #fff;
+}
+
+.ms-login {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 300px;
+    height: 160px;
+    margin: -150px 0 0 -190px;
+    padding: 40px;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.login-btn {
+    text-align: center;
+}
+
+.login-btn button {
+    width: 100%;
+    height: 36px;
+}
 </style>
