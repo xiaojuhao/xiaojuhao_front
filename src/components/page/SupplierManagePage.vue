@@ -103,6 +103,7 @@ export default {
                 supplierPhone: '',
                 supplierEmail: '',
                 payWay: 'alipay',
+                bankName:'',
                 payMode: '',
                 payAccount: '',
                 materialJson: '',
@@ -157,6 +158,7 @@ export default {
                 this.form.supplierAddr = sp.supplierAddr;
                 this.form.payMode = sp.payMode;
                 this.form.payWay = sp.payWay;
+                this.form.bankName = sp.bankName;
                 this.form.payAccount = sp.payAccount;
                 this.form.remark = sp.remark;
                 this.form.status = sp.status;

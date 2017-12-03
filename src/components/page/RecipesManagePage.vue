@@ -15,7 +15,7 @@
                     <el-input disabled v-model="form.recipesCode" placeholder="菜品代码"></el-input>
                 </el-form-item>
                 <el-form-item label="外部系统编码">
-                    <el-input v-model="form.outCode" placeholder="外部系统编码"></el-input>
+                    <el-input :disabled="form.src=='auto_sync'?true:false" v-model="form.outCode" placeholder="外部系统编码"></el-input>
                 </el-form-item>
                 <el-form-item label="配方">
                     <el-row :gutter="5">
@@ -72,6 +72,7 @@
                     recipesCode:this.$route.query.code,
                     recipesName:'',
                     outCode:'',
+                    src:'',
                     formula:[]
                 },
                 allMaterials:[],
@@ -121,6 +122,7 @@
             .then((resp)=>{
                 this.form.recipesName = resp.recipesName;
                 this.form.outCode = resp.outCode;
+                this.form.src = resp.src;
             });
             api.queryRecipesFormula(this.$data.form.recipesCode)
             .then((values)=>{

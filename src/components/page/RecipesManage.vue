@@ -1,5 +1,5 @@
 <template>
-    <div class="table">
+    <div class="table" v-loading="loadingState" element-loading-text="处理中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
         <div class="handle-box">
             <el-row :gutter="10">
                 <el-col :span="4">
@@ -10,12 +10,13 @@
                 </el-col>
                 <el-col :span="16">
                     <div style="position:relative; float:right; ">
+                        <el-button round @click="syncMenu()">同步菜单</el-button>
                         <el-button round @click="edit()">增加菜品</el-button>
                     </div>
                 </el-col>
             </el-row>
         </div>
-        <el-table :data="queryList" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)" @expand="expand">
+        <el-table :data="queryList" border style="width: 100%" @expand="expand">
             <el-table-column type="expand">
                 <template slot-scope="props">
                     <el-row v-for="item in props.row.formulas" :key="item.materialCode">
@@ -27,10 +28,13 @@
             </el-table-column>
             <el-table-column prop="recipesCode" label="菜品编码" width="120">
             </el-table-column>
-            <el-table-column prop="recipesName" label="菜品名称" width="250">
+            <el-table-column prop="recipesName" label="菜品名称" width="200">
             </el-table-column>
-            <el-table-column prop="outCode" label="外部系统编号" width="">
+            <el-table-column prop="recipesType" label="菜品类型" width="150">
             </el-table-column>
+            <el-table-column prop="outCode" label="外部系统编号" width="150">
+            </el-table-column>
+            <el-table-column prop="src" label="来源"></el-table-column>
             <el-table-column label="操作" width="120">
                 <template slot-scope="scope">
                     <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">编辑</el-button>
@@ -110,6 +114,16 @@ export default {
         },
         edit(index, item) {
             this.$router.push({ path: "/recipesManagePage", query: { code: item && item.recipesCode } })
+        },
+        syncMenu() {
+            this.loadingState = true;
+            api.syncRecipes()
+                .then(() => {
+                    this.$message("同步菜单成功")
+                }).always(() => {
+                    this.loadingState = false;
+                    this.queryData();
+                })
         },
         expand(row, expanded) {
             if (expanded) {

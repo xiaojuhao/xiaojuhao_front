@@ -17,6 +17,22 @@ export const util = {
     formatDate(ms) {
         let date = new Date(ms);
         return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    },
+    matchSearch(target, input) {
+        target = jquery.trim(target)
+        input = jquery.trim(input);
+        if (!target) {
+            return false;
+        }
+        let arr = input.split(" ");
+        for (let i = 0; i < arr.length; i++) {
+            let str = jquery.trim(arr[i])
+            if (!str) continue;
+            if (target.indexOf(str) < 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 const http = {
@@ -284,5 +300,8 @@ export const api = {
     },
     menuTree() {
         return http.post("/menuTree", {})
+    },
+    syncRecipes(){
+        return http.post("/remote/syncRecipes", {})
     }
 }

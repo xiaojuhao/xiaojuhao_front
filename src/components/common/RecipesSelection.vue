@@ -1,13 +1,13 @@
 <template>
     <div>
-        <el-select v-model="selectedCode" placeholder="请选择" filterable clearable :filter-method="filterMethod"  @change="setValue" @visible-change="visualChange">
+        <el-select v-model="selectedCode" placeholder="请选择" filterable clearable :filter-method="filterMethod" @change="setValue" @visible-change="visualChange">
             <el-option v-for="item in valuesShow" :key="item.recipesCode" :label="item.recipesName" :value="item.recipesCode">
             </el-option>
         </el-select>
     </div>
 </template>
 <script>
-import { api } from './bus'
+import { api, util } from './bus'
 export default {
     props: ["excludes", "value", "context"],
     data() {
@@ -30,22 +30,17 @@ export default {
             this.$emit("input", this.selectedCode, this.$props.context)
         },
         initData() {
-            let $data = this.$data;
             api.queryAllRecipes()
                 .then((value) => {
-                    $data.allValues = value;
-                    $data.selectedCode = this.$props.value;
+                    this.allValues = value;
+                    this.selectedCode = this.$props.value;
                 });
         },
         filterMethod(input) {
-            let $data = this.$data;
             setTimeout(() => {
-                $data.valuesShow = $data.allValues.filter((item) => {
+                this.valuesShow = this.allValues.filter((item) => {
                     var key = [item.recipesCode, item.recipesName, item.searchKey].join(',')
-                    if (key.indexOf(input) >= 0) {
-                        return true;
-                    }
-                    return false;
+                    return util.matchSearch(key, input)
                 })
             }, 10);
         },
