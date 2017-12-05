@@ -1,8 +1,9 @@
 <template>
-	<div>
+	<div style="display:inline">
 		    <el-select v-model="selectedCode"
-           placeholder="请选择" 
+           placeholder="选择门店" 
            filterable
+           clearable
            :filter-method="filterMethod"
            @change="setValue"
            @visible-change="visualChange">
@@ -36,7 +37,7 @@
     },
 		methods: {
 			setValue(){
-				this.$emit("input",this.$props.context,this.selectedCode)
+				this.$emit("input",this.selectedCode,this.$props.context)
 			},
       initData(){
         let $data = this.$data;

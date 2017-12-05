@@ -191,6 +191,10 @@ export default new Router({
                 {
                     path: '/stockHistory',
                     component: resolve => require(['../components/page/StockHistory.vue'], resolve)
+                },
+                {
+                    path: '/orderManage',
+                    component: resolve => require(['../components/page/OrderManage.vue'], resolve)
                 }
             ]
         }

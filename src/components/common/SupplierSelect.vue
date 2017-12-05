@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="display:inline">
         <el-select v-model="selectedCode" placeholder="供应商" filterable clearable :filter-method="filterMethod" @keyup.enter.native="enterkey" @change="setValue" @visible-change="visualChange">
             <el-option v-for="item in valuesShow" :key="item.code" :label="item.name" :value="item.code">
                 <span style="float: left">{{ item.name }}</span>

@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div style="display:inline">
 		    <el-select v-model="selectedCode"
            placeholder="请选择" 
            filterable

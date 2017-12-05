@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <el-select v-model="selectedCode" placeholder="请选择" filterable clearable :filter-method="filterMethod" @change="setValue" @visible-change="visualChange">
+    <div style="display:inline">
+        <el-select v-model="selectedCode" placeholder="选择菜品" filterable clearable :filter-method="filterMethod" @change="setValue" @visible-change="visualChange">
             <el-option v-for="item in valuesShow" :key="item.recipesCode" :label="item.recipesName" :value="item.recipesCode">
             </el-option>
         </el-select>

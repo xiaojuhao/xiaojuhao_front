@@ -16,7 +16,25 @@ const config = {
 export const util = {
     formatDate(ms) {
         let date = new Date(ms);
-        return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+        return this.parseDate(date);
+    },
+    parseDate(date) {
+        if (!date) return "";
+        let year = date.getFullYear();
+        let mon = date.getMonth();
+        let day = date.getDate();
+        let str = year;
+        if (mon < 10) {
+            str = str + "-0" + mon;
+        } else {
+            str = str + "-" + mon;
+        }
+        if (day < 10) {
+            str = str + "-0" + day;
+        } else {
+            str = str + "-" + day;
+        }
+        return str;
     },
     matchSearch(target, input) {
         target = jquery.trim(target)
@@ -301,7 +319,13 @@ export const api = {
     menuTree() {
         return http.post("/menuTree", {})
     },
-    syncRecipes(){
+    syncRecipes() {
         return http.post("/remote/syncRecipes", {})
+    },
+    syncOrders(data){
+        return http.post("/remote/syncOrders",data)
+    },
+    queryWmsOrder(data) {
+        return http.post("/busi/queryWmsOrder", data)
     }
 }
