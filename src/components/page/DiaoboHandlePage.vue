@@ -32,23 +32,21 @@
                 <el-button @click="onBack">取消</el-button>
             </div>
         </div>
-        <div v-if="isShowMessage" class="pop-message">
-            <div class="pop-message-sub">
-                <el-table :data="details" style="width:100%" max-height="400" row-class-name="info-row">
-                    <el-table-column prop="materialName" label="原料名称" width="">
-                    </el-table-column>
-                    <el-table-column label="拨出数量" width="" :formatter="formatStockAmt">
-                    </el-table-column>
-                    <el-table-column prop="realStockAmt" label="实际入库数量" width="">
-                    </el-table-column>
-                </el-table>
-                <div style="margin-top: 10px; margin-left: 300px;">
-                    <el-button type="primary" @click="onSubmit">确认提交</el-button>
-                    <span style="margin-right:20px"></span>
-                    <el-button @click="()=>{this.isShowMessage = false}">取消</el-button>
-                </div>
+        <el-dialog :visible.sync="isShowMessage" title="确认入库信息">
+            <el-table :data="details" style="width:100%" max-height="400" row-class-name="info-row">
+                <el-table-column prop="materialName" label="原料名称" width="">
+                </el-table-column>
+                <el-table-column label="拨出数量" width="" :formatter="formatStockAmt">
+                </el-table-column>
+                <el-table-column prop="realStockAmt" label="实际入库数量" width="">
+                </el-table-column>
+            </el-table>
+            <div style="margin-top: 10px; margin-left: 300px;">
+                <el-button type="primary" @click="onSubmit">确认提交</el-button>
+                <span style="margin-right:20px"></span>
+                <el-button @click="()=>{this.isShowMessage = false}">取消</el-button>
             </div>
-        </div>
+        </el-dialog>
     </div>
 </template>
 <script>

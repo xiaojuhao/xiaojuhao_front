@@ -21,8 +21,8 @@ export const util = {
     parseDate(date) {
         if (!date) return "";
         let year = date.getFullYear();
-        let mon = date.getMonth();
-        let day = date.getDate();
+        let mon = date.getMonth() + 1;
+        let day = date.getDate() ;
         let str = year;
         if (mon < 10) {
             str = str + "-0" + mon;

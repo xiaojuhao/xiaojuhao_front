@@ -38,25 +38,23 @@
                 <el-button @click="onBack">取消</el-button>
             </div>
         </div>
-        <div v-if="isShowMessage" class="pop-message">
-            <div class="pop-message-sub">
-                <el-table :data="details" style="width:100%" max-height="400" row-class-name="info-row">
-                    <el-table-column prop="materialName" label="原料名称" width="">
-                    </el-table-column>
-                    <el-table-column prop="supplierName" label="供应商" width="">
-                    </el-table-column>
-                    <el-table-column label="规格数量" width="" :formatter="formatSpec">
-                    </el-table-column>
-                    <el-table-column prop="realStockAmt" label="接收数量" width="">
-                    </el-table-column>
-                </el-table>
-                <div style="margin-top: 10px; margin-left: 300px;">
-                    <el-button type="primary" @click="onSubmit">确认提交</el-button>
-                    <span style="margin-right:20px"></span>
-                    <el-button @click="()=>{this.isShowMessage = false}">取消</el-button>
-                </div>
+        <el-dialog :visible.sync="isShowMessage" title="确认入库信息">
+            <el-table :data="details" style="width:100%" max-height="400" row-class-name="info-row">
+                <el-table-column prop="materialName" label="原料名称" width="">
+                </el-table-column>
+                <el-table-column prop="supplierName" label="供应商" width="">
+                </el-table-column>
+                <el-table-column label="规格数量" width="" :formatter="formatSpec">
+                </el-table-column>
+                <el-table-column prop="realStockAmt" label="接收数量" width="">
+                </el-table-column>
+            </el-table>
+            <div style="margin-top: 10px; margin-left: 300px;">
+                <el-button type="primary" @click="onSubmit">确认提交</el-button>
+                <span style="margin-right:20px"></span>
+                <el-button @click="()=>{this.isShowMessage = false}">取消</el-button>
             </div>
-        </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -128,10 +126,11 @@ export default {
 <style scoped>
 .pop-message {
     position: fixed;
-    top: 80px;
+    top: 0px;
     width: 100%;
     height: 100%;
     z-index: 99998;
+    background: gray;
 }
 
 .pop-message-sub {
