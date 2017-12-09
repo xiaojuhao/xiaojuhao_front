@@ -31,9 +31,10 @@
             </el-table-column>
             <el-table-column prop="remark" label="备注" width="100">
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="150">
+            <el-table-column label="操作" fixed="right" width="180">
                 <template slot-scope="scope">
                     <el-button size="small" type="primary">原料详情</el-button>
+                    <el-button size="small" type="primary" @click="saleChart(scope.row)">折线图</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -110,7 +111,16 @@ export default {
             this.pageNo = 1;
             this.tableData = [];
             this.getData();
-        }
+        },
+        saleChart(item) {
+            this.$router.push({
+                path: "/recipesDailyChart",
+                query: {
+                    code: item.recipesCode,
+                    store: item.storeCode
+                }
+            })
+        },
     }
 }
 </script>

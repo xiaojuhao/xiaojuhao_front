@@ -14,11 +14,12 @@
             </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位" width="100">
             </el-table-column>
-            <el-table-column prop="modifier" label="修改人" width="">
+            <el-table-column prop="modifier" label="修改人" width="160">
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="100">
+            <el-table-column label="操作" fixed="right" width="180">
                 <template slot-scope="scope">
-                    <el-button size="small" type="primary" @click="showDetail(scope.$index, scope.row)">详细记录</el-button>
+                    <el-button size="small" type="primary" @click="showDetail(scope.row)">详细记录</el-button>
+                    <el-button size="small" type="primary" @click="showTendency(scope.row)">趋势图</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -92,8 +93,11 @@ export default {
             console.log(this.$data.query)
             cb(data)
         },
-        showDetail(index, row) {
+        showDetail(row) {
             this.$router.push({ path: "/stockHistory", query: { cabin: row.cabinCode, mcode: row.materialCode } })
+        },
+        showTendency(row){
+            this.$router.push({ path: "/stockDailyCharts", query: { cabin: row.cabinCode, mcode: row.materialCode } })
         }
     }
 }

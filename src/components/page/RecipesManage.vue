@@ -1,56 +1,62 @@
 <template>
-    <div class="table" v-loading="loadingState" element-loading-text="处理中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
-        <div class="handle-box">
-            <el-row :gutter="10">
-                <el-col :span="4">
-                    <RecipesSelection @input="(v)=>{this.queryCond.recipesCode=v;}"></RecipesSelection>
-                </el-col>
-                <el-col :span="4">
-                    <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                </el-col>
-                <el-col :span="16">
-                    <div style="position:relative; float:right; ">
-                        <el-button round @click="syncMenu()">同步菜单</el-button>
-                        <el-button round @click="edit()">增加菜品</el-button>
-                    </div>
-                </el-col>
-            </el-row>
+    <div class="container">
+        <div class="table subdiv" v-loading="loadingState" element-loading-text="处理中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)" >
+            <div class="handle-box">
+                <el-row :gutter="10">
+                    <el-col :span="4">
+                        <RecipesSelection @input="(v)=>{this.queryCond.recipesCode=v;}"></RecipesSelection>
+                    </el-col>
+                    <el-col :span="4">
+                        <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                    </el-col>
+                    <el-col :span="16">
+                        <div style="position:relative; float:right; ">
+                            <el-button round @click="syncMenu()">同步菜单</el-button>
+                            <el-button round @click="edit()">增加菜品</el-button>
+                        </div>
+                    </el-col>
+                </el-row>
+            </div>
+            <el-table :data="queryList" border style="width: 100%" @expand="expand">
+                <el-table-column type="expand">
+                    <template slot-scope="props">
+                        <el-row v-for="item in props.row.formulas" :key="item.materialCode">
+                            <el-col :span="3">{{item.materialName}}</el-col>
+                            <el-col :span="1">{{item.materialAmt}}</el-col>
+                            <el-col :span="1">{{item.materialUnit}}</el-col>
+                        </el-row>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="recipesCode" label="菜品编码" width="120">
+                </el-table-column>
+                <el-table-column prop="recipesName" label="菜品名称" width="200">
+                </el-table-column>
+                <el-table-column prop="recipesType" label="菜品类型" width="150">
+                </el-table-column>
+                <el-table-column prop="outCode" label="外部系统编号" width="150">
+                </el-table-column>
+                <el-table-column prop="src" label="来源" width="150"></el-table-column>
+                <el-table-column label="操作" width="150">
+                    <template slot-scope="scope">
+                        <el-button size="small" type="primary" @click="edit(scope.row)">编辑</el-button>
+                        
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div class="pagination">
+                <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="totalRows" :page-size="pageSize">
+                </el-pagination>
+            </div>
         </div>
-        <el-table :data="queryList" border style="width: 100%" @expand="expand">
-            <el-table-column type="expand">
-                <template slot-scope="props">
-                    <el-row v-for="item in props.row.formulas" :key="item.materialCode">
-                        <el-col :span="3">{{item.materialName}}</el-col>
-                        <el-col :span="1">{{item.materialAmt}}</el-col>
-                        <el-col :span="1">{{item.materialUnit}}</el-col>
-                    </el-row>
-                </template>
-            </el-table-column>
-            <el-table-column prop="recipesCode" label="菜品编码" width="120">
-            </el-table-column>
-            <el-table-column prop="recipesName" label="菜品名称" width="200">
-            </el-table-column>
-            <el-table-column prop="recipesType" label="菜品类型" width="150">
-            </el-table-column>
-            <el-table-column prop="outCode" label="外部系统编号" width="150">
-            </el-table-column>
-            <el-table-column prop="src" label="来源"></el-table-column>
-            <el-table-column label="操作" width="120">
-                <template slot-scope="scope">
-                    <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">编辑</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <div class="pagination">
-            <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="totalRows" :page-size="pageSize">
-            </el-pagination>
-        </div>
+        
     </div>
 </template>
 <script>
 import { api } from '../common/bus.js'
 import RecipesSelection from '../common/RecipesSelection'
 import Vue from 'vue'
+
+
 export default {
     components: {
         RecipesSelection
@@ -62,6 +68,7 @@ export default {
             pageSize: 10,
             totalRows: 0,
             loadingState: false,
+            isShowMessage: false,
             queryCond: {
                 recipesCode: ''
             },
@@ -112,7 +119,7 @@ export default {
             console.log(this.$data.query)
             cb(data)
         },
-        edit(index, item) {
+        edit(item) {
             this.$router.push({ path: "/recipesManagePage", query: { code: item && item.recipesCode } })
         },
         syncMenu() {
@@ -132,6 +139,9 @@ export default {
                         row.formulas = values;
                     })
             }
+        },
+        closeChart(){
+            this.isShowMessage = false;
         }
     }
 }
@@ -155,5 +165,15 @@ export default {
     &:last-child {
         margin-bottom: 0;
     }
+}
+.container{
+    position: relative;
+}
+.subdiv {
+    position: absolute;
+}
+.chart-div{
+    background: gray;
+    border: 0;
 }
 </style>

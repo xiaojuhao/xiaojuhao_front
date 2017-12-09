@@ -195,6 +195,14 @@ export default new Router({
                 {
                     path: '/orderManage',
                     component: resolve => require(['../components/page/OrderManage.vue'], resolve)
+                },
+                {
+                    path: '/stockDailyCharts',
+                    component: resolve => require(['../components/page/StockDailyCharts.vue'], resolve)
+                },
+                {
+                    path: '/recipesDailyChart',
+                    component: resolve => require(['../components/page/RecipesDailyChart.vue'], resolve)
                 }
             ]
         }

@@ -31,6 +31,9 @@
             <el-pagination @current-change="handleCurrentChange" :current-page.sync="cur_page" layout="prev, pager, next" :total="totalRows" :page-size="pageSize">
             </el-pagination>
         </div>
+        <div style="text-align:center">
+            <el-button @click="returnBack" >返回</el-button>
+        </div>
     </div>
 </template>
 <script>
@@ -59,6 +62,9 @@ export default {
             })
     },
     methods: {
+        returnBack(){
+            this.$router.go(-1)
+        },
         handleCurrentChange(val) {
             this.cur_page = val;
             this.getData();

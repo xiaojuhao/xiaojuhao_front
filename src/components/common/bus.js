@@ -22,7 +22,7 @@ export const util = {
         if (!date) return "";
         let year = date.getFullYear();
         let mon = date.getMonth() + 1;
-        let day = date.getDate() ;
+        let day = date.getDate();
         let str = year;
         if (mon < 10) {
             str = str + "-0" + mon;
@@ -322,10 +322,16 @@ export const api = {
     syncRecipes() {
         return http.post("/remote/syncRecipes", {})
     },
-    syncOrders(data){
-        return http.post("/remote/syncOrders",data)
+    syncOrders(data) {
+        return http.post("/remote/syncOrders", data)
     },
     queryWmsOrder(data) {
         return http.post("/busi/queryWmsOrder", data)
+    },
+    lastSevenDaysSaleData(data) {
+        return http.post("/order/lastSevenDaysSaleData", data)
+    },
+    queryRecentDaysTendency(data) {
+        return http.post("/busi/queryRecentDaysTendency", data);
     }
 }
