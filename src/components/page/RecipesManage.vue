@@ -3,13 +3,15 @@
         <div class="table subdiv" v-loading="loadingState" element-loading-text="处理中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
             <div class="handle-box">
                 <el-row :gutter="10">
-                    <el-col :span="4">
-                        <RecipesSelection @input="(v)=>{this.queryCond.recipesCode=v;}"></RecipesSelection>
-                    </el-col>
-                    <el-col :span="4">
-                        <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                    </el-col>
                     <el-col :span="16">
+                        <RecipesSelection @input="(v)=>{this.queryCond.recipesCode=v;}"></RecipesSelection>
+                        <el-select v-model="queryCond.hadFormula" style="width:160px" clearable placeholder="配料完善状态">
+                            <el-option label="已完善" value="Y"></el-option>
+                            <el-option label="未完善" value="N"></el-option>
+                        </el-select>
+                        <el-button type="primary" icon="search" @click="search">查询</el-button>
+                    </el-col>
+                    <el-col :span="7">
                         <div style="position:relative; float:right; ">
                             <el-button round @click="syncMenu()">同步菜单</el-button>
                             <el-button round @click="edit()">增加菜品</el-button>
@@ -34,6 +36,8 @@
                 <el-table-column prop="recipesType" label="菜品类型" width="150">
                 </el-table-column>
                 <el-table-column prop="outCode" label="外部系统编号" width="150">
+                </el-table-column>
+                <el-table-column prop="hadFormula" label="是否已完善配料" width="150">
                 </el-table-column>
                 <el-table-column prop="src" label="来源" width="150"></el-table-column>
                 <el-table-column label="操作" width="150">
@@ -68,7 +72,8 @@ export default {
                 pageNo: 1,
                 pageSize: 10,
                 totalRows: 0,
-                recipesCode: ''
+                recipesCode: '',
+                hadFormula: ''
             },
             queryList: []
         }
@@ -87,7 +92,8 @@ export default {
                 pageNo: this.queryCond.pageNo,
                 pageSize: this.queryCond.pageSize,
                 totalRows: this.queryCond.totalRows,
-                recipesCode: this.queryCond.recipesCode
+                recipesCode: this.queryCond.recipesCode,
+                hadFormula: this.queryCond.hadFormula
             }
             this.$store.commit("setQueryCond", p)
         },
@@ -99,7 +105,8 @@ export default {
             api.queryRecipesPage({
                     pageNo: this.queryCond.pageNo,
                     pageSize: this.queryCond.pageSize,
-                    recipesCode: this.queryCond.recipesCode
+                    recipesCode: this.queryCond.recipesCode,
+                    hadFormula: this.queryCond.hadFormula
                 })
                 .then((page) => {
                     this.queryCond.totalRows = page.totalRows;
