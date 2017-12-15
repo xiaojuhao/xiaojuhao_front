@@ -25,8 +25,7 @@
                 </el-form-item>
                 <el-form-item label="配送门店">
                     <el-checkbox-group v-model="relatedStores">
-                        <el-checkbox v-for="item in allStores" :key=item.storeCode
-                         :label="item.storeCode" :checked="item.checked">{{item.storeName}}</el-checkbox>
+                        <el-checkbox v-for="item in allStores" :key=item.storeCode :label="item.storeCode" :checked="item.checked">{{item.storeName}}</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item>
@@ -76,7 +75,6 @@ export default {
     mounted() {
         api.getWarehouseByCode(this.$data.form.warehouseCode)
             .then((v) => {
-                console.log(v)
                 this.$data.form.id = v.id;
                 this.$data.form.warehouseCode = v.warehouseCode;
                 this.$data.form.warehouseName = v.warehouseName;

@@ -29,7 +29,6 @@ export default {
         }
     },
     mounted() {
-        console.log(this.$data)
         this.myChart = echarts.init(document.querySelector('.stockDailyChartsId'));
         api.queryRecentDaysTendency({
                 cabinCode: this.$route.query.cabin,

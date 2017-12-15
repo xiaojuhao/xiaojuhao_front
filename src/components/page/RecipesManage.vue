@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div class="table subdiv" v-loading="loadingState" element-loading-text="处理中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)" >
+        <div class="table subdiv" v-loading="loadingState" element-loading-text="处理中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
             <div class="handle-box">
                 <el-row :gutter="10">
                     <el-col :span="4">
@@ -39,16 +39,14 @@
                 <el-table-column label="操作" width="150">
                     <template slot-scope="scope">
                         <el-button size="small" type="primary" @click="edit(scope.row)">编辑</el-button>
-                        
                     </template>
                 </el-table-column>
             </el-table>
             <div class="pagination">
-                <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="totalRows" :page-size="pageSize">
+                <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="queryCond.totalRows" :page-size="queryCond.pageSize" :current-page.sync="queryCond.pageNo">
                 </el-pagination>
             </div>
         </div>
-        
     </div>
 </template>
 <script>
@@ -64,18 +62,19 @@ export default {
     data() {
         return {
             tableData: [],
-            pageNo: 1,
-            pageSize: 10,
-            totalRows: 0,
             loadingState: false,
             isShowMessage: false,
             queryCond: {
+                pageNo: 1,
+                pageSize: 10,
+                totalRows: 0,
                 recipesCode: ''
             },
             queryList: []
         }
     },
     mounted() {
+        this.loadParam();
         this.queryData();
     },
     methods: {
@@ -83,15 +82,27 @@ export default {
             this.pageNo = val;
             this.queryData();
         },
+        keepParam() {
+            let p = {
+                pageNo: this.queryCond.pageNo,
+                pageSize: this.queryCond.pageSize,
+                totalRows: this.queryCond.totalRows,
+                recipesCode: this.queryCond.recipesCode
+            }
+            this.$store.commit("setQueryCond", p)
+        },
+        loadParam() {
+            Object.assign(this.queryCond, this.$store.state.queryCond)
+        },
         queryData() {
             this.loadingState = true;
             api.queryRecipesPage({
-                    pageNo: this.pageNo,
-                    pageSize: this.pageSize,
+                    pageNo: this.queryCond.pageNo,
+                    pageSize: this.queryCond.pageSize,
                     recipesCode: this.queryCond.recipesCode
                 })
                 .then((page) => {
-                    this.totalRows = page.totalRows;
+                    this.queryCond.totalRows = page.totalRows;
                     this.queryList = [];
                     page.values.forEach((item) => {
                         Vue.set(item, "formulas", [])
@@ -105,21 +116,11 @@ export default {
             this.queryList = [];
             this.queryData();
         },
-        handleSelectionChange(val) {
-            this.multipleSelection = val;
-        },
         handleSelect(item) {
             this.$data.query.name = item.value;
         },
-        querySearch(queryString, cb) {
-            var data = [];
-            data.push({ id: 1, value: 'aaaaa' })
-            data.push({ id: 2, value: 'bbbbb' })
-            data.push({ id: 3, value: 'ccccc' })
-            console.log(this.$data.query)
-            cb(data)
-        },
         edit(item) {
+            this.keepParam();
             this.$router.push({ path: "/recipesManagePage", query: { code: item && item.recipesCode } })
         },
         syncMenu() {
@@ -140,7 +141,7 @@ export default {
                     })
             }
         },
-        closeChart(){
+        closeChart() {
             this.isShowMessage = false;
         }
     }
@@ -166,13 +167,16 @@ export default {
         margin-bottom: 0;
     }
 }
-.container{
+
+.container {
     position: relative;
 }
+
 .subdiv {
     position: absolute;
 }
-.chart-div{
+
+.chart-div {
     background: gray;
     border: 0;
 }

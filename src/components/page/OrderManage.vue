@@ -75,6 +75,19 @@ export default {
         formatSaleDate(row) {
             return util.formatDate(row.saleDate)
         },
+        keepParam() {
+            let p = {
+                pageNo: this.pageNo,
+                pageSize: this.pageSize,
+                totalRows: this.totalRows,
+                recipesCode: this.recipesCode,
+                saleDate: this.saleDate
+            }
+            this.$store.commit("setQueryCond", p)
+        },
+        loadParam() {
+            Object.assign(this.$data, this.$store.state.queryCond)
+        },
         getData() {
             this.loadingState = true;
             api.queryWmsOrder({
@@ -113,6 +126,7 @@ export default {
             this.getData();
         },
         saleChart(item) {
+            this.keepParam();
             this.$router.push({
                 path: "/recipesDailyChart",
                 query: {
@@ -121,6 +135,10 @@ export default {
                 }
             })
         },
+    },
+    mounted(){
+        this.loadParam();
+        this.getData();
     }
 }
 </script>

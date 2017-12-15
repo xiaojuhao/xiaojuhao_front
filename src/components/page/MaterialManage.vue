@@ -35,7 +35,7 @@
             </el-table-column>
         </el-table>
         <div class="pagination">
-            <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="totalRows" :page-size="pageSize">
+            <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="queryCond.totalRows" :page-size="queryCond.pageSize" :current-page.sync="queryCond.pageNo">
             </el-pagination>
         </div>
     </div>
@@ -51,11 +51,11 @@ export default {
     data() {
         return {
             tableData: [],
-            pageNo: 1,
-            pageSize: 10,
-            totalRows: 0,
             loadingState: false,
             queryCond: {
+                pageNo: 1,
+                pageSize: 10,
+                totalRows: 0,
                 materialCode: ''
             },
             queryList: [],
@@ -63,12 +63,25 @@ export default {
         }
     },
     mounted() {
+        this.loadParam();
         this.queryData();
     },
     methods: {
         handleCurrentChange(val) {
-            this.pageNo = val;
+            this.queryCond.pageNo = val;
             this.queryData();
+        },
+        keepParam() {
+            let p = {
+                pageNo: this.queryCond.pageNo,
+                pageSize: this.queryCond.pageSize,
+                totalRows: this.queryCond.totalRows,
+                materialCode: this.queryCond.materialCode
+            }
+            this.$store.commit("setQueryCond", p)
+        },
+        loadParam() {
+            Object.assign(this.queryCond, this.$store.state.queryCond)
         },
         formatStorageLife(row) {
             let re = /(\d+)(\w)/ig;
@@ -87,27 +100,26 @@ export default {
             }
             return ret;
         },
-        formatSpec(row){
-            if(row.specUnit == '无'){
+        formatSpec(row) {
+            if (row.specUnit == '无') {
                 return '无'
             }
-            return row.specQty+row.stockUnit+"/"+row.specUnit;
+            return row.specQty + row.stockUnit + "/" + row.specUnit;
         },
         queryData() {
-            let self = this;
-            self.$data.loadingState = true;
+            this.loadingState = true;
             api.queryMaterialsPage({
-                    pageSize: self.$data.pageSize,
-                    pageNo: self.$data.pageNo,
-                    materialCode: self.queryCond.materialCode
+                    pageSize: this.queryCond.pageSize,
+                    pageNo: this.queryCond.pageNo,
+                    materialCode: this.queryCond.materialCode
                 })
                 .then((page) => {
                     this.queryList = page.values;
-                    this.totalRows = page.totalRows;
-                }).fail(function(resp) {
-                    self.$message.error("请求出错")
-                }).always(function(resp) {
-                    self.$data.loadingState = false;
+                    this.queryCond.totalRows = page.totalRows;
+                }).fail((resp) => {
+                    this.$message.error("请求出错")
+                }).always((resp) => {
+                    this.loadingState = false;
                 })
         },
         search() {
@@ -115,6 +127,7 @@ export default {
             this.queryData();
         },
         edit(index, item) {
+            this.keepParam();
             this.$router.push({ path: "/materialManagePage", query: { mid: item && item.id } })
         }
     }

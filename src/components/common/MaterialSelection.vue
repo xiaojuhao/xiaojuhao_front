@@ -51,7 +51,6 @@
         // });
       },
       enterkey(e){
-        console.log(e)
       },
 			filterMethod(input){
           let $data = this.$data;

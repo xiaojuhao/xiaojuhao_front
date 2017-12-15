@@ -11,7 +11,8 @@ const state = {
     allWarehouses: [],
     allSuppliers: [],
     loginCookie: '',
-    userRole: ''
+    userRole: '',
+    queryCond:{}
 }
 
 const getters = {
@@ -122,6 +123,9 @@ const mutations = {
     },
     setUserRole(state, role) {
         state.userRole = role;
+    },
+    setQueryCond(state,cond){
+        state.queryCond = cond;
     }
 }
 

@@ -87,7 +87,6 @@ export default {
             this.$router.go(-1)
         },
         handleRemove(file, fileList) {
-            console.log(file, fileList);
         },
         handleSuccess(resp, fileList) {
             this.form.busiNo = resp.value.busiNo;
@@ -96,9 +95,7 @@ export default {
     mounted() {
         api.queryMaterialsStockById(this.form.id)
             .then((v) => {
-                console.log(v)
                 let re = /(\d+)(\w)/ig;
-                console.log(v)
                 this.form.materialName = v.materialName;
                 this.form.materialCode = v.materialCode;
                 this.form.cabinCode = v.cabinCode;

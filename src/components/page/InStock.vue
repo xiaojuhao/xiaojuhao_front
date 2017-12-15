@@ -101,7 +101,6 @@
         mounted(){
             this.initData();
             config.getWarehouse({},(resp)=>{
-                console.log(resp)
                 this.warehouseSelection=resp.value.values
             });
         },

@@ -137,7 +137,6 @@ export default {
                 this.$message.error("请选选择拨出单位")
                 return;
             }
-            console.log(this.cabinMaterialStock)
             clearTimeout(this.timeout)
             this.timeout = setTimeout(() => {
                 queryString = jquery.trim(queryString)
@@ -215,7 +214,6 @@ export default {
             }
             api.queryMaterialsStockPage(param)
                 .then((page) => {
-                    console.log(this.cabinMaterialStock)
                     this.cabinMaterialStock = page.values;
                     if (!this.cabinMaterialStock || this.cabinMaterialStock.length == 0) {
                         this.$message.error("仓库没有库存数据")

@@ -116,7 +116,6 @@ export default {
             http.post("/busi/batchInstock", {
                 dataJson: JSON.stringify(this.materialList)
             }).then((resp) => {
-                console.log(resp)
             })
         },
         removeRows(index) {

@@ -109,7 +109,6 @@ export default {
         api.queryMaterialById(this.form.id)
             .then((v) => {
                 let re = /(\d+)(\w)/ig;
-                console.log(v)
                 this.form.materialName = v.materialName;
                 this.form.materialCode = v.materialCode;
                 this.form.stockUnit = v.stockUnit;

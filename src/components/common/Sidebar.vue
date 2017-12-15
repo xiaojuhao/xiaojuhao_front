@@ -1,6 +1,6 @@
 <template>
     <div class="sidebar">
-        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" unique-opened router>
+        <el-menu :default-active="onRoutes" class="el-menu-vertical-demo" theme="dark" @select="handleSelect" unique-opened router>
             <template v-for="item in menus">
                 <template v-if="item.type=='nav'">
                     <el-submenu :index="item.menuIndex">
@@ -36,6 +36,11 @@ export default {
             .then((list) => {
                 this.menus = list;
             })
+    },
+    methods:{
+        handleSelect(key,path){
+            this.$store.commit("setQueryCond",{})
+        }
     }
 }
 </script>

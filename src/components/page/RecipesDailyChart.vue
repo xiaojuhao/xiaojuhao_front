@@ -1,6 +1,9 @@
 <template>
     <div class="subdiv chart-div" style="width: 90%;height:450px;">
         <div id="recipesDailyChartsId" class="recipesDailyChartsId" style="width: 100%;height:450px;"></div>
+        <div style="text-align:center">
+            <el-button @click="returnBack">返回</el-button>
+        </div>
     </div>
 </template>
 <script>
@@ -24,7 +27,6 @@ export default {
         }
     },
     mounted() {
-        console.log(this.$data)
         this.myChart = echarts.init(document.querySelector('.recipesDailyChartsId'));
         api.lastSevenDaysSaleData({
                 recipesCode: this.$route.query.code,
@@ -40,6 +42,9 @@ export default {
 
     },
     methods: {
+        returnBack() {
+            this.$router.go(-1)
+        },
         initData() {
             let option = {
                 title: {

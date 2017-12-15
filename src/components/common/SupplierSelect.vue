@@ -36,7 +36,6 @@ export default {
                 pageSize: 2000
             }).then((page) => {
                 page.values.forEach((item) => {
-                    console.log(item)
                     let ii = {};
                     ii.code = item.supplierCode;
                     ii.name = item.supplierName;

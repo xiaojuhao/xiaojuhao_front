@@ -132,14 +132,6 @@ export default {
         },
         showStockHistory(index, item) {
             this.$router.push({ path: "/stockHistory", query: { mcode: item.materialCode, cabin:item.cabinCode } })
-        },
-        querySearch(queryString, cb) {
-            var data = [];
-            data.push({ id: 1, value: 'aaaaa' })
-            data.push({ id: 2, value: 'bbbbb' })
-            data.push({ id: 3, value: 'ccccc' })
-            console.log(this.$data.query)
-            cb(data)
         }
     }
 }
