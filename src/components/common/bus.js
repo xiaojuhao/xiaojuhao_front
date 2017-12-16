@@ -8,13 +8,17 @@ const config = {
     //server:'http://localhost:8080/'
     server: function() {
         if (window.location.href.indexOf("localhost") > 0) {
-            return "http://localhost:8080/"
-        } else if (window.location.href.indexOf("47.96.148.141") > 0) {
-            return "http://47.96.148.141/";
-        } else if (window.location.href.indexOf("gameest.com") > 0) {
-            return "http://1.gameest.com/";
+            return "http://localhost:8080"
         }
-        return process.env.REMOTE_SERVER
+        // else if (window.location.href.indexOf("47.96.148.141") > 0) {
+        //     return "http://47.96.148.141/";
+        // } else if (window.location.href.indexOf("gameest.com") > 0) {
+        //     return "http://1.gameest.com/";
+        // }
+        // let protocal = window.location.protocol;
+        let host = window.location.host;
+        // return process.env.REMOTE_SERVER
+        return "//" + host;
     }()
 }
 export const util = {
