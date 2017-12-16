@@ -31,7 +31,7 @@
                     accept="image/*"
                     :on-success="handleSuccess" :file-list="fileList" :data="form">
                         <el-button size="small" type="primary">添加文件</el-button>
-                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+                        <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
                     </el-upload>
                 </el-form-item>
                 <el-row>

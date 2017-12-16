@@ -11,6 +11,8 @@ const config = {
             return "http://localhost:8080/"
         }else if(window.location.href.indexOf("47.96.148.141") > 0){
             return "http://47.96.148.141/";
+        }else if(window.location.href.indexOf("gameest.com") > 0){
+            return "http://1.gameest.com/";
         }
         return process.env.REMOTE_SERVER
     }()
