@@ -33,7 +33,7 @@
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="180">
                 <template slot-scope="scope">
-                    <el-button size="small" type="primary">原料详情</el-button>
+                    <el-button size="small" type="primary" @click="showMaterialDetail(scope.row)">原料详情</el-button>
                     <el-button size="small" type="primary" @click="saleChart(scope.row)">折线图</el-button>
                 </template>
             </el-table-column>
@@ -42,6 +42,16 @@
             <el-pagination @current-change="handleCurrentChange" :current-page.sync="pageNo" layout="prev, pager, next" :total="totalRows" :page-size="pageSize">
             </el-pagination>
         </div>
+        <el-dialog :title="dialogTitle" v-model="dialogOrderMaterialShow" class="dialog">
+            <el-table :data="orderMaterials" border>
+                <el-table-column prop="materialCode" label="原料名称" >
+                </el-table-column>
+                <el-table-column prop="saleNum" label="消耗数量" >
+                </el-table-column>
+                <el-table-column prop="remark" label="备注" >
+                </el-table-column>
+            </el-table>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -64,7 +74,10 @@ export default {
             syncDate: null,
             recipesCode: '',
             loadingState: false,
-            loadingState2: false
+            loadingState2: false,
+            dialogOrderMaterialShow: false,
+            dialogTitle: '',
+            orderMaterials: []
         }
     },
     methods: {
@@ -135,8 +148,20 @@ export default {
                 }
             })
         },
+        showMaterialDetail(item) {
+            console.log(item)
+            this.dialogOrderMaterialShow = true;
+            this.dialogTitle = "原料明细-" + item.storeName + "-" + item.recipesName
+            api.queryOrderMaterials({
+                orderId: item.id,
+                recipesCode: item.recipesCode,
+                storeCode: item.storeCode
+            }).then((list) => {
+                this.orderMaterials = list;
+            })
+        }
     },
-    mounted(){
+    mounted() {
         this.loadParam();
         this.getData();
     }
@@ -154,5 +179,9 @@ export default {
 .handle-input {
     width: 300px;
     display: inline-block;
+}
+
+.dialog {
+    width: 100%;
 }
 </style>

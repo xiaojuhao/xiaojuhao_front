@@ -7,7 +7,7 @@
             <table border="1" bordercolor="#a0c6e5" style="border-collapse: collapse; min-width: 80%">
                 <tr v-for="item in messages" :key="item.id" >
                     <td align="center" style="width:50px;">{{item.id}}</td>
-                    <td style="width:100px;">告警信息</td>
+                    <td style="width:100px;">{{item.title}}</td>
                     <td>{{item.content}}</td>
                     <td>{{formatDate(item)}}</td>
                 </tr>
