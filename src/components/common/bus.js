@@ -123,6 +123,18 @@ export const api = {
 
         return df.promise();
     },
+    getMaterialFromStoreByCode(materialCode) {
+        if (store.getters.allMaterialsMap) {
+            return store.getters.allMaterialsMap.get(materialCode)
+        }
+        return null;
+    },
+    getSupplierFromStoreByCode(supplierCode) {
+        if (store.getters.allSuppliersMap) {
+            return store.getters.allSuppliersMap.get(supplierCode)
+        }
+        return null;
+    },
     saveUser(data) {
         return http.post("/user/saveUser", data);
     },
@@ -136,12 +148,7 @@ export const api = {
         return http.post("/user/queryUsers", data)
     },
     getAllStoreList() {
-        var df = jquery.Deferred();
-        http.post('/store/getAllStore')
-            .then((page) => {
-                df.resolve(page.values);
-            }).fail((resp) => df.reject(resp))
-        return df.promise();
+        return http.post("/store/getAllStore", { pageSize: 1000 })
     },
     queryStoreByCode(code) {
         return http.post("/store/getStoreByCode", { storeCode: code })
@@ -220,6 +227,9 @@ export const api = {
     addMaterials(data) {
         return http.post("/busi/addMaterials", data)
     },
+    deleteMaterials(materialCode) {
+        return http.post("/busi/deleteMaterials", { materialCode: materialCode })
+    },
     queryMaterialSplitByMaterialCode(materialCode) {
         return http.post("/busi/queryMaterialSplitByMaterialCode", { materialCode: materialCode })
     },
@@ -282,11 +292,14 @@ export const api = {
     queryMyAllocate(data) {
         return http.post("/inventoryApply/queryMyAllocate", data)
     },
-    queryInventoryApplyByApplyNum(orderNum) {
+    queryInventoryApplyDetailByApplyNum(orderNum) {
         return http.post("/inventoryApply/queryPurchaseOrderDetail", { applyNum: orderNum })
     },
     confirmInventory(data) {
         return http.post("/inventoryApply/confirmInventory", data)
+    },
+    paidInventory(data) {
+        return http.post("/inventoryApply/paidInventory", data)
     },
     commitDiaobo(data) {
         return http.post("/diaobo/commit", data)
@@ -344,5 +357,11 @@ export const api = {
     },
     queryOrderMaterials(data) {
         return http.post("/busi/queryOrderMaterials", data)
+    },
+    querySpecDetailByMaterialCode(materialCode) {
+        return http.post("/spec/queryDetail", { materialCode: materialCode, pageSize: 100 })
+    },
+    queryUnitByGroup(groupCode) {
+        return http.post("/unit/queryUnitByGroup", { groupCode: groupCode })
     }
 }

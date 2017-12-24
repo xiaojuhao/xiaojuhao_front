@@ -4,7 +4,8 @@
             <div class="handle-box">
                 <el-row :gutter="10">
                     <el-col :span="16">
-                        <RecipesSelection @input="(v)=>{this.queryCond.recipesCode=v;}"></RecipesSelection>
+                        <!-- <RecipesSelection @input="(v)=>{this.queryCond.recipesCode=v;}"></RecipesSelection> -->
+                        <el-input v-model="queryCond.searchKey" style="width:180px" placeholder="搜索菜品名称或拼音"></el-input>
                         <el-select v-model="queryCond.hadFormula" style="width:160px" clearable placeholder="配料完善状态">
                             <el-option label="已完善" value="Y"></el-option>
                             <el-option label="未完善" value="N"></el-option>
@@ -73,7 +74,8 @@ export default {
                 pageSize: 10,
                 totalRows: 0,
                 recipesCode: '',
-                hadFormula: ''
+                hadFormula: '',
+                searchKey: ''
             },
             queryList: []
         }
@@ -106,7 +108,8 @@ export default {
                     pageNo: this.queryCond.pageNo,
                     pageSize: this.queryCond.pageSize,
                     recipesCode: this.queryCond.recipesCode,
-                    hadFormula: this.queryCond.hadFormula
+                    hadFormula: this.queryCond.hadFormula,
+                    searchKey: this.queryCond.searchKey
                 })
                 .then((page) => {
                     this.queryCond.totalRows = page.totalRows;

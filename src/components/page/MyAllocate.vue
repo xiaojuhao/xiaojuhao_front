@@ -23,8 +23,9 @@
             </el-table-column>
             <el-table-column prop="applyNum" label="采购单号" width="350">
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="80">
+            <el-table-column label="操作" fixed="right" width="150">
                 <template slot-scope="scope">
+                    <el-button size="small" type="primary" @click="showDetail(scope.row)">打印</el-button>
                     <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
                 </template>
             </el-table-column>
@@ -111,8 +112,8 @@ export default {
             this.tableData = [];
             this.getData();
         },
-        confirmOrder(item) {
-            this.$router.push({ path: "/inventoryInConfirm", query: { applyNum: item && item.applyNum } })
+        showDetail(item) {
+            this.$router.push({ path: "/inventoryDetail", query: { applyNum: item && item.applyNum } })
         },
         printBill(item){
             window.open(config.server+"/print?applyNum="+item.applyNum)

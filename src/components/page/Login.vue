@@ -56,6 +56,7 @@ export default {
                             this.$store.commit('setLoginCookie', userinfo.loginCookie)
                             this.$store.commit('setUserRole', userinfo.userRole)
                             localStorage.setItem('ms_username', userinfo.userName);
+                            this.$store.dispatch('loadAllData')
                             self.$router.push('/home');
                         }
                     }).fail((resp) => {

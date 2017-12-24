@@ -2,13 +2,12 @@
     <div class="table">
         <div class="handle-box">
             <el-row :gutter="10">
-                <el-col :span="4">
-                    <MaterialSelection @input="(val)=>{this.queryCond.materialCode=val;}"></MaterialSelection>
-                </el-col>
-                <el-col :span="4">
-                    <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                </el-col>
                 <el-col :span="16">
+                    <!-- <MaterialSelection @input="(val)=>{this.queryCond.materialCode=val;}"></MaterialSelection> -->
+                    <el-input v-model="queryCond.searchKey" style="width:180px" placeholder="搜索条件"></el-input>
+                    <el-button type="primary" icon="search" @click="search">搜索</el-button>支持原料名称、配音搜索
+                </el-col>
+                <el-col :span="8">
                     <div style="position:relative; float:right; ">
                         <el-button round @click="edit()">增加原料</el-button>
                     </div>
@@ -20,17 +19,20 @@
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="200">
             </el-table-column>
-            <el-table-column label="规格" width="100" :formatter="formatSpec">
-            </el-table-column>
             <el-table-column v-if="userRole == '1'" prop="utilizationRatio" label="利用率(%)" width="120">
             </el-table-column>
             <el-table-column prop="storageLife" label="保质期" width="120" :formatter="formatStorageLife">
             </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位" width="">
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="100">
+            <el-table-column label="操作" fixed="right" width="150">
                 <template slot-scope="scope">
-                    <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">编辑</el-button>
+                    <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">
+                        编辑
+                    </el-button>
+                    <el-button size="small" type="primary" @click="delMaterial(scope.$index, scope.row)">
+                        删除
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -56,7 +58,8 @@ export default {
                 pageNo: 1,
                 pageSize: 10,
                 totalRows: 0,
-                materialCode: ''
+                materialCode: '',
+                searchKey: ''
             },
             queryList: [],
             userRole: this.$store.state.userRole
@@ -111,7 +114,9 @@ export default {
             api.queryMaterialsPage({
                     pageSize: this.queryCond.pageSize,
                     pageNo: this.queryCond.pageNo,
-                    materialCode: this.queryCond.materialCode
+                    materialCode: this.queryCond.materialCode,
+                    searchKey: this.queryCond.searchKey,
+                    status: '1'
                 })
                 .then((page) => {
                     this.queryList = page.values;
@@ -129,6 +134,22 @@ export default {
         edit(index, item) {
             this.keepParam();
             this.$router.push({ path: "/materialManagePage", query: { mid: item && item.id } })
+        },
+        delMaterial(index, item) {
+            let tips = "是否删除" + item.materialName + "?"
+            this.$confirm(tips, '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                api.deleteMaterials(item.materialCode)
+                    .then(() => {
+                        this.queryData();
+                    }).fail((resp) => {
+                        this.$message.error(resp.message)
+                    })
+            })
+
         }
     }
 }

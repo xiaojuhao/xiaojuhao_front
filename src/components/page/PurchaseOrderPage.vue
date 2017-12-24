@@ -21,6 +21,14 @@
                 </el-table-column>
                 <el-table-column prop="supplierName" label="供应商" width="150">
                 </el-table-column>
+                <el-table-column label="采购规格" width="150">
+                    <template slot-scope="scope">
+                        <el-select v-model="scope.row.specCode" slot="append" style="width:140px" @change="onSelectSpec(scope.row, scope.row.specCode)">
+                            <el-option v-for="item in scope.row.specCodeSel" :key="item.specCode" :label="item.specName" :value="item.specCode">
+                            </el-option>
+                        </el-select>
+                    </template>
+                </el-table-column>
                 <el-table-column label="采购数量" width="140">
                     <template slot-scope="scope">
                         <el-input size="small" v-model="scope.row.specAmt">
@@ -36,6 +44,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="规格" :formatter="formatSpec" width="100">
+                </el-table-column>
+                <el-table-column label="入库数量" :formatter="formatAmt" width="100">
+                </el-table-column>
+                <el-table-column prop="brandName" label="品牌" width="100">
+                </el-table-column>
+                <el-table-column prop="homeplace" label="产地" width="100">
                 </el-table-column>
                 <el-table-column label="生产日期" width="150">
                     <template slot-scope="scope">
@@ -90,8 +104,20 @@ export default {
     },
     methods: {
         formatSpec(row) {
-            if (row.specUnit == '无') return "1"+row.stockUnit
-            return row.specQty + row.stockUnit;
+            if (row.specQty && row.stockUnit && row.specUnit) {
+                if (row.stockUnit != row.specUnit)
+                    return row.specQty + row.stockUnit + "/" + row.specUnit;
+                else
+                    return row.stockUnit
+            }
+        },
+        formatAmt(row) {
+            let amt = eval(row.specAmt + "*" + row.specQty).toFixed(2);
+            let intamt = parseInt(amt);
+            if (amt == intamt) {
+                return intamt + row.stockUnit;
+            }
+            return amt + row.stockUnit;
         },
         onClear() {
             let self = this;
@@ -109,32 +135,31 @@ export default {
                 return
             }
             let self = this;
-            this.$confirm('是否提交入库?', '提示', {
+            this.$confirm('是否提交采购单?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
                 this.loadingState = true;
-                this.submitToServer();
-                self.materialList = [];
-                setTimeout(() => {
-                    this.loadingState = false;
-                    this.$message("提交采购单成功")
-                }, 1000)
+                let param = {
+                    cabinCode: this.cabinCode,
+                    dataJson: JSON.stringify(this.materialList)
+                }
+                api.commitPurchaseOrder(param)
+                    .then((val) => {
+                        self.materialList = [];
+                        this.$message("提交采购单成功")
+                    }).fail((resp) => {
+                        this.$message.error(resp.message)
+                    }).always(() => {
+                        this.loadingState = false;
+                    })
             }).catch(() => {
                 this.$message({
                     type: 'info',
                     message: '取消入库'
                 });
             });
-        },
-        submitToServer() {
-            let param = {
-                cabinCode: this.cabinCode,
-                dataJson: JSON.stringify(this.materialList)
-            }
-            api.commitPurchaseOrder(param)
-                .then((val) => {})
         },
         removeRows(index) {
             this.$data.materialList.splice(index, 1)
@@ -145,9 +170,15 @@ export default {
                 queryString = jquery.trim(queryString)
                 let counter = 0;
                 let result = this.allMaterialSupplier.map((item) => {
+                    let mt = api.getSupplierFromStoreByCode(item.supplierCode)
+                    console.log(mt)
                     let sk = item.materialName + "," + item.supplierName + "," + item.searchKey;
                     Vue.set(item, "sk", sk)
-                    Vue.set(item, 'value', item.materialName + "-" + item.supplierName)
+                    if (mt && mt.shortName) {
+                        Vue.set(item, 'value', mt.shortName + "-" + item.materialName)
+                    } else {
+                        Vue.set(item, 'value', item.supplierName + "-" + item.materialName)
+                    }
                     return item;
                 }).filter((item) => {
                     counter++;
@@ -177,8 +208,8 @@ export default {
                             Vue.set(item, 'storageLifeUnit', r[2])
                             Vue.set(item, 'storageLifeNum', r[1])
                         }
-                        Vue.set(item, "specUnit", mm.specUnit)
-                        Vue.set(item, "specQty", mm.specQty)
+                        Vue.set(item, "specUnit", '')
+                        Vue.set(item, "specQty", 0)
                         Vue.set(item, "stockUnit", mm.stockUnit)
                     }
                     Vue.set(item, 'specAmt', 0)
@@ -187,7 +218,35 @@ export default {
                     Vue.set(item, 'cabinCode', this.cabinCode)
                     Vue.set(item, 'prodDate', today)
                     Vue.set(item, 'materialCode', item.materialCode)
+                    this.setSpecCode(item);
                     self.materialList.push(item)
+                }
+            })
+        },
+        setSpecCode(item) {
+            setTimeout(() => {
+                api.querySpecDetailByMaterialCode(item.materialCode)
+                    .then((list) => {
+                        if (list && list.length > 0) {
+                            Vue.set(item, 'specCode', list[0].specCode)
+                            Vue.set(item, 'specUnit', list[0].specUnit)
+                            Vue.set(item, 'specQty', list[0].transRate)
+                            Vue.set(item, 'brandName', list[0].brandName)
+                            Vue.set(item, 'homeplace', list[0].homeplace)
+                        }
+                        Vue.set(item, 'specCodeSel', list)
+                    })
+            }, 0)
+
+        },
+        onSelectSpec(item, selectedCode) {
+            item.specCodeSel.forEach((it) => {
+                if (it.specCode == selectedCode) {
+                    Vue.set(item, 'specCode', it.specCode)
+                    Vue.set(item, 'specUnit', it.specUnit)
+                    Vue.set(item, 'specQty', it.transRate)
+                    Vue.set(item, 'brandName', it.brandName)
+                    Vue.set(item, 'homeplace', it.homeplace)
                 }
             })
         },
@@ -216,6 +275,7 @@ export default {
         }
     },
     mounted() {
+        this.$store.dispatch('loadAllData')
         api.queryAllMaterialSuppler()
             .then((values) => {
                 this.allMaterialSupplier = values;

@@ -6,7 +6,7 @@
 <script>
 	export default {
 		mounted(){
-			this.$store.dispatch('loadAllData');
+			//this.$store.dispatch('loadAllData');
 		}
 	}
 </script>

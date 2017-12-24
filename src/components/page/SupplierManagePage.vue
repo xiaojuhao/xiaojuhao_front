@@ -37,7 +37,7 @@
                 </el-form-item>
                 <el-form-item label="结账模式">
                     <el-select v-model="form.payMode" style="width:150px" placeholder="请选择">
-                        <el-option label="现结" value="ByNow"></el-option>
+                        <el-option label="现结" value="ByInTime"></el-option>
                         <el-option label="周结" value="ByWeek"></el-option>
                         <el-option label="月结" value="ByMonth"></el-option>
                     </el-select>
@@ -46,15 +46,34 @@
                     <template>
                         <el-radio-group v-model="form.payWay">
                             <el-radio label="alipay">支付宝</el-radio>
+                            <el-radio label="weixin">微信</el-radio>
                             <el-radio label="bank">银行</el-radio>
                         </el-radio-group>
                     </template>
                 </el-form-item>
                 <el-form-item v-if="form.payWay=='bank'" label="银行信息">
-                    <el-input v-model="form.bankName" placeholder="银行信息"></el-input>
+                    <el-input v-model="form.bankName" placeholder="银行名称" ></el-input>
                 </el-form-item>
-                <el-form-item label="账户信息">
-                    <el-input v-model="form.payAccount" placeholder="账户信息"></el-input>
+                <el-form-item v-if="form.payWay=='bank'" label="开户行">
+                    <el-input v-model="form.depositBank" placeholder="开户行" ></el-input>
+                </el-form-item>
+                <el-form-item v-if="form.payWay=='bank'" label="银行账户">
+                    <el-input v-model="form.bankAccount" placeholder="银行账户" ></el-input>
+                </el-form-item>
+                <el-form-item v-if="form.payWay=='bank'" label="收款人">
+                    <el-input v-model="form.bankAccountName" placeholder="收款人" ></el-input>
+                </el-form-item>
+                <el-form-item  v-if="form.payWay=='alipay'" label="支付宝账号">
+                    <el-input v-model="form.alipayAccount" placeholder="支付宝账号"></el-input>
+                </el-form-item>
+                <el-form-item  v-if="form.payWay=='alipay'" label="支付宝收款人">
+                    <el-input v-model="form.alipayAccountName" placeholder="支付宝收款人"></el-input>
+                </el-form-item>
+                <el-form-item v-if="form.payWay=='weixin'" label="微信账号">
+                    <el-input v-model="form.weixinAccount" placeholder="微信账号"></el-input>
+                </el-form-item>
+                <el-form-item v-if="form.payWay=='weixin'" label="微信收款人">
+                    <el-input v-model="form.weixinAccountName" placeholder="微信收款人"></el-input>
                 </el-form-item>
                 <el-form-item label="备注">
                     <el-input v-model="form.remark" placeholder="备注信息"></el-input>
@@ -117,9 +136,7 @@ export default {
     methods: {
         onSubmit() {
             this.form.materialJson = JSON.stringify(this.materials);
-            if (this.form.payWay != 'bank') {
-                this.form.bankName = this.form.payWay;
-            }
+            
             api.saveSupplierInfo(this.form)
                 .then((val) => {
                     this.form.supplierCode = val.supplierCode;
@@ -150,18 +167,7 @@ export default {
     mounted() {
         api.querySupplierByCode(this.form.supplierCode)
             .then((sp) => {
-                this.form.supplierName = sp.supplierName;
-                this.form.supplierTel = sp.supplierTel;
-                this.form.shortName = sp.shortName;
-                this.form.supplierPhone = sp.supplierPhone;
-                this.form.supplierEmail = sp.supplierEmail;
-                this.form.supplierAddr = sp.supplierAddr;
-                this.form.payMode = sp.payMode;
-                this.form.payWay = sp.payWay;
-                this.form.bankName = sp.bankName;
-                this.form.payAccount = sp.payAccount;
-                this.form.remark = sp.remark;
-                this.form.status = sp.status;
+                Object.assign(this.form,sp);
             });
         api.queryMaterialSupplerByCode({
             supplierCode: this.form.supplierCode

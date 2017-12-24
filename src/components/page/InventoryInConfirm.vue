@@ -116,7 +116,7 @@ export default {
         }
     },
     mounted() {
-        api.queryInventoryApplyByApplyNum(this.applyNum)
+        api.queryInventoryApplyDetailByApplyNum(this.applyNum)
             .then((list) => {
                 this.details = list;
             })

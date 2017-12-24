@@ -117,6 +117,18 @@ export default new Router({
                     component: resolve => require(['../components/page/inventoryInPage.vue'], resolve) // 
                 },
                 {
+                    path: '/inventoryDetail',
+                    component: resolve => require(['../components/page/InventoryDetail.vue'], resolve)
+                },
+                {
+                    path: '/inventoryPaid',
+                    component: resolve => require(['../components/page/InventoryPaid.vue'], resolve)
+                },
+                {
+                    path: '/inventoryPaidPage',
+                    component: resolve => require(['../components/page/InventoryPaidPage.vue'], resolve)
+                },
+                {
                     path: '/pandian',
                     component: resolve => require(['../components/page/Pandian.vue'], resolve) // 
                 },

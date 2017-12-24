@@ -19,11 +19,18 @@
             </el-table-column>
             <el-table-column prop="applyType" label="类型" width="100" :formatter="formatApplyType">
             </el-table-column>
+            <el-table-column label="支付状态" width="100" :formatter="formatPayStatus">
+            </el-table-column>
+            <el-table-column label="支付时间" width="100" :formatter="formatPayTime">
+            </el-table-column>
+            <el-table-column prop="payRemark" label="备注" width="100">
+            </el-table-column>
             <el-table-column prop="applyNum" label="采购单号" width="350">
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="150">
+            <el-table-column label="操作" fixed="right" width="200">
                 <template slot-scope="scope">
                     <el-button size="small" v-if="scope.row.status == '4'" type="primary" @click="confirmOrder(scope.row)">确认</el-button>
+                    <el-button size="small" type="primary" @click="showDetail(scope.row)">明细</el-button>
                     <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
                 </template>
             </el-table-column>
@@ -35,7 +42,7 @@
     </div>
 </template>
 <script>
-import { api, config } from '../common/bus'
+import { api, config, util } from '../common/bus'
 export default {
     data() {
         return {
@@ -88,6 +95,21 @@ export default {
                     return "未知"
             }
         },
+        formatPayStatus(row) {
+            switch (row.paidStatus) {
+                case "0":
+                    return "待支付";
+                case "1":
+                    return "支付成功";
+                case "2":
+                    return "支付失败";
+                default:
+                    return "未知状态"
+            }
+        },
+        formatPayTime(row) {
+            return util.parseDate(row.payTime)
+        },
         handleCurrentChange(val) {
             this.pageNo = val;
             this.getData();
@@ -96,8 +118,8 @@ export default {
             let param = {
                 status: this.query.status,
                 pageNo: this.pageNo,
-                pageSize:this.pageSize,
-                applyTypes:'purchase'
+                pageSize: this.pageSize,
+                applyTypes: 'purchase'
             }
             api.queryInventoryApplyPage(param)
                 .then((page) => {
@@ -114,6 +136,9 @@ export default {
         },
         printBill(item) {
             window.open(config.server + "/print?applyNum=" + item.applyNum)
+        },
+        showDetail(item) {
+            this.$router.push({ path: "/inventoryDetail", query: { applyNum: item && item.applyNum } })
         }
     }
 }

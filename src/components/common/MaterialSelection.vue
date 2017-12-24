@@ -41,14 +41,9 @@
 				this.$emit("input",this.selectedCode,this.$props.context)
 			},
       initData(){
+        console.log(this.$store.state.allMaterials)
         this.allValues = this.$store.state.allMaterials;
         this.selectedCode = this.$props.value;
-        // let $data = this.$data;
-        // api.queryAllMaterials()
-        // .then((value)=>{
-        //   $data.allValues = value.values;
-        //   $data.selectedCode = this.$props.value;
-        // });
       },
       enterkey(e){
       },

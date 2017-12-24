@@ -7,7 +7,7 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form"  label-width="100px" v-loading="loadingState">
+            <el-form ref="form" label-width="100px" v-loading="loadingState">
                 <el-form-item label="菜品名称">
                     <el-input v-model="form.recipesName" placeholder="菜品名称"></el-input>
                 </el-form-item>
@@ -26,11 +26,7 @@
                     </el-row>
                     <el-row v-for="(ff,index) in form.formula" :key="ff.materialCode" :gutter="5">
                         <el-col :span="12">
-                            <MaterialSelection 
-                                :value="ff.materialCode" 
-                                :context="ff"
-                                :excludes="addedMaterials"
-                                v-on:input="addNewFormula">
+                            <MaterialSelection :value="ff.materialCode" :context="ff" :excludes="addedMaterials" v-on:input="addNewFormula">
                             </MaterialSelection>
                         </el-col>
                         <el-col :span="4">
@@ -57,106 +53,109 @@
                 </el-form-item>
             </el-form>
         </div>
-
     </div>
 </template>
-
 <script>
-    import {api} from '../common/bus'
-    import MaterialSelection from '../common/MaterialSelection'
-    export default {
-        data: function(){
-            return {
-                form:{
-                    id:'',
-                    recipesCode:this.$route.query.code,
-                    recipesName:'',
-                    outCode:'',
-                    src:'',
-                    formula:[]
-                },
-                allMaterials:[],
-                loadingState:false
-            }
-        },
-        methods: {
-            onSubmit() {
-                this.loadingState  = true;
-                api.addRecipes({
-                    recipesCode:this.form.recipesCode,
-                    recipesName:this.form.recipesName,
-                    outCode:this.form.outCode,
-                    formulaJson:JSON.stringify(this.form.formula)
-                }).then((resp)=>{
-                    this.$message("操作成功")
-                    this.$router.go(-1)
-                }).always(()=>{
-                    this.loadingState  = false;
-                })
+import { api } from '../common/bus'
+import MaterialSelection from '../common/MaterialSelection'
+export default {
+    data: function() {
+        return {
+            form: {
+                id: '',
+                recipesCode: this.$route.query.code,
+                recipesName: '',
+                outCode: '',
+                src: '',
+                formula: []
             },
-            onCancel(){
+            allMaterials: [],
+            loadingState: false
+        }
+    },
+    methods: {
+        onSubmit() {
+            this.loadingState = true;
+            api.addRecipes({
+                recipesCode: this.form.recipesCode,
+                recipesName: this.form.recipesName,
+                outCode: this.form.outCode,
+                formulaJson: JSON.stringify(this.form.formula)
+            }).then((resp) => {
+                this.$message("操作成功")
                 this.$router.go(-1)
-            },
-            removeFormula(index){
-                this.$data.form.formula.splice(index,1)
-            },
-            addFormulaItem(){
-                this.$data.form.formula.push({
-                    id:0,
-                    materialUnit:'',
-                    materialAmt:0,
-                    materialCode:''
-                })
-            },
-            addNewFormula(val, ctx){
-                let item = this.$store.getters.allMaterialsMap.get(val)
-                Object.keys(item).forEach((key)=>{
-                    ctx[key]=item[key]
-                })
-                ctx.materialUnit = item.stockUnit;
-            }
+            }).fail((resp) => {
+                this.$message.error(resp.message)
+            }).always(() => {
+                this.loadingState = false;
+            })
         },
-        mounted(){
-            this.$store.commit('ensureLoadAll')
-            api.queryRecipesByCode(this.$data.form.recipesCode)
-            .then((resp)=>{
+        onCancel() {
+            this.$router.go(-1)
+        },
+        removeFormula(index) {
+            this.$data.form.formula.splice(index, 1)
+        },
+        addFormulaItem() {
+            this.$data.form.formula.push({
+                id: 0,
+                materialUnit: '',
+                materialAmt: 0,
+                materialCode: ''
+            })
+        },
+        addNewFormula(val, ctx) {
+            let item = this.$store.getters.allMaterialsMap.get(val)
+            Object.keys(item).forEach((key) => {
+                ctx[key] = item[key]
+            })
+            ctx.materialUnit = item.stockUnit;
+        }
+    },
+    mounted() {
+        this.$store.commit('ensureLoadAll')
+        api.queryRecipesByCode(this.$data.form.recipesCode)
+            .then((resp) => {
                 this.form.recipesName = resp.recipesName;
                 this.form.outCode = resp.outCode;
                 this.form.src = resp.src;
             });
-            api.queryRecipesFormula(this.$data.form.recipesCode)
-            .then((values)=>{
+        api.queryRecipesFormula(this.$data.form.recipesCode)
+            .then((values) => {
                 this.$data.form.formula = values;
             })
-        },
-        computed:{
-            addedMaterials(){
-                let ll = [];
-                this.$data.form.formula.forEach((item)=>ll.push(item.materialCode))
-                return ll;
-            }
-        },
-        components: {
-            MaterialSelection
+    },
+    computed: {
+        addedMaterials() {
+            let ll = [];
+            this.$data.form.formula.forEach((item) => ll.push(item.materialCode))
+            return ll;
         }
+    },
+    components: {
+        MaterialSelection
     }
+}
 </script>
 <style scoped>
-    .span-center {
-        display:inline-block;
-        width: 100%;
-        font-weight:bold;
+.span-center {
+    display: inline-block;
+    width: 100%;
+    font-weight: bold;
+}
+
+.grid-content {
+    min-height: 1px;
+}
+
+.el-row {
+    margin-bottom: 4px;
+    &:last-child {
+        margin-bottom: 0;
     }
-    .grid-content {
-        min-height: 1px;
-     }
-    .el-row {
-        margin-bottom: 4px;
-        &:last-child {
-          margin-bottom: 0;
-        }
-      }
-    .el-col {
-        border-radius: 4px;
-      }
+}
+
+.el-col {
+    border-radius: 4px;
+}
 </style>
