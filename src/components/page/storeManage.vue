@@ -51,8 +51,8 @@
                 let self = this;
                 self.$data.loadingState = true;
                 api.getAllStoreList()
-                .then((values)=>{
-                    self.queryList = values;
+                .then((page)=>{
+                    self.queryList = page.values;
                 }).fail((resp)=>{
                     this.$message.error(resp.message)
                 }).always(()=>{

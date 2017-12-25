@@ -62,8 +62,8 @@ const mutations = {
     },
     loadAllStores(state) {
         api.getAllStoreList()
-            .then((list) => {
-                state.allStores = list;
+            .then((page) => {
+                state.allStores = page.values;
             })
     },
     loadAllRecipes(state) {
@@ -94,8 +94,8 @@ const mutations = {
         }
         if (!state.allStores || state.allStores.length == 0) {
             api.getAllStoreList()
-                .then((list) => {
-                    state.allStores = list;
+                .then((page) => {
+                    state.allStores = page.values;
                 })
         }
         if (!state.allRecipes || state.allRecipes.length == 0) {

@@ -3,9 +3,9 @@
         <div class="handle-box">
             <el-row :gutter="10">
                 <el-col :span="16">
-                    <!-- <MaterialSelection @input="(val)=>{this.queryCond.materialCode=val;}"></MaterialSelection> -->
-                    <el-input v-model="queryCond.searchKey" style="width:180px" placeholder="搜索条件"></el-input>
-                    <el-button type="primary" icon="search" @click="search">搜索</el-button>支持原料名称、配音搜索
+                    <MyCabinSelect @input="(v)=>{this.queryCond.cabinCode=v;}"></MyCabinSelect>
+                    <el-input v-model="queryCond.searchKey" style="width:180px" placeholder="原料名称或配音"></el-input>
+                    <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </el-col>
                 <el-col :span="8">
                     <div style="position:relative; float:right; ">
@@ -15,25 +15,18 @@
             </el-row>
         </div>
         <el-table :data="queryList" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
-            <el-table-column prop="materialCode" label="原料编码" width="150">
-            </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="200">
             </el-table-column>
-            <el-table-column prop="category" label="分类" width="200">
+            <el-table-column prop="cabinName" label="仓库" width="200">
             </el-table-column>
-            <el-table-column v-if="userRole == '1'" prop="utilizationRatio" label="利用率(%)" width="120">
+            <el-table-column prop="warningValue1" label="闲时预警">
             </el-table-column>
-            <el-table-column prop="storageLife" label="保质期" width="120" :formatter="formatStorageLife">
-            </el-table-column>
-            <el-table-column prop="stockUnit" label="库存单位" width="">
+            <el-table-column prop="warningValue2" label="忙时预警">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template slot-scope="scope">
-                    <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">
-                        编辑
-                    </el-button>
-                    <el-button size="small" type="primary" @click="delMaterial(scope.$index, scope.row)">
-                        删除
+                    <el-button size="small" type="primary" @click="showWarningSetPage(scope.$index, scope.row)">
+                        设置预警
                     </el-button>
                 </template>
             </el-table-column>
@@ -42,15 +35,35 @@
             <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="queryCond.totalRows" :page-size="queryCond.pageSize" :current-page.sync="queryCond.pageNo">
             </el-pagination>
         </div>
+        <el-dialog :title="dialogTitle" v-model="dialogWaringSetShow" class="dialog">
+            <el-form label-width="90px" v-loading="loadingState">
+                <el-form-item label="原料名称">{{material.materialName}}</el-form-item>
+                <el-form-item label="仓库">{{material.cabinName}}
+                </el-form-item>
+                <el-form-item label="闲时预警值">
+                    <el-input size="small" v-model="material.warningValue1" style="width:100px"></el-input>
+                </el-form-item>
+                <el-form-item label="忙时预警值">
+                    <el-input size="small" v-model="material.warningValue2" style="width:100px"></el-input>
+                </el-form-item>
+            </el-form>
+            <div style="text-align:center;margin-top:10px;">
+                <el-button size="small" type="primary" @click="saveWaringValue">
+                    保存预警设置
+                </el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
 import { api } from '../common/bus'
 import MaterialSelection from '../common/MaterialSelection'
-
+import MyCabinSelect from '../common/MyCabinSelect'
+import Vue from 'vue'
 export default {
     components: {
-        MaterialSelection
+        MaterialSelection,
+        MyCabinSelect
     },
     data() {
         return {
@@ -61,10 +74,14 @@ export default {
                 pageSize: 10,
                 totalRows: 0,
                 materialCode: '',
+                cabinCode: '',
                 searchKey: ''
             },
             queryList: [],
-            userRole: this.$store.state.userRole
+            userRole: this.$store.state.userRole,
+            dialogWaringSetShow: false,
+            dialogTitle: '预警设置',
+            material: {}
         }
     },
     mounted() {
@@ -113,10 +130,11 @@ export default {
         },
         queryData() {
             this.loadingState = true;
-            api.queryMaterialsPage({
+            api.queryMaterialsStockPage({
                     pageSize: this.queryCond.pageSize,
                     pageNo: this.queryCond.pageNo,
                     materialCode: this.queryCond.materialCode,
+                    cabinCode: this.queryCond.cabinCode,
                     searchKey: this.queryCond.searchKey,
                     status: '1'
                 })
@@ -133,25 +151,19 @@ export default {
             this.queryList = [];
             this.queryData();
         },
-        edit(index, item) {
-            this.keepParam();
-            this.$router.push({ path: "/materialManagePage", query: { mid: item && item.id } })
+        showWarningSetPage(index, item) {
+            this.dialogWaringSetShow = true;
+            this.material = item;
         },
-        delMaterial(index, item) {
-            let tips = "是否删除" + item.materialName + "?"
-            this.$confirm(tips, '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                api.deleteMaterials(item.materialCode)
-                    .then(() => {
-                        this.queryData();
-                    }).fail((resp) => {
-                        this.$message.error(resp.message)
-                    })
-            })
-
+        saveWaringValue() {
+            api.saveWarning(this.material)
+                .then((resp) => {
+                    this.$message("设置成功")
+                    setTimeout(() => { this.dialogWaringSetShow = false; }, 500)
+                    this.queryData();
+                }).fail((resp) => {
+                    this.$message.error(resp.message)
+                })
         }
     }
 }

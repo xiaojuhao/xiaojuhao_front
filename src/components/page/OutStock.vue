@@ -74,8 +74,8 @@
                   $data.item = value;
               });
               api.getAllStoreList()
-              .then((value)=>{
-                  $data.storeSelection = value;
+              .then((page)=>{
+                  $data.storeSelection = page.values;
               })
 
             }

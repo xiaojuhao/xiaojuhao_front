@@ -56,6 +56,14 @@ export default new Router({
                     component: resolve => require(['../components/page/MaterialManagePage.vue'], resolve) // 
                 },
                 {
+                    path: '/materialRequireManage',
+                    component: resolve => require(['../components/page/MaterialRequireManage.vue'], resolve) // 
+                },
+                {
+                    path: '/materialWarningSet',
+                    component: resolve => require(['../components/page/MaterialWarningSet.vue'], resolve) // 
+                },
+                {
                     path: '/recipesManage',
                     component: resolve => require(['../components/page/RecipesManage.vue'], resolve) //
                 },

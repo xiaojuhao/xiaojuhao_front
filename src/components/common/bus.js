@@ -214,7 +214,8 @@ export const api = {
     queryAllMaterials() {
         let data = {
             pageNo: 1,
-            pageSize: 2000
+            pageSize: 2000,
+            status:'1'
         }
         return http.post("/busi/queryMaterials", data);
     },
@@ -363,5 +364,11 @@ export const api = {
     },
     queryUnitByGroup(groupCode) {
         return http.post("/unit/queryUnitByGroup", { groupCode: groupCode })
+    },
+    saveWarning(data){
+        return http.post("/storeManage/saveWarning",data);
+    },
+    queryMaterialRequire(data){
+        return http.post("/require/query",data)
     }
 }

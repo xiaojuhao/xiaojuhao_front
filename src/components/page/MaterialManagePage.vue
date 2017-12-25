@@ -25,6 +25,15 @@
                         </el-select>
                     </el-input>
                 </el-form-item>
+                <el-form-item label="分类">
+                    <el-select v-model="form.category" style="width:80px" placeholder="请选择">
+                        <el-option v-for="item in categorySel" 
+                            :key="item.unitCode" 
+                            :label="item.unitName" 
+                            :value="item.unitCode">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="库存单位">
                     <el-select v-model="form.stockUnit" style="width:80px" placeholder="请选择">
                         <el-option v-for="item in stockUnits" 
@@ -144,7 +153,8 @@ export default {
                 searchKey: '',
                 storageLifeUnit: 'D',
                 storageLifeNum: '',
-                specDetail: ''
+                specDetail: '',
+                category:''
             },
             rules: {
 
@@ -154,7 +164,8 @@ export default {
             specList: [],
             subList: [],
             purchaseUnits: [],
-            stockUnits: []
+            stockUnits: [],
+            categorySel:[]
         }
     },
     methods: {
@@ -192,6 +203,7 @@ export default {
                 this.form.specUnit = v.specUnit;
                 this.form.specQty = v.specQty || 0;
                 this.form.utilizationRatio = v.utilizationRatio;
+                this.form.category = v.category;
                 let r = re.exec(v.storageLife)
                 if (r) {
                     this.form.storageLifeNum = r[1];
@@ -205,7 +217,7 @@ export default {
             })
         api.queryUnitByGroup('purchase_unit_group').then((units) => this.purchaseUnits = units)
         api.queryUnitByGroup('stock_unit_group').then((units) => this.stockUnits = units)
-
+        api.queryUnitByGroup('material_category').then((cates) => this.categorySel = cates)
     }
 }
 </script>

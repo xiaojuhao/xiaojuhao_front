@@ -42,8 +42,8 @@
       initData(){
         let $data = this.$data;
         api.getAllStoreList()
-        .then((value)=>{
-          $data.allValues = value;
+        .then((page)=>{
+          $data.allValues = page.values;
           $data.selectedCode = this.$props.value;
         });
       },
