@@ -24,8 +24,9 @@
                             <el-option label="月" value="M"></el-option>
                         </el-select>
                     </el-input>
-                </el-form-item>
-                <el-form-item label="分类">
+                    <span class="span-title" style="text-align:right;margin-right:10px; width:40px;">
+                        分类
+                    </span>
                     <el-select v-model="form.category" style="width:80px" placeholder="请选择">
                         <el-option v-for="item in categorySel" 
                             :key="item.unitCode" 
@@ -33,8 +34,9 @@
                             :value="item.unitCode">
                         </el-option>
                     </el-select>
-                </el-form-item>
-                <el-form-item label="库存单位">
+                    <span class="span-title" style="text-align:right;margin-right:10px;">
+                        库存单位
+                    </span>
                     <el-select v-model="form.stockUnit" style="width:80px" placeholder="请选择">
                         <el-option v-for="item in stockUnits" 
                             :key="item.unitCode" 
@@ -46,7 +48,7 @@
                 <el-form-item label="采购规格">
                     <el-button type="primary" size="mini" icon="plus" @click="addSpec">添加规格</el-button>
                     备注：入库数量在采购入库的时用来计算入库的原料数量，谨慎填写
-                    <div v-for="(spec,index) in specList" style="border:dotted #D4D4D4 1px; margin-top:5px;">
+                    <div v-for="(spec,index) in specList" style="border:dotted #D4D4D4 0px; margin-top:5px;">
                         <el-row>
                             <el-col>
                                 <span class="span-title">规格名称</span>

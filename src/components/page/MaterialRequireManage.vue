@@ -5,16 +5,17 @@
                 <el-col :span="16">
                     <MyCabinSelect @input="(v)=>{queryCond.cabinCode=v;}"></MyCabinSelect>
                     <el-input v-model="queryCond.searchKey" style="width:180px" placeholder="搜索条件"></el-input>
-                    <el-button type="primary" icon="search" @click="search">搜索</el-button>支持原料名称、配音搜索
+                    <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </el-col>
                 <el-col :span="8">
                     <div style="position:relative; float:right; ">
-                        <el-button round @click="edit()">增加原料</el-button>
                     </div>
                 </el-col>
             </el-row>
         </div>
-        <el-table :data="tableData" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
+        <el-table :data="tableData" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)" @select="handleSelect" :row-style="rowStyle">
+            <el-table-column type="selection" width="55">
+            </el-table-column>
             <el-table-column prop="cabinName" label="仓库" width="150">
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="150">
@@ -65,6 +66,12 @@
             <el-pagination @current-change="handleCurrentChange" layout="prev, pager, next" :total="queryCond.totalRows" :page-size="queryCond.pageSize" :current-page.sync="queryCond.pageNo">
             </el-pagination>
         </div>
+        <el-row style="margin-top:20px;">
+            <el-col :offset="6">
+                <el-button type="primary" :disabled="selectItems.length==0" @click="submitSelectedData(1)">暂存</el-button>
+                <el-button type="primary" :disabled="selectItems.length==0" @click="submitSelectedData(2)">提交采购</el-button>
+            </el-col>
+        </el-row>
     </div>
 </template>
 <script>
@@ -79,17 +86,19 @@ export default {
     },
     data() {
         return {
-            tableData: [],
-            loadingState: false,
             queryCond: {
                 pageNo: 1,
-                pageSize: 10,
+                pageSize: 30,
                 totalRows: 0,
                 materialCode: '',
                 cabinCode: '',
-                searchKey: ''
+                searchKey: '',
+                status: '0'
             },
-            userRole: this.$store.state.userRole
+            tableData: [],
+            loadingState: false,
+            userRole: this.$store.state.userRole,
+            selectItems: []
         }
     },
     mounted() {
@@ -106,7 +115,8 @@ export default {
                 pageNo: this.queryCond.pageNo,
                 pageSize: this.queryCond.pageSize,
                 totalRows: this.queryCond.totalRows,
-                materialCode: this.queryCond.materialCode
+                materialCode: this.queryCond.materialCode,
+                status: this.queryCond.status
             }
             this.$store.commit("setQueryCond", p)
         },
@@ -116,14 +126,16 @@ export default {
         formatRequireDate(row) {
             return util.formatDate(row.requireDate)
         },
-        formatSpec(row) {
-            if (row.specUnit == '无') {
-                return '无'
-            }
-            return row.specQty + row.stockUnit + "/" + row.specUnit;
-        },
-        onSelectSpec() {
-
+        onSelectSpec(item, specCode) {
+            item.specCodeSel && item.specCodeSel.forEach((it) => {
+                if (it.specCode == specCode) {
+                    Vue.set(item, 'specCode', it.specCode)
+                    Vue.set(item, 'specUnit', it.specUnit)
+                    Vue.set(item, 'specQty', it.transRate)
+                    Vue.set(item, 'brandName', it.brandName)
+                    Vue.set(item, 'homeplace', it.homeplace)
+                }
+            })
         },
         queryData() {
             this.loadingState = true;
@@ -131,7 +143,8 @@ export default {
                     pageSize: this.queryCond.pageSize,
                     pageNo: this.queryCond.pageNo,
                     materialCode: this.queryCond.materialCode,
-                    cabinCode:this.queryCond.cabinCode
+                    cabinCode: this.queryCond.cabinCode,
+                    status: this.queryCond.status
                 })
                 .then((page) => {
                     this.tableData = page.values;
@@ -171,25 +184,25 @@ export default {
             this.tableData = [];
             this.queryData();
         },
-        edit(index, item) {
-            this.keepParam();
-            this.$router.push({ path: "/materialManagePage", query: { mid: item && item.id } })
+        rowStyle(row) {
+            if (row.isSelected == true)
+                return 'background:#E0E0E0'
         },
-        delMaterial(index, item) {
-            let tips = "是否删除" + item.materialName + "?"
-            this.$confirm(tips, '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                api.deleteMaterials(item.materialCode)
-                    .then(() => {
-                        this.queryData();
-                    }).fail((resp) => {
-                        this.$message.error(resp.message)
-                    })
+        handleSelect(sels, item) {
+            this.selectItems = sels;
+            Vue.set(item, 'isSelected', false)
+            setTimeout(() => sels.forEach((it) => Vue.set(it, 'isSelected', true)), 0)
+        },
+        submitSelectedData(type) {
+            api.handleRequire({
+                requires: JSON.stringify(this.selectItems),
+                handleType: type
+            }).then((resp) => {
+                this.$message("提交成功");
+                this.queryData();
+            }).fail((resp) => {
+                this.$message.error(resp.message)
             })
-
         }
     }
 }
@@ -206,5 +219,9 @@ export default {
 .handle-input {
     width: 300px;
     display: inline-block;
+}
+
+.bg-selected {
+    background: red;
 }
 </style>

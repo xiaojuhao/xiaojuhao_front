@@ -370,5 +370,8 @@ export const api = {
     },
     queryMaterialRequire(data){
         return http.post("/require/query",data)
+    },
+    handleRequire(data){
+        return http.post("/require/handleRequire",data)
     }
 }
