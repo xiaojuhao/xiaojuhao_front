@@ -8,8 +8,11 @@
         </div>
         <div class="handle-box">
             <RecipesSelection @input="(v)=>{this.recipesCode=v}"></RecipesSelection>
-            <StoreSelection @input="(v)=>{this.storeCode=v}"></StoreSelection>
-            <el-date-picker v-model="saleDate" type="date" placeholder="选择日期" style="width:130px">
+            <MyStoreSelect @input="(v)=>{this.storeCode=v}"></MyStoreSelect>
+            <el-date-picker v-model="saleDateStart" type="date" placeholder="起始日期" style="width:130px">
+            </el-date-picker>
+            -
+            <el-date-picker v-model="saleDateEnd" type="date" placeholder="结束日期" style="width:130px">
             </el-date-picker>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
             <div style="position:relative; float:right; ">
@@ -44,11 +47,17 @@
         </div>
         <el-dialog :title="dialogTitle" v-model="dialogOrderMaterialShow" class="dialog">
             <el-table :data="orderMaterials" border>
-                <el-table-column prop="materialCode" label="原料名称" >
+                <el-table-column prop="materialName" label="原料名称">
                 </el-table-column>
-                <el-table-column prop="saleNum" label="消耗数量" >
+                <el-table-column label="消耗数量">
+                    <template <template slot-scope="scope">
+                        {{scope.row.materialTotalAmt}}{{scope.row.materialUnit}}
+                    </template>
                 </el-table-column>
-                <el-table-column prop="remark" label="备注" >
+                <el-table-column prop="remark" label="备注">
+                    <template <template slot-scope="scope">
+                        {{scope.row.recipesName}}{{scope.row.saleNum}}份
+                    </template>
                 </el-table-column>
             </el-table>
         </el-dialog>
@@ -58,10 +67,12 @@
 import { api, util } from '../common/bus'
 import StoreSelection from '../common/StoreSelection'
 import RecipesSelection from '../common/RecipesSelection'
+import MyStoreSelect from '../common/MyStoreSelect'
 export default {
     components: {
         StoreSelection,
-        RecipesSelection
+        RecipesSelection,
+        MyStoreSelect
     },
     data() {
         return {
@@ -70,7 +81,8 @@ export default {
             pageSize: 10,
             totalRows: 0,
             storeCode: '',
-            saleDate: new Date(),
+            saleDateStart: new Date(),
+            saleDateEnd: new Date(),
             syncDate: null,
             recipesCode: '',
             loadingState: false,
@@ -94,7 +106,8 @@ export default {
                 pageSize: this.pageSize,
                 totalRows: this.totalRows,
                 recipesCode: this.recipesCode,
-                saleDate: this.saleDate
+                saleDateStart: this.saleDateStart,
+                saleDateEnd: this.saleDateEnd
             }
             this.$store.commit("setQueryCond", p)
         },
@@ -108,7 +121,8 @@ export default {
                     pageSize: this.pageSize,
                     storeCode: this.storeCode,
                     recipesCode: this.recipesCode,
-                    saleDate: util.parseDate(this.saleDate)
+                    saleDateStart: util.parseDate(this.saleDateStart),
+                    saleDateEnd: util.parseDate(this.saleDateEnd)
                 })
                 .then((page) => {
                     this.tableData = page.values;
@@ -125,7 +139,8 @@ export default {
                 date: util.parseDate(this.syncDate)
             }).then((val) => {
                 this.$message("同步成功")
-                this.saleDate = this.syncDate;
+                this.saleDateStart = this.syncDate;
+                this.saleDateEnd = this.syncDate;
                 this.getData();
             }).fail((resp) => {
                 this.$message.error(resp.message)

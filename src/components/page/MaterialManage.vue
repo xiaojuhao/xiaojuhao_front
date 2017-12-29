@@ -3,7 +3,10 @@
         <div class="handle-box">
             <el-row :gutter="10">
                 <el-col :span="16">
-                    <!-- <MaterialSelection @input="(val)=>{this.queryCond.materialCode=val;}"></MaterialSelection> -->
+                    <el-select v-model="queryCond.category" style="width:100px" clearable placeholder="分类">
+                        <el-option v-for="item in categorySel" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
+                        </el-option>
+                    </el-select>
                     <el-input v-model="queryCond.searchKey" style="width:180px" placeholder="搜索条件"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>支持原料名称、配音搜索
                 </el-col>
@@ -61,15 +64,18 @@ export default {
                 pageSize: 10,
                 totalRows: 0,
                 materialCode: '',
-                searchKey: ''
+                searchKey: '',
+                category: ''
             },
             queryList: [],
+            categorySel: [],
             userRole: this.$store.state.userRole
         }
     },
     mounted() {
         this.loadParam();
         this.queryData();
+        api.queryUnitByGroup('material_category').then((cates) => this.categorySel = cates);
     },
     methods: {
         handleCurrentChange(val) {
@@ -77,13 +83,7 @@ export default {
             this.queryData();
         },
         keepParam() {
-            let p = {
-                pageNo: this.queryCond.pageNo,
-                pageSize: this.queryCond.pageSize,
-                totalRows: this.queryCond.totalRows,
-                materialCode: this.queryCond.materialCode
-            }
-            this.$store.commit("setQueryCond", p)
+            this.$store.commit("setQueryCond", this.queryCond)
         },
         loadParam() {
             Object.assign(this.queryCond, this.$store.state.queryCond)
@@ -118,6 +118,7 @@ export default {
                     pageNo: this.queryCond.pageNo,
                     materialCode: this.queryCond.materialCode,
                     searchKey: this.queryCond.searchKey,
+                    category: this.queryCond.category,
                     status: '1'
                 })
                 .then((page) => {

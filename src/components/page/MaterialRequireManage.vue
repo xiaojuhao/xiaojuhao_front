@@ -144,7 +144,8 @@ export default {
                     pageNo: this.queryCond.pageNo,
                     materialCode: this.queryCond.materialCode,
                     cabinCode: this.queryCond.cabinCode,
-                    status: this.queryCond.status
+                    status: this.queryCond.status,
+                    searchKey:this.queryCond.searchKey
                 })
                 .then((page) => {
                     this.tableData = page.values;

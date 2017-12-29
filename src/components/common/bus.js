@@ -373,5 +373,20 @@ export const api = {
     },
     handleRequire(data){
         return http.post("/require/handleRequire",data)
+    },
+    currentStockCheck(cabinCode){
+        return http.post("/check/current",{cabinCode:cabinCode})
+    },
+    startCheck(cabinCode){
+        return http.post("/check/startCheck",{cabinCode:cabinCode})
+    },
+    finishCheck(id,cabinCode){
+        return http.post("/check/finishCheck",{id:id, cabinCode:cabinCode})
+    },
+    queryCheckDetail(id,cabinCode){
+        return http.post("/check/queryDetail",{id:id, cabinCode:cabinCode})
+    },
+    doCheckStock(data){
+        return http.post("/check/checkDetail",data)
     }
 }

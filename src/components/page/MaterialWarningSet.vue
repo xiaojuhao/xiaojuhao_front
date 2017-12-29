@@ -7,11 +7,6 @@
                     <el-input v-model="queryCond.searchKey" style="width:180px" placeholder="原料名称或配音"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </el-col>
-                <el-col :span="8">
-                    <div style="position:relative; float:right; ">
-                        <el-button round @click="edit()">增加原料</el-button>
-                    </div>
-                </el-col>
             </el-row>
         </div>
         <el-table :data="queryList" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
