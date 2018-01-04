@@ -168,21 +168,23 @@ export default {
             clearTimeout(this.timeout)
             this.timeout = setTimeout(() => {
                 queryString = jquery.trim(queryString)
-                let counter = 0;
+                let counter = 1;
                 let result = this.allMaterialSupplier.map((item) => {
-                    let mt = api.getSupplierFromStoreByCode(item.supplierCode)
-                    console.log(mt)
                     let sk = item.materialName + "," + item.supplierName + "," + item.searchKey;
                     Vue.set(item, "sk", sk)
-                    if (mt && mt.shortName) {
-                        Vue.set(item, 'value', mt.shortName + "-" + item.materialName)
+                    if (item && item.shortName) {
+                        Vue.set(item, 'value', item.shortName + "-" + item.materialName)
                     } else {
                         Vue.set(item, 'value', item.supplierName + "-" + item.materialName)
                     }
                     return item;
                 }).filter((item) => {
-                    counter++;
-                    return counter <= 20 && item.sk.indexOf(queryString) >= 0;
+                    if(counter <= 20 && item.sk.indexOf(queryString) >= 0){
+                        counter++;
+                        return true;
+                    }else{
+                        return false;
+                    }
                 })
 
                 this.$data.currSelectAlts = result;
@@ -229,6 +231,7 @@ export default {
                     .then((list) => {
                         if (list && list.length > 0) {
                             Vue.set(item, 'specCode', list[0].specCode)
+                            Vue.set(item, 'psecName', list[0].specName)
                             Vue.set(item, 'specUnit', list[0].specUnit)
                             Vue.set(item, 'specQty', list[0].transRate)
                             Vue.set(item, 'brandName', list[0].brandName)
@@ -243,6 +246,7 @@ export default {
             item.specCodeSel.forEach((it) => {
                 if (it.specCode == selectedCode) {
                     Vue.set(item, 'specCode', it.specCode)
+                    Vue.set(item, 'specName', it.specName)
                     Vue.set(item, 'specUnit', it.specUnit)
                     Vue.set(item, 'specQty', it.transRate)
                     Vue.set(item, 'brandName', it.brandName)

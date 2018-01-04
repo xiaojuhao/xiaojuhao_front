@@ -6,12 +6,14 @@
                 <el-option label="已支付" value="1"></el-option>
                 <el-option label="支付失败" value="2"></el-option>
             </el-select>
-            <el-button type="primary" icon="search" @click="search">搜索采购单</el-button>
+            <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
         <el-table :data="data" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column prop="cabinName" label="仓库" width="150">
             </el-table-column>  
             <el-table-column prop="supplierName" label="供应商" width="120">
+            </el-table-column>
+            <el-table-column prop="proposer" label="申请人" width="120">
             </el-table-column>
             <el-table-column prop="payables" label="应付/已付" width="160" :formatter="formatPay">
             </el-table-column>
@@ -19,7 +21,7 @@
             </el-table-column>
             <el-table-column label="支付状态" width="100" :formatter="formatPayStatus">
             </el-table-column>
-            <el-table-column label="支付时间" width="100" :formatter="formatPayTime">
+            <el-table-column label="支付时间" width="120" :formatter="formatPayTime">
             </el-table-column>
             <el-table-column prop="payRemark" label="备注" width="100">
             </el-table-column>
@@ -105,7 +107,7 @@ export default {
             }
         },
         formatPayTime(row) {
-            return util.parseDate(row.payTime)
+            return util.formatDate(row.paidTime)
         },
         formatPay(row){
             return row.payables.toFixed(2)+"/"+row.paidAmt.toFixed(2);

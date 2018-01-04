@@ -47,7 +47,7 @@
             <div style="margin-top: 10px; margin-left: 300px;">
                 <el-button type="primary" v-show="apply.paidStatus == '0'" @click="comfirmPay">确认支付</el-button>
                 <span style="margin-right:20px"></span>
-                <el-button @click="onBack">取消</el-button>
+                <el-button @click="onBack">返回</el-button>
             </div>
         </div>
     </div>

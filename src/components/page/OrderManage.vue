@@ -7,7 +7,7 @@
             </el-breadcrumb>
         </div>
         <div class="handle-box">
-            <RecipesSelection @input="(v)=>{this.recipesCode=v}"></RecipesSelection>
+            <el-input v-model="searchKey" placeholder="菜单名称或拼音或编码" style="width:150px"></el-input>
             <MyStoreSelect @input="(v)=>{this.storeCode=v}"></MyStoreSelect>
             <el-date-picker v-model="saleDateStart" type="date" placeholder="起始日期" style="width:130px">
             </el-date-picker>
@@ -89,7 +89,8 @@ export default {
             loadingState2: false,
             dialogOrderMaterialShow: false,
             dialogTitle: '',
-            orderMaterials: []
+            orderMaterials: [],
+            searchKey: ''
         }
     },
     methods: {
@@ -107,7 +108,8 @@ export default {
                 totalRows: this.totalRows,
                 recipesCode: this.recipesCode,
                 saleDateStart: this.saleDateStart,
-                saleDateEnd: this.saleDateEnd
+                saleDateEnd: this.saleDateEnd,
+                searchKey: this.searchKey
             }
             this.$store.commit("setQueryCond", p)
         },
@@ -122,7 +124,8 @@ export default {
                     storeCode: this.storeCode,
                     recipesCode: this.recipesCode,
                     saleDateStart: util.parseDate(this.saleDateStart),
-                    saleDateEnd: util.parseDate(this.saleDateEnd)
+                    saleDateEnd: util.parseDate(this.saleDateEnd),
+                    searchKey: this.searchKey
                 })
                 .then((page) => {
                     this.tableData = page.values;
@@ -164,7 +167,6 @@ export default {
             })
         },
         showMaterialDetail(item) {
-            console.log(item)
             this.dialogOrderMaterialShow = true;
             this.dialogTitle = "原料明细-" + item.storeName + "-" + item.recipesName
             api.queryOrderMaterials({

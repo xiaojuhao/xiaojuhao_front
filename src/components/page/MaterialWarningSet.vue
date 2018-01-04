@@ -18,6 +18,8 @@
             </el-table-column>
             <el-table-column prop="warningValue2" label="忙时预警">
             </el-table-column>
+            <el-table-column prop="stockUnit" label="库存单位">
+            </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template slot-scope="scope">
                     <el-button size="small" type="primary" @click="showWarningSetPage(scope.$index, scope.row)">
@@ -36,10 +38,14 @@
                 <el-form-item label="仓库">{{material.cabinName}}
                 </el-form-item>
                 <el-form-item label="闲时预警值">
-                    <el-input size="small" v-model="material.warningValue1" style="width:100px"></el-input>
+                    <el-input size="small" v-model="material.warningValue1" style="width:100px">
+                        <template slot="append">{{material.stockUnit}}</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="忙时预警值">
-                    <el-input size="small" v-model="material.warningValue2" style="width:100px"></el-input>
+                    <el-input size="small" v-model="material.warningValue2" style="width:100px">
+                        <template slot="append">{{material.stockUnit}}</template>
+                    </el-input>
                 </el-form-item>
             </el-form>
             <div style="text-align:center;margin-top:10px;">

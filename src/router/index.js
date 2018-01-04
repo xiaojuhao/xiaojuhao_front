@@ -223,6 +223,26 @@ export default new Router({
                 {
                     path: '/recipesDailyChart',
                     component: resolve => require(['../components/page/RecipesDailyChart.vue'], resolve)
+                },
+                {
+                    path: '/paymentPay',
+                    component: resolve => require(['../components/page/PaymentPay.vue'], resolve)
+                },
+                {
+                    path: '/paymentInput',
+                    component: resolve => require(['../components/page/PaymentInput.vue'], resolve)
+                },
+                {
+                    path: '/paymentInputDetail',
+                    component: resolve => require(['../components/page/PaymentInputDetail.vue'], resolve)
+                },
+                {
+                    path: '/paymentApprove',
+                    component: resolve => require(['../components/page/PaymentApprove.vue'], resolve)
+                },
+                {
+                    path: '/paymentReport',
+                    component: resolve => require(['../components/page/PaymentReport.vue'], resolve)
                 }
             ]
         }

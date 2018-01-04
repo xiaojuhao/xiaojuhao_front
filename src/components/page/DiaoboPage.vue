@@ -34,7 +34,19 @@
                         <el-input size="small" v-model="scope.row.outAmt"></el-input>
                     </template>
                 </el-table-column>
-                <el-table-column prop="stockUnit" label="单位" width="100">
+                <el-table-column prop="stockUnit" label="单位" width="80">
+                </el-table-column>
+                <el-table-column label="总价" width="130">
+                    <template slot-scope="scope">
+                        <el-input size="small" v-model="scope.row.totalPrice">
+                            <template slot="append">元</template>
+                        </el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="备注" width="250">
+                    <template slot-scope="scope">
+                        <el-input size="small" v-model="scope.row.remark"></el-input>
+                    </template>
                 </el-table-column>
                 <el-table-column label="操作" width="">
                     <template slot-scope="scope">
@@ -106,13 +118,7 @@ export default {
                 cancelButtonText: '取消',
                 type: 'warning'
             }).then(() => {
-                this.loadingState = true;
                 this.submitToServer();
-                self.materialList = [];
-                setTimeout(() => {
-                    this.loadingState = false;
-                    this.$message("提交采购单成功")
-                }, 1000)
             }).catch(() => {
                 this.$message({
                     type: 'info',
@@ -121,13 +127,22 @@ export default {
             });
         },
         submitToServer() {
+            this.loadingState = true;
             let param = {
                 inCabinCode: this.inCabinCode,
                 outCabinCode: this.outCabinCode,
                 dataJson: JSON.stringify(this.materialList)
             }
             api.commitDiaobo(param)
-                .then((val) => {})
+                .then((val) => {
+                    this.$message("提交成功")
+                    this.materialList = [];
+                })
+                .fail((resp) => {
+                    this.$message.error(resp.message)
+                }).always(() => {
+                    this.loadingState = false;
+                })
         },
         removeRows(index) {
             this.$data.materialList.splice(index, 1)
@@ -140,15 +155,20 @@ export default {
             clearTimeout(this.timeout)
             this.timeout = setTimeout(() => {
                 queryString = jquery.trim(queryString)
-                let counter = 0;
+                let counter = 1;
                 let result = this.cabinMaterialStock.map((item) => {
                     let sk = item.materialName + "," + item.cabinName + "," + item.searchKey;
                     Vue.set(item, "sk", sk)
-                    Vue.set(item, 'value', item.materialName + "-" + item.cabinName)
+                    Vue.set(item, 'value', item.materialName )
+                    Vue.set(item, 'totalPrice', 0)
                     return item;
                 }).filter((item) => {
-                    counter++;
-                    return counter <= 20 && item.sk.indexOf(queryString) >= 0;
+                    if(counter <= 20 && item.sk.indexOf(queryString) >= 0){
+                        counter++;
+                        return true;
+                    }else{
+                        return false;
+                    }
                 })
 
                 this.$data.currSelectAlts = result;

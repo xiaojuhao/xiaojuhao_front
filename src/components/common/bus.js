@@ -10,12 +10,6 @@ const config = {
         if (window.location.href.indexOf("localhost") > 0) {
             return "http://localhost:8080"
         }
-        // else if (window.location.href.indexOf("47.96.148.141") > 0) {
-        //     return "http://47.96.148.141/";
-        // } else if (window.location.href.indexOf("gameest.com") > 0) {
-        //     return "http://1.gameest.com/";
-        // }
-        // let protocal = window.location.protocol;
         let host = window.location.host;
         // return process.env.REMOTE_SERVER
         return "//" + host;
@@ -23,6 +17,9 @@ const config = {
 }
 export const util = {
     formatDate(ms) {
+        if (!ms) {
+            return "";
+        }
         let date = new Date(ms);
         return this.parseDate(date);
     },
@@ -63,9 +60,10 @@ export const util = {
 }
 const http = {
     post(uri, data) {
-        if (data) {
-            data.requestLoginCookie = store.state.loginCookie;
+        if (!data) {
+            data = {};
         }
+        data.requestLoginCookie = store.state.loginCookie;
         var df = jquery.Deferred();
         jquery.ajax({
                 url: config.server + uri,
@@ -156,6 +154,9 @@ export const api = {
     queryMyStores() {
         return http.post("/store/getMyStore", {})
     },
+    queryMycabins() {
+        return http.post("/user/mycabins")
+    },
     saveStore(data) {
         return http.post("/store/saveStore", data)
     },
@@ -202,6 +203,9 @@ export const api = {
     queryMaterialsStockPage(data) {
         return http.post("/busi/queryMaterialsStock", data);
     },
+    queryStockByMaterialCodes(data) {
+        return http.post("/busi/queryStockByMaterialCodes", data);
+    },
     correctStock(data) {
         return http.post("/inventoryApply/correctStock", data)
     },
@@ -215,7 +219,7 @@ export const api = {
         let data = {
             pageNo: 1,
             pageSize: 2000,
-            status:'1'
+            status: '1'
         }
         return http.post("/busi/queryMaterials", data);
     },
@@ -271,6 +275,9 @@ export const api = {
     },
     queryMaterialSupplerByCode(param) {
         return http.post("/busi/queryMaterialSupplerByCode", param)
+    },
+    querySuppliersByMaterialCodes(data) {
+        return http.post("/busi/querySuppliersByMaterialCodes", data);
     },
     queryAllMaterialSuppler() {
         return http.post("/busi/queryAllMaterialSuppler", {})
@@ -362,31 +369,43 @@ export const api = {
     querySpecDetailByMaterialCode(materialCode) {
         return http.post("/spec/queryDetail", { materialCode: materialCode, pageSize: 100 })
     },
+    querySpecsByMaterialCodes(data) {
+        return http.post("/spec/querySpecsByMaterialCodes", data);
+    },
     queryUnitByGroup(groupCode) {
         return http.post("/unit/queryUnitByGroup", { groupCode: groupCode })
     },
-    saveWarning(data){
-        return http.post("/storeManage/saveWarning",data);
+    saveWarning(data) {
+        return http.post("/storeManage/saveWarning", data);
     },
-    queryMaterialRequire(data){
-        return http.post("/require/query",data)
+    queryMaterialRequire(data) {
+        return http.post("/require/query", data)
     },
-    handleRequire(data){
-        return http.post("/require/handleRequire",data)
+    handleRequire(data) {
+        return http.post("/require/handleRequire", data);
     },
-    currentStockCheck(cabinCode){
-        return http.post("/check/current",{cabinCode:cabinCode})
+    cancelRequire(data) {
+        return http.post("/require/cancelRequire", data);
     },
-    startCheck(cabinCode){
-        return http.post("/check/startCheck",{cabinCode:cabinCode})
+    currentStockCheck(cabinCode) {
+        return http.post("/check/current", { cabinCode: cabinCode })
     },
-    finishCheck(id,cabinCode){
-        return http.post("/check/finishCheck",{id:id, cabinCode:cabinCode})
+    startCheck(cabinCode) {
+        return http.post("/check/startCheck", { cabinCode: cabinCode })
     },
-    queryCheckDetail(id,cabinCode){
-        return http.post("/check/queryDetail",{id:id, cabinCode:cabinCode})
+    finishCheck(id, cabinCode) {
+        return http.post("/check/finishCheck", { id: id, cabinCode: cabinCode })
     },
-    doCheckStock(data){
-        return http.post("/check/checkDetail",data)
+    queryCheckDetail(id, cabinCode) {
+        return http.post("/check/queryDetail", { id: id, cabinCode: cabinCode })
+    },
+    doCheckStock(data) {
+        return http.post("/check/checkDetail", data)
+    },
+    queryPayments(data) {
+        return http.post("/payment/queryPayments", data)
+    },
+    queryPaymentByPayNo(id, payNo) {
+        return http.post("/payment/queryPaymentByPayNo", { id: id, payNo: payNo })
     }
 }

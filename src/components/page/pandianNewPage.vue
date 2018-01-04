@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" v-loading="loadingShow" element-loading-text="正在处理.....">
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item><i class="el-icon-date"></i> 进销存管理</el-breadcrumb-item>
@@ -105,6 +105,7 @@ export default {
             waitingList: [],
             doneList: [],
             detailInputDialogShow: false,
+            loadingShow: false,
             dialogTitle: '',
             currentItem: ''
         }
@@ -179,6 +180,7 @@ export default {
             this.detailInputDialogShow = false;
         },
         confirm(row, index) {
+            this.loadingShow = true;
             this.waitingList.splice(index, 1).forEach((item) => {
                 api.doCheckStock({
                     id: item.id,
@@ -192,6 +194,8 @@ export default {
                     this.doneList.unshift(item)
                 }).fail((resp) => {
                     this.$message.error(resp.message)
+                }).always(() => {
+                    this.loadingShow = false;
                 })
             })
         },
@@ -208,18 +212,24 @@ export default {
                 })
         },
         startCheck() {
+            this.loadingShow = true;
             api.startCheck(this.cabin.code)
                 .then((val) => {
                     this.checkMain = val;
                     this.queryCheckDetail();
+                }).always(() => {
+                    this.loadingShow = false;
                 })
         },
         finishCheck() {
+            this.loadingShow = true;
             api.finishCheck(this.checkMain.id, this.checkMain.cabinCode)
                 .then((val) => {
                     this.checkMain = {};
                     this.waitingList = [];
                     this.doneList = [];
+                }).always(() => {
+                    this.loadingShow = false;
                 })
         }
     },
@@ -251,7 +261,7 @@ export default {
                 return "开始盘点"
             }
         },
-        btnType(){
+        btnType() {
             if (this.checkMain.status == '1') {
                 return 'danger'
             } else {

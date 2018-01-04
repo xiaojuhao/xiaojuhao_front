@@ -123,6 +123,7 @@ export default {
                 })
         },
         search() {
+            this.queryCond.pageNo = 1;
             this.queryList = [];
             this.queryData();
         },

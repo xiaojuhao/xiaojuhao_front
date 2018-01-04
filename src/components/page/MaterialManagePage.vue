@@ -28,22 +28,21 @@
                         分类
                     </span>
                     <el-select v-model="form.category" style="width:80px" placeholder="请选择">
-                        <el-option v-for="item in categorySel" 
-                            :key="item.unitCode" 
-                            :label="item.unitName" 
-                            :value="item.unitCode">
+                        <el-option v-for="item in categorySel" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
                         </el-option>
                     </el-select>
                     <span class="span-title" style="text-align:right;margin-right:10px;">
                         库存单位
                     </span>
                     <el-select v-model="form.stockUnit" style="width:80px" placeholder="请选择">
-                        <el-option v-for="item in stockUnits" 
-                            :key="item.unitCode" 
-                            :label="item.unitName" 
-                            :value="item.unitCode">
+                        <el-option v-for="item in stockUnits" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
                         </el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="供应商">
+                    <div v-for="item in form.suppliers">
+                        {{item.supplierCode}} {{item.supplierName}}
+                    </div>
                 </el-form-item>
                 <el-form-item label="采购规格">
                     <el-button type="primary" size="mini" icon="plus" @click="addSpec">添加规格</el-button>
@@ -156,7 +155,8 @@ export default {
                 storageLifeUnit: 'D',
                 storageLifeNum: '',
                 specDetail: '',
-                category:''
+                category: '',
+                suppliers: []
             },
             rules: {
 
@@ -167,7 +167,7 @@ export default {
             subList: [],
             purchaseUnits: [],
             stockUnits: [],
-            categorySel:[]
+            categorySel: []
         }
     },
     methods: {
@@ -216,6 +216,11 @@ export default {
                     .then((specs) => {
                         this.specList = specs;
                     })
+                api.querySuppliersByMaterialCodes({
+                    materialCodes: this.form.materialCode
+                }).then((list) => {
+                    this.form.suppliers = list;
+                })
             })
         api.queryUnitByGroup('purchase_unit_group').then((units) => this.purchaseUnits = units)
         api.queryUnitByGroup('stock_unit_group').then((units) => this.stockUnits = units)

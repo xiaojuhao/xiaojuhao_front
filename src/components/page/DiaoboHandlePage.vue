@@ -17,11 +17,13 @@
                 </el-table-column>
                 <el-table-column label="拨出数量" width="100" :formatter="formatStockAmt">
                 </el-table-column>
-                <el-table-column label="实际入库数量" width="150">
+                <el-table-column label="实际入库数量" width="130">
                     <template slot-scope="scope">
                         <el-input size="small" v-model="scope.row.realStockAmt">
                         </el-input>
                     </template>
+                </el-table-column>
+                <el-table-column prop="remark" label="备注" width="200">
                 </el-table-column>
                 <el-table-column label="操作日期" width="130" :formatter="formatCreateDate">
                 </el-table-column>

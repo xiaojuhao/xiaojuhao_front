@@ -125,13 +125,17 @@ export default {
             clearTimeout(this.timeout)
             this.timeout = setTimeout(() => {
                 queryString = jquery.trim(queryString)
-                let counter = 0;
+                let counter = 1;
                 let result = this.allMaterialSupplier.map((item) => {
                     Vue.set(item, 'value', item.materialName + "-" + item.supplierName)
                     return item;
                 }).filter((item) => {
-                    counter++;
-                    return counter <= 20 && item.value.indexOf(queryString) >= 0;
+                    if(counter <= 20 && item.value.indexOf(queryString) >= 0){
+                        counter++;
+                        return true;
+                    }else{
+                        return false;
+                    }
                 })
 
                 this.$data.currSelectAlts = result;

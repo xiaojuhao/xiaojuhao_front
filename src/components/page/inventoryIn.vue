@@ -9,9 +9,11 @@
             <el-button type="primary" icon="search" @click="search">搜索采购单</el-button>
         </div>
         <el-table :data="data" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
-            <el-table-column prop="cabinCode" label="单位编码" width="150">
+            <el-table-column prop="cabinName" label="门店" width="150">
             </el-table-column>
-            <el-table-column prop="cabinName" label="单位名称" width="150">
+            <el-table-column prop="supplierName" label="供应商" width="150">
+            </el-table-column>
+            <el-table-column label="采购时间" width="120" :formatter="formatGmtCreated">
             </el-table-column>
             <el-table-column prop="proposer" label="申请人" width="120">
             </el-table-column>
@@ -21,15 +23,19 @@
             </el-table-column>
             <el-table-column label="支付状态" width="100" :formatter="formatPayStatus">
             </el-table-column>
-            <el-table-column label="支付时间" width="100" :formatter="formatPayTime">
+            <el-table-column label="支付时间" width="120" :formatter="formatPayTime">
             </el-table-column>
-            <el-table-column prop="payRemark" label="备注" width="100">
+            <el-table-column prop="payRemark" label="支付备注" width="100">
+            </el-table-column>
+            <el-table-column prop="remark" label="采购备注" width="100">
             </el-table-column>
             <el-table-column prop="applyNum" label="采购单号" width="350">
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="200">
+            <el-table-column label="操作" fixed="right" width="250">
                 <template slot-scope="scope">
-                    <el-button size="small" v-if="scope.row.status == '4'" type="primary" @click="confirmOrder(scope.row)">确认</el-button>
+                    <el-button size="small" v-if="scope.row.status == '4'" type="primary" @click="confirmOrder(scope.row)">
+                        入库确认
+                    </el-button>
                     <el-button size="small" type="primary" @click="showDetail(scope.row)">明细</el-button>
                     <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
                 </template>
@@ -108,7 +114,10 @@ export default {
             }
         },
         formatPayTime(row) {
-            return util.parseDate(row.payTime)
+            return util.formatDate(row.paidTime)
+        },
+        formatGmtCreated(row) {
+            return util.formatDate(row.gmtCreated)
         },
         handleCurrentChange(val) {
             this.pageNo = val;
