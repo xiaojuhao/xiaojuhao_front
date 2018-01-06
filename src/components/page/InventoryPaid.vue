@@ -118,6 +118,7 @@ export default {
         },
         getData() {
             let param = {
+                status:5, //必须是已入库的才能查出来
                 paidStatus: this.query.paidStatus,
                 pageNo: this.pageNo,
                 pageSize: this.pageSize,

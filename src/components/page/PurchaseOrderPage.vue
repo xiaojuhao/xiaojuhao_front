@@ -45,7 +45,14 @@
                 </el-table-column>
                 <el-table-column label="规格" :formatter="formatSpec" width="100">
                 </el-table-column>
-                <el-table-column label="入库数量" :formatter="formatAmt" width="100">
+                <el-table-column label="理论库存数量" :formatter="formatStockAmt" width="100">
+                </el-table-column>
+                <el-table-column prop="utilizationRatio" label="利用率" width="100">
+                    <template slot-scope="scope">
+                        {{scope.row.utilizationRatio}}%
+                    </template>
+                </el-table-column>
+                <el-table-column label="折算库存数量" :formatter="formatInStockAmt" width="100">
                 </el-table-column>
                 <el-table-column prop="brandName" label="品牌" width="100">
                 </el-table-column>
@@ -104,15 +111,23 @@ export default {
     },
     methods: {
         formatSpec(row) {
-            if (row.specQty && row.stockUnit && row.specUnit) {
+            if (row.transRate && row.stockUnit && row.specUnit) {
                 if (row.stockUnit != row.specUnit)
-                    return row.specQty + row.stockUnit + "/" + row.specUnit;
+                    return row.transRate + row.stockUnit + "/" + row.specUnit;
                 else
                     return row.stockUnit
             }
         },
-        formatAmt(row) {
-            let amt = eval(row.specAmt + "*" + row.specQty).toFixed(2);
+        formatStockAmt(row) {
+            let amt = eval(row.specAmt + "*" + row.transRate).toFixed(2);
+            let intamt = parseInt(amt);
+            if (amt == intamt) {
+                return intamt + row.stockUnit;
+            }
+            return amt + row.stockUnit;
+        },
+        formatInStockAmt(row) {
+            let amt = (eval(row.specAmt + "*" + row.transRate) * row.utilizationRatio / 100).toFixed(2);
             let intamt = parseInt(amt);
             if (amt == intamt) {
                 return intamt + row.stockUnit;
@@ -179,10 +194,10 @@ export default {
                     }
                     return item;
                 }).filter((item) => {
-                    if(counter <= 20 && item.sk.indexOf(queryString) >= 0){
+                    if (counter <= 20 && item.sk.indexOf(queryString) >= 0) {
                         counter++;
                         return true;
-                    }else{
+                    } else {
                         return false;
                     }
                 })
@@ -211,7 +226,7 @@ export default {
                             Vue.set(item, 'storageLifeNum', r[1])
                         }
                         Vue.set(item, "specUnit", '')
-                        Vue.set(item, "specQty", 0)
+                        Vue.set(item, "transRate", 0)
                         Vue.set(item, "stockUnit", mm.stockUnit)
                     }
                     Vue.set(item, 'specAmt', 0)
@@ -233,9 +248,10 @@ export default {
                             Vue.set(item, 'specCode', list[0].specCode)
                             Vue.set(item, 'psecName', list[0].specName)
                             Vue.set(item, 'specUnit', list[0].specUnit)
-                            Vue.set(item, 'specQty', list[0].transRate)
+                            Vue.set(item, 'transRate', list[0].transRate)
                             Vue.set(item, 'brandName', list[0].brandName)
                             Vue.set(item, 'homeplace', list[0].homeplace)
+                            Vue.set(item, 'utilizationRatio', list[0].utilizationRatio)
                         }
                         Vue.set(item, 'specCodeSel', list)
                     })
@@ -248,9 +264,10 @@ export default {
                     Vue.set(item, 'specCode', it.specCode)
                     Vue.set(item, 'specName', it.specName)
                     Vue.set(item, 'specUnit', it.specUnit)
-                    Vue.set(item, 'specQty', it.transRate)
+                    Vue.set(item, 'transRate', it.transRate)
                     Vue.set(item, 'brandName', it.brandName)
                     Vue.set(item, 'homeplace', it.homeplace)
+                    Vue.set(item, 'utilizationRatio', it.utilizationRatio)
                 }
             })
         },

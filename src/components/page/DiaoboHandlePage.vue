@@ -8,16 +8,42 @@
                     <el-breadcrumb-item>单号{{applyNum}}</el-breadcrumb-item>
                 </el-breadcrumb>
             </div>
-            <el-table :data="details" border style="width: 150%">
+            <el-table :data="tableData" border style="width: 150%">
+                <el-table-column width="55">
+                    <template slot-scope="scope">
+                        <el-checkbox v-model="scope.row.isSelected" :disabled="scope.row.status!='1'">
+                        </el-checkbox>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="materialName" label="原料名称" width="150">
                 </el-table-column>
                 <el-table-column prop="cabinName" label="拨入单位" width="130">
                 </el-table-column>
                 <el-table-column prop="fromCabinName" label="拨出单位" width="130">
                 </el-table-column>
-                <el-table-column label="拨出数量" width="100" :formatter="formatStockAmt">
+                <el-table-column label="拨出数量" width="130">
+                    <template slot-scope="scope">
+                        <el-input size="small" v-model="scope.row.realSpecAmt" @change="onSpecAmtChange(scope.row)">
+                            <template slot="append">{{scope.row.specUnit}}</template>
+                        </el-input>
+                    </template>
                 </el-table-column>
-                <el-table-column label="实际入库数量" width="130">
+                <el-table-column label="规格" width="120">
+                    <template slot-scope="scope">
+                        {{scope.row.transRate}}{{scope.row.stockUnit}}/{{scope.row.specUnit}}
+                    </template>
+                </el-table-column>
+                <el-table-column label="理论库存数量" width="130">
+                    <template slot-scope="scope">
+                        {{scope.row.stockAmt}}{{scope.row.stockUnit}}
+                    </template>
+                </el-table-column>
+                <el-table-column label="利用率" width="100">
+                    <template slot-scope="scope">
+                        {{scope.row.utilizationRatio}}%
+                    </template>
+                </el-table-column>
+                <el-table-column label="折算库存数量" width="130">
                     <template slot-scope="scope">
                         <el-input size="small" v-model="scope.row.realStockAmt">
                         </el-input>
@@ -35,7 +61,7 @@
             </div>
         </div>
         <el-dialog :visible.sync="isShowMessage" title="确认入库信息">
-            <el-table :data="details" style="width:100%" max-height="400" row-class-name="info-row">
+            <el-table :data="selectedData" style="width:100%" max-height="400" row-class-name="info-row">
                 <el-table-column prop="materialName" label="原料名称" width="">
                 </el-table-column>
                 <el-table-column label="拨出数量" width="" :formatter="formatStockAmt">
@@ -53,11 +79,12 @@
 </template>
 <script>
 import { api, util } from '../common/bus'
+import Vue from 'vue'
 export default {
     data: function() {
         return {
             applyNum: this.$route.query.applyNum,
-            details: [],
+            tableData: [],
             loadingState: false,
             splitMaterials: [],
             isShowMessage: false
@@ -74,11 +101,19 @@ export default {
         formatCreateDate(row) {
             return util.formatDate(row.gmtCreated)
         },
+        onSpecAmtChange(row) {
+            let realSpecAmt = row.realSpecAmt * row.transRate * row.utilizationRatio / 100;
+            Vue.set(row, 'realSpecAmt', realSpecAmt);
+            Vue.set(row, 'realStockAmt', realSpecAmt);
+        },
         onSubmit() {
             this.isShowMessage = false;
             this.loadingState = true;
+            if (this.selectedData.length == 0) {
+                this.$message.error("请选择记录")
+            }
             let param = {
-                dataJson: JSON.stringify(this.details),
+                dataJson: JSON.stringify(this.selectedData),
                 applyNum: this.applyNum
             }
             api.confirmDiaobo(param)
@@ -87,8 +122,7 @@ export default {
                     this.$router.go(-1)
                 }).fail((resp) => {
                     this.$message.error(resp.message)
-                })
-                .always(() => {
+                }).always(() => {
                     this.loadingState = false;
                 })
         },
@@ -108,8 +142,16 @@ export default {
     mounted() {
         api.queryInventoryApplyDetailByApplyNum(this.applyNum)
             .then((list) => {
-                this.details = list;
+                this.tableData = list;
+                this.tableData.forEach((it) => {
+                    Vue.set(it, 'realSpecAmt', it.specAmt)
+                })
             })
+    },
+    computed: {
+        selectedData() {
+            return this.tableData.filter((it) => it.isSelected)
+        }
     }
 }
 </script>

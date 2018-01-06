@@ -31,13 +31,14 @@
             </el-table-column>
             <el-table-column prop="applyNum" label="采购单号" width="350">
             </el-table-column>
-            <el-table-column label="操作" fixed="right" width="250">
+            <el-table-column label="操作" fixed="right" width="260">
                 <template slot-scope="scope">
                     <el-button size="small" v-if="scope.row.status == '4'" type="primary" @click="confirmOrder(scope.row)">
-                        入库确认
+                        入库
                     </el-button>
                     <el-button size="small" type="primary" @click="showDetail(scope.row)">明细</el-button>
                     <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
+                    <el-button size="small" v-if="scope.row.status == '4'" type="danger" @click="deleteBill(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -148,6 +149,21 @@ export default {
         },
         showDetail(item) {
             this.$router.push({ path: "/inventoryDetail", query: { applyNum: item && item.applyNum } })
+        },
+        deleteBill(item) {
+            this.$confirm('是否删除采购单?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                api.deleteInventory(item.applyNum)
+                    .then((val) => {
+                        this.$message("删除成功");
+                        this.getData();
+                    }).fail((resp) => {
+                        this.$message.error(resp.message)
+                    })
+            })
         }
     }
 }

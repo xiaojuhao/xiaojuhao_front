@@ -11,7 +11,7 @@
             <el-table :data="details" border style="width: 150%">
                 <el-table-column prop="materialName" label="原料名称" width="200">
                 </el-table-column>
-                <el-table-column prop="supplierName" label="供应商" width="130">
+                <el-table-column label="供应商" width="130" :formatter="formatFrom">
                 </el-table-column>
                 <el-table-column prop="cabinName" label="门店/仓库" width="130">
                 </el-table-column>
@@ -61,8 +61,16 @@ export default {
         formateProdDate(row) {
             return util.formatDate(row.prodDate)
         },
-        formatRealAmt(row){
-            return row.realStockAmt+row.stockUnit;
+        formatRealAmt(row) {
+            return row.realStockAmt + row.stockUnit;
+        },
+        formatFrom(row) {
+            switch (row.applyType) {
+                case "purchase":
+                    return row.supplierName;
+                case "allocation":
+                    return row.fromCabinName;
+            }
         },
         onSubmit() {
             this.isShowMessage = false;

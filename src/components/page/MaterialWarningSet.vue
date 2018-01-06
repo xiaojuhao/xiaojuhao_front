@@ -18,6 +18,8 @@
             </el-table-column>
             <el-table-column prop="warningValue2" label="忙时预警">
             </el-table-column>
+            <el-table-column prop="warningStock" label="预警(计算值)">
+            </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">

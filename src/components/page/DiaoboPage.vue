@@ -27,21 +27,43 @@
                 </el-table-column>
                 <el-table-column prop="cabinName" label="拨出仓库" width="150">
                 </el-table-column>
-                <el-table-column prop="currStock" label="当前库存" width="100">
-                </el-table-column>
-                <el-table-column label="拨出数量" width="100">
+                <el-table-column label="当前库存" width="120">
                     <template slot-scope="scope">
-                        <el-input size="small" v-model="scope.row.outAmt"></el-input>
+                        {{scope.row.currStock}} {{scope.row.stockUnit}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="stockUnit" label="单位" width="80">
-                </el-table-column>
-                <el-table-column label="总价" width="130">
+                <el-table-column label="调拨规格" width="120">
                     <template slot-scope="scope">
-                        <el-input size="small" v-model="scope.row.totalPrice">
-                            <template slot="append">元</template>
+                        <el-select size="small" v-model="scope.row.specCode" style="width:100px" @change="onSelectSpec(scope.row, scope.row.specCode)">
+                            <el-option v-for="item in scope.row.specCodeSel" :key="item.specCode" :label="item.specName" :value="item.specCode">
+                            </el-option>
+                        </el-select>
+                    </template>
+                </el-table-column>
+                <el-table-column label="拨出数量" width="140">
+                    <template slot-scope="scope">
+                        <el-input size="small" v-model="scope.row.specAmt">
+                            <template slot="append">{{scope.row.specUnit}}</template>
                         </el-input>
                     </template>
+                </el-table-column>
+                <el-table-column label="单价" width="160">
+                    <template slot-scope="scope">
+                        <el-input size="small" v-model="scope.row.specPrice">
+                            <template slot="append">元/{{scope.row.specUnit}}</template>
+                        </el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="总价" width="160" :formatter="calcTotalPrice">
+                </el-table-column>
+                <el-table-column label="理论库存数量" width="160" :formatter="calcStockAmt">
+                </el-table-column>
+                <el-table-column label="利用率" width="100" prop="utilizationRatio">
+                    <template slot-scope="scope">
+                        {{scope.row.utilizationRatio}}%
+                    </template>
+                </el-table-column>
+                <el-table-column label="折算库存数量" width="160" :formatter="calcInStockAmt">
                 </el-table-column>
                 <el-table-column label="备注" width="250">
                     <template slot-scope="scope">
@@ -85,7 +107,7 @@ export default {
     methods: {
         formatSpec(row) {
             if (row.specUnit == '无') return row.stockUnit
-            return row.specQty + row.stockUnit;
+            return row.transRate + row.stockUnit;
         },
         onClear() {
             let self = this;
@@ -144,6 +166,22 @@ export default {
                     this.loadingState = false;
                 })
         },
+        onSelectSpec(item) {
+            item.specCodeSel && item.specCodeSel.forEach((it) => {
+                if (it.specCode == item.specCode) {
+                    Vue.set(item, 'specName', it.specName)
+                    Vue.set(item, 'specUnit', it.specUnit)
+                    Vue.set(item, 'stockUnit', it.stockUnit)
+                    Vue.set(item, 'transRate', it.transRate)
+                    Vue.set(item, 'brandName', it.brandName)
+                    Vue.set(item, 'homeplace', it.homeplace)
+                    Vue.set(item, 'utilizationRatio', it.utilizationRatio)
+                    Vue.set(item, 'selectedSpec', it)
+                }
+            })
+            //this.calcSpecAmt(item);
+            this.initSpecPrice(item)
+        },
         removeRows(index) {
             this.$data.materialList.splice(index, 1)
         },
@@ -159,14 +197,14 @@ export default {
                 let result = this.cabinMaterialStock.map((item) => {
                     let sk = item.materialName + "," + item.cabinName + "," + item.searchKey;
                     Vue.set(item, "sk", sk)
-                    Vue.set(item, 'value', item.materialName )
+                    Vue.set(item, 'value', item.materialName)
                     Vue.set(item, 'totalPrice', 0)
                     return item;
                 }).filter((item) => {
-                    if(counter <= 20 && item.sk.indexOf(queryString) >= 0){
+                    if (counter <= 20 && item.sk.indexOf(queryString) >= 0) {
                         counter++;
                         return true;
-                    }else{
+                    } else {
                         return false;
                     }
                 })
@@ -192,9 +230,6 @@ export default {
                             Vue.set(item, 'storageLifeUnit', r[2])
                             Vue.set(item, 'storageLifeNum', r[1])
                         }
-                        Vue.set(item, "specUnit", mm.specUnit)
-                        Vue.set(item, "specQty", mm.specQty)
-                        Vue.set(item, "stockUnit", mm.stockUnit)
                     }
                     Vue.set(item, 'outAmt', 0)
                     Vue.set(item, 'outCabinCode', this.outCabinCode)
@@ -202,6 +237,7 @@ export default {
                     self.materialList.push(item)
                 }
             })
+            this.initTableDate(this.materialList)
         },
         handleSelect(item) {
             this.currSelectAlts = [item]
@@ -222,9 +258,15 @@ export default {
             var total = 0.00;
             if (row.specAmt && row.specPrice) {
                 total = row.specAmt * row.specPrice;
-                return total.toFixed(2);
+                return total.toFixed(2) + "元";
             }
-            return total;
+            return total + "元";
+        },
+        calcStockAmt(row) {
+            return (row.transRate * row.specAmt).toFixed(2) + row.stockUnit;
+        },
+        calcInStockAmt(row) {
+            return (row.transRate * row.specAmt * row.utilizationRatio / 100).toFixed(2) + row.stockUnit;
         },
         onSelectOutCabin(val) {
             this.outCabinCode = val;
@@ -239,6 +281,71 @@ export default {
                         this.$message.error("仓库没有库存数据")
                     }
                 })
+        },
+        initTableDate(tableData) {
+            let codes = [];
+            tableData.forEach((it) => {
+                codes.push(it.materialCode)
+            })
+            api.querySpecsByMaterialCodes({
+                materialCodes: codes.join(',')
+            }).then((list) => {
+                //将list按mateiralCode分组
+                let map = new Map();
+                list.forEach((it) => {
+                    let mc = it.materialCode;
+                    if (!map.get(mc)) {
+                        map.set(mc, [])
+                    }
+                    map.get(mc).push(it);
+                })
+                for (let entry of map) {
+                    let entryVals = entry[1];
+                    let oneVal = entryVals[0];
+                    let s = {};
+                    Vue.set(s, 'specCode', 'MS000000');
+                    Vue.set(s, 'specName', oneVal.stockUnit);
+                    Vue.set(s, 'specUnit', oneVal.stockUnit);
+                    Vue.set(s, 'stockUnit', oneVal.stockUnit);
+                    Vue.set(s, 'transRate', 1);
+                    Vue.set(s, 'utilizationRatio', 100);
+                    entryVals.push(s);
+                }
+                //遍历每条记录，设置规则
+                tableData.forEach((it) => {
+                    if (map.get(it.materialCode)) {
+                        Vue.set(it, 'specCodeSel', map.get(it.materialCode))
+                    }
+                    //如果记录本身没有规格信息，就将第一个设置为默认规格
+                    if (!it.specCode && it.specCodeSel.length > 0) {
+                        Vue.set(it, 'specCode', it.specCodeSel[0].specCode)
+                        Vue.set(it, 'specUnit', it.specCodeSel[0].specUnit)
+                        Vue.set(it, 'stockUnit', it.specCodeSel[0].stockUnit)
+                        Vue.set(it, 'transRate', it.specCodeSel[0].transRate)
+                        Vue.set(it, 'brandName', it.specCodeSel[0].brandName)
+                        Vue.set(it, 'homeplace', it.specCodeSel[0].homeplace)
+                        Vue.set(it, 'utilizationRatio', it.specCodeSel[0].utilizationRatio)
+                        Vue.set(it, 'selectedSpec', it.specCodeSel[0])
+                        this.initSpecPrice(it)
+                    }
+                    if (!it.transRate && it.specUnit == it.stockUnit) {
+                        Vue.set(it, 'transRate', 1);
+                    }
+                })
+            })
+        },
+        initSpecInfo(item) {
+
+        },
+        initSpecPrice(item) {
+            Vue.set(item, 'specPrice', 0);
+            let cabinCode = item.cabinCode;
+            if (item.selectedSpec && item.selectedSpec.priceInfo) {
+                let pi = JSON.parse(item.selectedSpec.priceInfo)
+                if (pi && pi[cabinCode]) {
+                    Vue.set(item, 'specPrice', pi[cabinCode]);
+                }
+            }
         }
     },
     mounted() {

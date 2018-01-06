@@ -87,10 +87,16 @@
         </div>
         <el-row style="margin-top:20px;">
             <el-col :offset="6">
-                <el-button type="primary" @click="showConfirmDialog">确认提交</el-button>
-                <span style="margin-right:20px"></span>
                 <el-button type="primary" :disabled="selectItems.length==0" @click="submitSelectedData(1)">
                     暂存
+                </el-button>
+                <span style="margin-right:20px"></span>
+                <el-button type="primary" :disabled="selectItems.length==0" @click="showConfirmDialog">
+                    确认提交
+                </el-button>
+                <span style="margin-right:20px"></span>
+                <el-button type="danger" :disabled="selectItems.length==0" @click="submitCancel">
+                    删除需求
                 </el-button>
             </el-col>
         </el-row>
@@ -115,9 +121,6 @@
                 <el-button @click="()=>{this.isShowMessage = false}">关闭</el-button>
                 <el-button type="primary" :disabled="selectItems.length==0" @click="submitSelectedData(2)">
                     提交采购
-                </el-button>
-                <el-button type="danger" :disabled="selectItems.length==0" @click="submitCancel">
-                    取消采购需求
                 </el-button>
             </div>
         </el-dialog>
@@ -192,7 +195,6 @@ export default {
                     Vue.set(item, 'homeplace', it.homeplace)
                 }
             })
-
             this.calcSpecAmt(item);
         },
         onSelectSupplier(item) {

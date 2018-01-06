@@ -285,6 +285,9 @@ export const api = {
     commitPurchaseOrder(data) {
         return http.post("/inventoryApply/commitPurchaseOrder", data)
     },
+    deleteInventory(applyNum) {
+        return http.post("/inventoryApply/deleteInventory", { applyNum: applyNum })
+    },
     queryInventoryApplyPage(data) {
         return http.post("/inventoryApply/queryInventoryApply", data)
     },

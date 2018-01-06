@@ -112,6 +112,7 @@ export default {
                 }).always(() => {
                     this.loadingState = false;
                 })
+            this.onBack();
         },
         onBack() {
             this.$router.go(-1)
