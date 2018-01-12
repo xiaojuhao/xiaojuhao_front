@@ -201,6 +201,14 @@ export default new Router({
                     component: resolve => require(['../components/page/ReportOfStock.vue'], resolve)
                 },
                 {
+                    path: '/materialCheckReport',
+                    component: resolve => require(['../components/page/MaterialCheckReport.vue'], resolve)
+                },
+                {
+                    path: '/materialCheckReportDetail',
+                    component: resolve => require(['../components/page/MaterialCheckReportDetail.vue'], resolve)
+                },
+                {
                     path: '/purchaseOrder',
                     component: resolve => require(['../components/page/PurchaseOrder.vue'], resolve)
                 },

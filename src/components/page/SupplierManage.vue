@@ -19,6 +19,8 @@
             </el-table-column>
             <el-table-column prop="supplierName" label="供应商名称" width="150">
             </el-table-column>
+            <el-table-column prop="supplierFullName" label="供应商全称" width="300">
+            </el-table-column>
             <el-table-column prop="supplierTel" label="电话" width="130">
             </el-table-column>
             <el-table-column prop="supplierPhone" label="手机" width="130">

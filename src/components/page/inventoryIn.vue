@@ -38,7 +38,7 @@
                     </el-button>
                     <el-button size="small" type="primary" @click="showDetail(scope.row)">明细</el-button>
                     <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
-                    <el-button size="small" v-if="scope.row.status == '4'" type="danger" @click="deleteBill(scope.row)">删除</el-button>
+                    <el-button size="small" v-if="scope.row.status == '4'" type="danger" @click="deleteBill(scope.row)">作废</el-button>
                 </template>
             </el-table-column>
         </el-table>

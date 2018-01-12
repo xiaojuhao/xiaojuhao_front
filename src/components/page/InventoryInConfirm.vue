@@ -35,7 +35,7 @@
                         {{scope.row.transRate}}{{scope.row.stockUnit}}/{{scope.row.specUnit}}
                     </template>
                 </el-table-column>
-                <el-table-column label="理论库存数量" width="120">
+                <el-table-column label="采购库存" width="120">
                     <template slot-scope="scope">
                         {{scope.row.stockAmt}}{{scope.row.stockUnit}}
                     </template>
@@ -45,16 +45,22 @@
                         {{scope.row.utilizationRatio}}%
                     </template>
                 </el-table-column>
-                <el-table-column label="折算入库数量" width="150">
+                <el-table-column label="食材库存" width="150">
                     <template slot-scope="scope">
                         <el-input size="small" v-model="scope.row.realStockAmt">
                             <template slot="append">{{scope.row.stockUnit}}</template>
                         </el-input>
                     </template>
                 </el-table-column>
-                <el-table-column prop="specPrice" label="采购价" width="80">
+                <el-table-column label="单价" width="80">
+                    <template slot-scope="scope">
+                        {{scope.row.specPrice}}元
+                    </template>
                 </el-table-column>
-                <el-table-column prop="totalPrice" label="总价" width="80">
+                <el-table-column label="总价" width="80">
+                    <template slot-scope="scope">
+                        {{scope.row.totalPrice}}元
+                    </template>
                 </el-table-column>
                 <el-table-column label="生产日期" width="130" :formatter="formateProdDate">
                 </el-table-column>
@@ -183,7 +189,6 @@ export default {
                     //设置选中状态
                     list.forEach((it) => {
                         Vue.set(it, 'isSelected', false)
-                        Vue.set(it, 'realSpecAmt', it.specAmt)
                     })
                 })
         }

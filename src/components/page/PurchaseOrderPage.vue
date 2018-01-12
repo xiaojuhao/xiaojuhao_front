@@ -17,7 +17,7 @@
         </div>
         <div class="form-box">
             <el-table :data="materialList" border style="width: 120%">
-                <el-table-column prop="materialName" label="原料名称" width="150">
+                <el-table-column prop="materialName" label="原料名称" width="180">
                 </el-table-column>
                 <el-table-column prop="supplierName" label="供应商" width="150">
                 </el-table-column>
@@ -45,33 +45,16 @@
                 </el-table-column>
                 <el-table-column label="规格" :formatter="formatSpec" width="100">
                 </el-table-column>
-                <el-table-column label="理论库存数量" :formatter="formatStockAmt" width="100">
+                <el-table-column label="采购入库" :formatter="formatStockAmt" width="100">
                 </el-table-column>
-                <el-table-column prop="utilizationRatio" label="利用率" width="100">
-                    <template slot-scope="scope">
-                        {{scope.row.utilizationRatio}}%
-                    </template>
-                </el-table-column>
-                <el-table-column label="折算库存数量" :formatter="formatInStockAmt" width="100">
+                <el-table-column label="食材入库" :formatter="formatInStockAmt" width="100">
                 </el-table-column>
                 <el-table-column prop="brandName" label="品牌" width="100">
-                </el-table-column>
-                <el-table-column prop="homeplace" label="产地" width="100">
                 </el-table-column>
                 <el-table-column label="生产日期" width="150">
                     <template slot-scope="scope">
                         <el-date-picker v-model="scope.row.prodDate" class="data-picker" size="small" type="date" placeholder="选择日期">
                         </el-date-picker>
-                    </template>
-                </el-table-column>
-                <el-table-column label="保质期" width="150">
-                    <template slot-scope="scope">
-                        <el-input v-model="scope.row.storageLifeNum" style="width:120px">
-                            <el-select v-model="scope.row.storageLifeUnit" slot="append" style="width:60px">
-                                <el-option label="天" value="D"></el-option>
-                                <el-option label="月" value="M"></el-option>
-                            </el-select>
-                        </el-input>
                     </template>
                 </el-table-column>
                 <el-table-column prop="totalPrice" label="总金额" width="120" :formatter="calcTotalPrice">
@@ -187,11 +170,7 @@ export default {
                 let result = this.allMaterialSupplier.map((item) => {
                     let sk = item.materialName + "," + item.supplierName + "," + item.searchKey;
                     Vue.set(item, "sk", sk)
-                    if (item && item.shortName) {
-                        Vue.set(item, 'value', item.shortName + "-" + item.materialName)
-                    } else {
-                        Vue.set(item, 'value', item.supplierName + "-" + item.materialName)
-                    }
+                    Vue.set(item, 'value', item.supplierName + "-" + item.materialName)
                     return item;
                 }).filter((item) => {
                     if (counter <= 20 && item.sk.indexOf(queryString) >= 0) {
@@ -236,7 +215,8 @@ export default {
                     Vue.set(item, 'prodDate', today)
                     Vue.set(item, 'materialCode', item.materialCode)
                     this.setSpecCode(item);
-                    self.materialList.push(item)
+                    self.materialList.push(item);
+                    this.initSpecPrice(item);
                 }
             })
         },
@@ -252,6 +232,8 @@ export default {
                             Vue.set(item, 'brandName', list[0].brandName)
                             Vue.set(item, 'homeplace', list[0].homeplace)
                             Vue.set(item, 'utilizationRatio', list[0].utilizationRatio)
+                            Vue.set(item, 'selectedSpec', list[0])
+                            this.initSpecPrice(item);
                         }
                         Vue.set(item, 'specCodeSel', list)
                     })
@@ -268,6 +250,8 @@ export default {
                     Vue.set(item, 'brandName', it.brandName)
                     Vue.set(item, 'homeplace', it.homeplace)
                     Vue.set(item, 'utilizationRatio', it.utilizationRatio)
+                    Vue.set(item, 'selectedSpec', it);
+                    this.initSpecPrice(item);
                 }
             })
         },
@@ -293,6 +277,20 @@ export default {
                 return total.toFixed(2);
             }
             return total;
+        },
+        initSpecPrice(item) {
+            Vue.set(item, 'specPrice', 0);
+            let cabinCode = item.cabinCode;
+            if (item.selectedSpec && item.selectedSpec.priceInfo) {
+                try {
+                    let pi = JSON.parse(item.selectedSpec.priceInfo)
+                    if (pi && pi[cabinCode]) {
+                        Vue.set(item, 'specPrice', pi[cabinCode]);
+                    }
+                } catch (e) {
+                    console.log(e)
+                }
+            }
         }
     },
     mounted() {

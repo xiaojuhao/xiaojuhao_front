@@ -6,7 +6,7 @@
                 <el-option label="已入库" value="5"></el-option>
                 <el-option label="撤销" value="6"></el-option>
             </el-select>
-            <el-button type="primary" icon="search" @click="search">搜索采购单</el-button>
+            <el-button type="primary" icon="search" @click="search">搜索调拨单</el-button>
         </div>
         <el-table :data="data" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column prop="cabinCode" label="单位编码" width="150">
@@ -26,7 +26,7 @@
                     <el-button size="small" v-if="scope.row.status == '4'" type="primary" @click="confirmOrder(scope.row)">确认</el-button>
                     <el-button size="small" type="primary" @click="showDetail(scope.row)">明细</el-button>
                     <el-button size="small" type="primary" @click="printBill(scope.row)">打印</el-button>
-                    <el-button size="small" v-if="scope.row.status == '4'" type="danger" @click="deleteBill(scope.row)">删除</el-button>
+                    <el-button size="small" v-if="scope.row.status == '4'" type="danger" @click="deleteBill(scope.row)">作废</el-button>
                 </template>
             </el-table-column>
         </el-table>

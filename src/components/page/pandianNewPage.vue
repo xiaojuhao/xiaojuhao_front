@@ -71,11 +71,16 @@
         </el-row>
         <el-dialog :title="dialogTitle" v-model="detailInputDialogShow" class="dialog">
             <el-table :data="currentItem.specList" border>
-                <el-table-column prop="specName" label="规格名称">
+                <el-table-column prop="specName" label="规格名称" width="150">
                 </el-table-column>
-                <el-table-column label="规格" :formatter="formatSpec">
+                <el-table-column label="规格" :formatter="formatSpec" width="120">
                 </el-table-column>
-                <el-table-column prop="specAmt" label="剩余">
+                <el-table-column label="利用率" width="80">
+                    <template slot-scope="scope">
+                        {{scope.row.utilizationRatio}}%
+                    </template>
+                </el-table-column>
+                <el-table-column prop="specAmt" label="剩余" width="140">
                     <template slot-scope="scope">
                         <el-input size="mini" v-model="scope.row.leftAmt">
                             <template slot="append">
@@ -84,7 +89,7 @@
                         </el-input>
                     </template>
                 </el-table-column>
-                <el-table-column label="折算数量" :formatter="calcStockAmt">
+                <el-table-column label="折算数量" :formatter="calcStockAmt" width="180">
                 </el-table-column>
             </el-table>
             <div style="text-align:center;margin-top:10px;">
@@ -123,7 +128,7 @@ export default {
             return item.transRate + item.stockUnit + "/" + item.specUnit;
         },
         calcStockAmt(item) {
-            let stockAmt = item.leftAmt * item.transRate;
+            let stockAmt = item.leftAmt * item.transRate * item.utilizationRatio / 100;
             Vue.set(item, 'stockAmt', stockAmt);
             return item.stockAmt + item.stockUnit;
         },
@@ -145,6 +150,7 @@ export default {
                             Vue.set(s, 'specUnit', it.specUnit);
                             Vue.set(s, 'stockUnit', it.stockUnit);
                             Vue.set(s, 'transRate', it.transRate);
+                            Vue.set(s, 'utilizationRatio', it.utilizationRatio)
                             if (it.transRate == 1 && it.stockUnit == it.specUnit) {
                                 hadSS = true;
                             }
@@ -159,6 +165,7 @@ export default {
                             Vue.set(ss, 'specUnit', row.stockUnit);
                             Vue.set(ss, 'stockUnit', row.stockUnit);
                             Vue.set(ss, 'transRate', 1);
+                            Vue.set(ss, 'utilizationRatio', 100);
                             specList.push(ss);
                         }
 
@@ -172,8 +179,8 @@ export default {
         confirmItem() {
             let realStock = 0;
             this.currentItem.specList && this.currentItem.specList.forEach((it) => {
-                if (it.leftAmt) {
-                    realStock = realStock + it.leftAmt * it.transRate;
+                if (it.stockAmt) {
+                    realStock += it.stockAmt;
                 }
             })
             this.currentItem.stockAmt = realStock;

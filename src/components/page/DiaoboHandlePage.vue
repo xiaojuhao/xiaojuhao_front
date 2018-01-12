@@ -33,7 +33,7 @@
                         {{scope.row.transRate}}{{scope.row.stockUnit}}/{{scope.row.specUnit}}
                     </template>
                 </el-table-column>
-                <el-table-column label="理论库存数量" width="130">
+                <el-table-column label="采购库存" width="130">
                     <template slot-scope="scope">
                         {{scope.row.stockAmt}}{{scope.row.stockUnit}}
                     </template>
@@ -43,10 +43,20 @@
                         {{scope.row.utilizationRatio}}%
                     </template>
                 </el-table-column>
-                <el-table-column label="折算库存数量" width="130">
+                <el-table-column label="食材库存" width="130">
                     <template slot-scope="scope">
                         <el-input size="small" v-model="scope.row.realStockAmt">
                         </el-input>
+                    </template>
+                </el-table-column>
+                <el-table-column label="单价" width="80">
+                    <template slot-scope="scope">
+                        {{scope.row.specPrice}}元
+                    </template>
+                </el-table-column>
+                <el-table-column label="总价" width="80">
+                    <template slot-scope="scope">
+                        {{scope.row.totalPrice}}元
                     </template>
                 </el-table-column>
                 <el-table-column prop="remark" label="备注" width="200">
@@ -103,8 +113,8 @@ export default {
         },
         onSpecAmtChange(row) {
             let realSpecAmt = row.realSpecAmt * row.transRate * row.utilizationRatio / 100;
-            Vue.set(row, 'realSpecAmt', realSpecAmt);
             Vue.set(row, 'realStockAmt', realSpecAmt);
+            Vue.set(row, 'stockAmt', realSpecAmt);
         },
         onSubmit() {
             this.isShowMessage = false;
@@ -143,9 +153,6 @@ export default {
         api.queryInventoryApplyDetailByApplyNum(this.applyNum)
             .then((list) => {
                 this.tableData = list;
-                this.tableData.forEach((it) => {
-                    Vue.set(it, 'realSpecAmt', it.specAmt)
-                })
             })
     },
     computed: {

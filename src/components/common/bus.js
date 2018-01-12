@@ -21,9 +21,9 @@ export const util = {
             return "";
         }
         let date = new Date(ms);
-        return this.parseDate(date);
+        return this.formatDateT(date);
     },
-    parseDate(date) {
+    formatDateT(date) {
         if (!date) return "";
         let year = date.getFullYear();
         let mon = date.getMonth() + 1;
@@ -38,6 +38,49 @@ export const util = {
             str = str + "-0" + day;
         } else {
             str = str + "-" + day;
+        }
+        return str;
+    },
+    formatDateTime(ms) {
+        if (!ms) {
+            return "";
+        }
+        let date = new Date(ms);
+        return this.formatDateTimeT(date);
+    },
+    formatDateTimeT(date) {
+        if (!date) return "";
+        let year = date.getFullYear();
+        let mon = date.getMonth() + 1;
+        let day = date.getDate();
+        let hours = date.getHours();
+        let minutes = date.getMinutes();
+        let seconds = date.getSeconds();
+        let str = year;
+        if (mon < 10) {
+            str = str + "-0" + mon;
+        } else {
+            str = str + "-" + mon;
+        }
+        if (day < 10) {
+            str = str + "-0" + day;
+        } else {
+            str = str + "-" + day;
+        }
+        if (hours < 10) {
+            str = str + " 0" + hours;
+        } else {
+            str = str + " " + hours;
+        }
+        if (minutes < 10) {
+            str = str + ":0" + minutes;
+        } else {
+            str = str + ":" + minutes;
+        }
+        if (seconds < 10) {
+            str = str + ":0" + seconds;
+        } else {
+            str = str + ":" + seconds;
         }
         return str;
     },
@@ -390,6 +433,9 @@ export const api = {
     cancelRequire(data) {
         return http.post("/require/cancelRequire", data);
     },
+    createMaterialRequre(data) {
+        return http.post("/require/createRequire", data);
+    },
     currentStockCheck(cabinCode) {
         return http.post("/check/current", { cabinCode: cabinCode })
     },
@@ -410,5 +456,11 @@ export const api = {
     },
     queryPaymentByPayNo(id, payNo) {
         return http.post("/payment/queryPaymentByPayNo", { id: id, payNo: payNo })
+    },
+    queryMaterialCheckMain(data) {
+        return http.post("/check/queryCheckMain", data)
+    },
+    queryMaterialCheckDetail(data) {
+        return http.post("/check/queryCheckDetail", data)
     }
 }

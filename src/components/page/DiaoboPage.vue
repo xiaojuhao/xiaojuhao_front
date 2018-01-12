@@ -56,14 +56,14 @@
                 </el-table-column>
                 <el-table-column label="总价" width="160" :formatter="calcTotalPrice">
                 </el-table-column>
-                <el-table-column label="理论库存数量" width="160" :formatter="calcStockAmt">
+                <el-table-column label="采购库存" width="160" :formatter="calcStockAmt">
                 </el-table-column>
                 <el-table-column label="利用率" width="100" prop="utilizationRatio">
                     <template slot-scope="scope">
                         {{scope.row.utilizationRatio}}%
                     </template>
                 </el-table-column>
-                <el-table-column label="折算库存数量" width="160" :formatter="calcInStockAmt">
+                <el-table-column label="食材库存" width="160" :formatter="calcInStockAmt">
                 </el-table-column>
                 <el-table-column label="备注" width="250">
                     <template slot-scope="scope">

@@ -123,8 +123,8 @@ export default {
                     pageSize: this.pageSize,
                     storeCode: this.storeCode,
                     recipesCode: this.recipesCode,
-                    saleDateStart: util.parseDate(this.saleDateStart),
-                    saleDateEnd: util.parseDate(this.saleDateEnd),
+                    saleDateStart: util.formatDateT(this.saleDateStart),
+                    saleDateEnd: util.formatDateT(this.saleDateEnd),
                     searchKey: this.searchKey
                 })
                 .then((page) => {
@@ -139,7 +139,7 @@ export default {
         syncSaleData() {
             this.loadingState2 = true;
             api.syncOrders({
-                date: util.parseDate(this.syncDate)
+                date: util.formatDateT(this.syncDate)
             }).then((val) => {
                 this.$message("同步成功")
                 this.saleDateStart = this.syncDate;

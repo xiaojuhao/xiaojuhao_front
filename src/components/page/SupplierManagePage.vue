@@ -11,8 +11,8 @@
                 <el-form-item label="供应商名称">
                     <el-input v-model="form.supplierName" placeholder="供应商名称"></el-input>
                 </el-form-item>
-                <el-form-item label="简称">
-                    <el-input v-model="form.shortName" placeholder="简称"></el-input>
+                <el-form-item label="全称">
+                    <el-input v-model="form.supplierFullName" placeholder="供应商全称"></el-input>
                 </el-form-item>
                 <el-form-item label="供应商代码">
                     <el-input disabled v-model="form.supplierCode" placeholder="供应商代码"></el-input>
@@ -52,21 +52,21 @@
                     </template>
                 </el-form-item>
                 <el-form-item v-if="form.payWay=='bank'" label="银行信息">
-                    <el-input v-model="form.bankName" placeholder="银行名称" ></el-input>
+                    <el-input v-model="form.bankName" placeholder="银行名称"></el-input>
                 </el-form-item>
                 <el-form-item v-if="form.payWay=='bank'" label="开户行">
-                    <el-input v-model="form.depositBank" placeholder="开户行" ></el-input>
+                    <el-input v-model="form.depositBank" placeholder="开户行"></el-input>
                 </el-form-item>
                 <el-form-item v-if="form.payWay=='bank'" label="银行账户">
-                    <el-input v-model="form.bankAccount" placeholder="银行账户" ></el-input>
+                    <el-input v-model="form.bankAccount" placeholder="银行账户"></el-input>
                 </el-form-item>
                 <el-form-item v-if="form.payWay=='bank'" label="收款人">
-                    <el-input v-model="form.bankAccountName" placeholder="收款人" ></el-input>
+                    <el-input v-model="form.bankAccountName" placeholder="收款人"></el-input>
                 </el-form-item>
-                <el-form-item  v-if="form.payWay=='alipay'" label="支付宝账号">
+                <el-form-item v-if="form.payWay=='alipay'" label="支付宝账号">
                     <el-input v-model="form.alipayAccount" placeholder="支付宝账号"></el-input>
                 </el-form-item>
-                <el-form-item  v-if="form.payWay=='alipay'" label="支付宝收款人">
+                <el-form-item v-if="form.payWay=='alipay'" label="支付宝收款人">
                     <el-input v-model="form.alipayAccountName" placeholder="支付宝收款人"></el-input>
                 </el-form-item>
                 <el-form-item v-if="form.payWay=='weixin'" label="微信账号">
@@ -79,24 +79,26 @@
                     <el-input v-model="form.remark" placeholder="备注信息"></el-input>
                 </el-form-item>
                 <el-form-item label="供应原料">
-                    <el-row :gutter="5">
-                        <el-col :span="12"><span class="span-center">原料</span></el-col>
-                        <el-col :span="3"><span class="span-center">操作</span></el-col>
-                    </el-row>
-                    <el-row v-for="(ff,index) in materials" :key="ff.materialCode" :gutter="5">
-                        <el-col :span="12">
-                            <MaterialSelection :value="ff.materialCode" :context="ff" :excludes="addedMaterials" v-on:input="materialSelCallback">
-                            </MaterialSelection>
-                        </el-col>
-                        <el-col :span="3">
-                            <div class="grid-content">
-                                <el-button icon="delete" size="small" @click="removeMaterials(index)"></el-button>
-                            </div>
+                    <el-row>
+                        <el-col>
+                            <span class="span-material" v-for="(item,index) in selectedMaterials" :key="item.materialCode">
+                                {{item.materialName}}
+                            </span>
                         </el-col>
                     </el-row>
                     <el-row>
                         <el-col :span="24">
-                            <el-button type="success" @click="addMaterialItem">增加原料</el-button>
+                            <el-button size="small" :type="showMaterialsButton.type" @click="showMaterials">{{showMaterialsButton.title}}</el-button>
+                            <el-radio-group v-if="isShowMaterials" v-model="category" size="small">
+                                <el-radio-button v-for="c in categorySel" :label="c.unitCode"></el-radio-button>
+                            </el-radio-group>
+                        </el-col>
+                    </el-row>
+                    <el-row v-if="isShowMaterials">
+                        <el-col>
+                            <el-checkbox v-for="item in filteredMaterials" :key="item.id" v-model="item.isSelected">
+                                {{item.materialName}}
+                            </el-checkbox>
                         </el-col>
                     </el-row>
                 </el-form-item>
@@ -111,6 +113,7 @@
 <script>
 import { api } from '../common/bus'
 import MaterialSelection from '../common/MaterialSelection'
+import Vue from 'vue'
 export default {
     data: function() {
         return {
@@ -122,25 +125,37 @@ export default {
                 supplierPhone: '',
                 supplierEmail: '',
                 payWay: 'alipay',
-                bankName:'',
+                bankName: '',
                 payMode: '',
                 payAccount: '',
                 materialJson: '',
-                remark:'',
-                status:''
+                remark: '',
+                status: ''
             },
-            materials: [],
-            loadingState: false
+            allMaterials: [],
+            loadingState: false,
+            categorySel: [],
+            category: '',
+            isShowMaterials: false,
+            showMaterialsButton: {
+                title: '显示原料',
+                type: 'success'
+            }
+
         }
     },
     methods: {
         onSubmit() {
-            this.form.materialJson = JSON.stringify(this.materials);
-            
+            let materials = [];
+            this.selectedMaterials.forEach((it) => {
+                materials.push({ materialCode: it.materialCode })
+            })
+            this.form.materialJson = JSON.stringify(materials);
             api.saveSupplierInfo(this.form)
                 .then((val) => {
-                    this.form.supplierCode = val.supplierCode;
+                    Object.assign(this.form, val);
                     this.$message("提交成功")
+                    this.$router.go(-1)
                 }).fail((resp) => {
                     this.$message.error(resp.message)
                 })
@@ -148,40 +163,71 @@ export default {
         onCancel() {
             this.$router.go(-1)
         },
-        removeMaterials(index) {
-            this.materials.splice(index, 1)
+        showMaterials() {
+            if (this.isShowMaterials) {
+                this.isShowMaterials = false;
+                this.showMaterialsButton.title = "显示原料";
+                this.showMaterialsButton.type = "success"
+            } else {
+                this.isShowMaterials = true;
+                this.showMaterialsButton.title = "隐藏原料";
+                this.showMaterialsButton.type = "danger";
+            }
         },
-        addMaterialItem() {
-            this.materials.push({
-                materialCode: ''
-            })
-        },
-        materialSelCallback(val, ctx) {
-            let item = this.$store.getters.allMaterialsMap.get(val)
-            Object.keys(item).forEach((key) => {
-                ctx[key] = item[key]
-            })
-            ctx.materialUnit = item.stockUnit;
+        querySuppliedMaterials() {
+            //查询供应商已经供应的原材料
+            api.queryMaterialSupplerByCode({
+                supplierCode: this.form.supplierCode
+            }).then((values) => {
+                let map = new Map();
+                values.forEach((it) => {
+                    map.set(it.materialCode, it)
+                })
+                //将已经供应的原材料的isSelected设置为true
+                this.allMaterials.forEach((it) => {
+                    if (map.get(it.materialCode)) {
+                        Vue.set(it, 'isSelected', true)
+                    }
+                })
+            });
         }
     },
     mounted() {
+        //供应商信息
         api.querySupplierByCode(this.form.supplierCode)
             .then((sp) => {
-                Object.assign(this.form,sp);
+                Object.assign(this.form, sp);
             });
-        api.queryMaterialSupplerByCode({
-            supplierCode: this.form.supplierCode
-        }).then((values) => {
-            values.forEach((item) => {
-                this.materials.push({ materialCode: item.materialCode })
+        //所有原材料信息，供用户选择
+        api.queryAllMaterials()
+            .then((page) => {
+                this.allMaterials = page.values;
+                this.allMaterials.forEach((it) => Vue.set(it, 'isSelected', false))
+                //供应商供应原材料信息
+                this.querySuppliedMaterials();
+            }).fail((resp) => {
+                this.$message.error(resp.message)
             })
+        //原料的分类配置信心
+        api.queryUnitByGroup('material_category').then((cates) => {
+            this.categorySel = cates;
+            this.category = cates[0].unitCode;
         })
     },
     computed: {
-        addedMaterials() {
-            let ll = [];
-            this.materials.forEach((item) => ll.push(item.materialCode))
-            return ll;
+        filteredMaterials() {
+            return this.allMaterials.filter((it) => {
+                if (this.category && it.category == this.category) {
+                    return true;
+                } else {
+                    return false;
+                }
+            })
+        },
+        selectedMaterials() {
+            return this.allMaterials.filter((it) => {
+                return it.isSelected
+            })
         }
     },
     components: {
@@ -209,5 +255,15 @@ export default {
 
 .el-col {
     border-radius: 4px;
+}
+
+.span-material {
+    margin-right: 6px;
+}
+.form-box {
+    width: 100%;
+}
+.el-input {
+    width: 50%;
 }
 </style>

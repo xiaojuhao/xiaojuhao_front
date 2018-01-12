@@ -16,20 +16,32 @@
                 <el-form-item label="原料编码">
                     <el-input disabled v-model="form.materialCode" placehoder="自动生成"></el-input>
                 </el-form-item>
+                <el-form-item label="报损类型">
+                    <el-radio v-model="baosunType" label="1">食材报损</el-radio>
+                    <el-radio v-model="baosunType" label="2">采购原料报损</el-radio>
+                </el-form-item>
                 <el-form-item label="报损额">
-                    <el-input v-model="form.lossAmt" placehoder="报损额" style="width:120px">
-                        <template slot-slot="append">
+                    <el-select v-show="baosunType == '2'" v-model="form.specCode" style="width:120px" placeholder="请选择" @change="onSelectSpec">
+                        <el-option v-for="item in materialSpecSelect" :key="item.specCode" :label="item.specName" :value="item.specCode">
+                        </el-option>
+                    </el-select>
+                    <el-input v-show="baosunType == '2'" v-model="form.specAmt" style="width:120px" @change="onSpecAmtChange">
+                        <template slot="append">
+                            {{form.specUnit}}
+                        </template>
+                    </el-input>
+                    <el-input v-model="form.lossAmt" style="width:120px">
+                        <template slot="append">
                             {{form.stockUnit}}
                         </template>
                     </el-input>
+                    <div v-show="baosunType == '2'">{{this.form.calcFormula}}</div>
                 </el-form-item>
                 <el-form-item label="备注">
                     <el-input v-model="form.remark" placehoder="备注"></el-input>
                 </el-form-item>
                 <el-form-item label="添加图片">
-                    <el-upload class="upload-demo" :action="actionUrl" :on-remove="handleRemove" 
-                    accept="image/*"
-                    :on-success="handleSuccess" :file-list="fileList" :data="form">
+                    <el-upload class="upload-demo" :action="actionUrl" :on-remove="handleRemove" accept="image/*" :on-success="handleSuccess" :file-list="fileList" :data="form">
                         <el-button size="small" type="primary">添加文件</el-button>
                         <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB</div>
                     </el-upload>
@@ -49,27 +61,37 @@
 <script>
 import config from '../common/config.vue'
 import { api } from '../common/bus'
+import Vue from 'vue'
 export default {
     data: function() {
         return {
             form: {
                 id: this.$route.query.id,
-                cabinCode:'',
-                cabinName:'',
+                cabinCode: '',
+                cabinName: '',
                 materialName: '',
                 materialCode: '',
                 stockUnit: '',
-                lossAmt:0,
-                busiNo:'',
-                remark:''
+                lossAmt: 0,
+                busiNo: '',
+                remark: '',
+                specCode: '',
+                specAmt: 0,
+                specUnit: '',
+                utilizationRatio: 100,
+                transRate: 1,
+                calcFormula: ''
             },
             rules: {
 
             },
-            actionUrl: config.server+'/file/upload',
+            actionUrl: config.server + '/file/upload',
             fileList: [],
             loadingState: false,
-            splitMaterials: []
+            splitMaterials: [],
+            baosunType: '1',
+            materialSpecSelect: []
+
         }
     },
     methods: {
@@ -86,10 +108,34 @@ export default {
         onCancel() {
             this.$router.go(-1)
         },
-        handleRemove(file, fileList) {
-        },
+        handleRemove(file, fileList) {},
         handleSuccess(resp, fileList) {
             this.form.busiNo = resp.value.busiNo;
+        },
+        querySpecDetailByMaterialCode() {
+            api.querySpecDetailByMaterialCode(this.form.materialCode)
+                .then((vals) => {
+                    this.materialSpecSelect = vals;
+                })
+        },
+        onSelectSpec() {
+            this.materialSpecSelect.forEach((it) => {
+                if (it.specCode == this.form.specCode) {
+                    Vue.set(this.form, 'specUnit', it.specUnit);
+                    Vue.set(this.form, 'utilizationRatio', it.utilizationRatio)
+                    Vue.set(this.form, 'transRate', it.transRate)
+                }
+            })
+            this.onSpecAmtChange();
+        },
+        onSpecAmtChange() {
+            this.form.calcFormula = '';
+            if (this.form.specAmt && this.form.transRate && this.form.utilizationRatio) {
+                this.form.lossAmt = this.form.specAmt * this.form.transRate * this.form.utilizationRatio / 100;
+                this.form.calcFormula = "计算公式:"+this.form.specAmt + '*' + this.form.transRate +
+                    '*' +
+                    this.form.utilizationRatio + '/100 =' + this.form.lossAmt;
+            }
         }
     },
     mounted() {
@@ -106,7 +152,9 @@ export default {
                     this.form.storageLifeNum = r[1];
                     this.form.storageLifeUnit = r[2];
                 }
+                this.querySpecDetailByMaterialCode();
             })
+
     }
 }
 </script>
@@ -126,7 +174,8 @@ export default {
     border: 0;
     display: inline;
 }
-.el-upload__tip{
+
+.el-upload__tip {
     display: inline;
 }
 </style>

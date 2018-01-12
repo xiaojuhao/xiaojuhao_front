@@ -3,52 +3,28 @@
         <div class="handle-box">
             <el-row :gutter="10">
                 <el-col :span="16">
-                    <el-select v-model="queryCond.type" style="width:100px" clearable placeholder="费用类型">
-                        <el-option label="报销" value="reim"></el-option>
-                        <el-option label="备用金" value="fund"></el-option>
-                        <el-option label="付款申请" value="expense"></el-option>
-                        <el-option label="工资" value="salary"></el-option>
-                    </el-select>
-                    <el-select v-model="queryCond.status" style="width:100px" clearable placeholder="状态">
-                        <el-option v-for="item in paymentStatusSels" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
-                        </el-option>
-                    </el-select>
-                    <el-date-picker v-model="queryCond.startDateD" type="date" placeholder="起始日期" style="width:130px">
-                    </el-date-picker>
-                    -
-                    <el-date-picker v-model="queryCond.endDateD" type="date" placeholder="结束日期" style="width:130px">
-                    </el-date-picker>
+                    <MyCabinSelect @input="(val)=>{this.queryCond.cabinCode = val}"></MyCabinSelect>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
-                </el-col>
-                <el-col :span="8">
-                    <div style="position:relative; float:right; ">
-                        <el-button round @click="edit()">申请新单</el-button>
-                    </div>
                 </el-col>
             </el-row>
         </div>
         <el-table :data="queryList" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
-            <el-table-column prop="payNo" label="申请单号" width="150">
+            <el-table-column prop="cabinCode" label="门店编码" width="150">
             </el-table-column>
-            <el-table-column prop="departmentName" label="申请部门" width="150">
+            <el-table-column prop="cabinName" label="门店名称" width="150">
             </el-table-column>
-            <el-table-column prop="typeName" label="分类" width="100">
+            <el-table-column prop="checker" label="盘点人员" width="130">
             </el-table-column>
-            <el-table-column prop="payables" label="申请金额" width="100">
+            <el-table-column label="状态" width="130" :formatter="formatStatus">
             </el-table-column>
-            <el-table-column prop="paidAmt" label="已付金额" width="100">
+            <el-table-column label="盘点开始时间" width="180" :formatter="formatStartTime">
             </el-table-column>
-            <el-table-column label="状态" width="100" :formatter="formatStatus">
-            </el-table-column>
-            <el-table-column label="申请日期" width="120" :formatter="formatCreateTime">
+            <el-table-column prop="盘点开始时间" label="盘点结束时间" width="180" :formatter="formatEndTime">
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template slot-scope="scope">
-                    <el-button size="small" type="primary" @click="edit(scope.$index, scope.row)">
-                        编辑
-                    </el-button>
-                    <el-button size="small" type="primary" @click="delMaterial(scope.$index, scope.row)">
-                        删除
+                    <el-button size="small" type="primary" @click="showDetail(scope.$index, scope.row)">
+                        详细
                     </el-button>
                 </template>
             </el-table-column>
@@ -61,14 +37,15 @@
 </template>
 <script>
 import { api, util } from '../common/bus'
-import MaterialSelection from '../common/MaterialSelection'
+import MyCabinSelect from '../common/MyCabinSelect'
 
 export default {
     components: {
-        MaterialSelection
+        MyCabinSelect
     },
     data() {
         return {
+            tableData: [],
             loadingState: false,
             queryCond: {
                 pageNo: 1,
@@ -76,20 +53,18 @@ export default {
                 totalRows: 0,
                 materialCode: '',
                 searchKey: '',
-                type: '',
-                status: '',
-                startDateD: null,
-                endDateD: null
+                cabinCode: '',
+                category: ''
             },
-            paymentStatusSels: [],
             queryList: [],
+            categorySel: [],
             userRole: this.$store.state.userRole
         }
     },
     mounted() {
         this.loadParam();
         this.queryData();
-        api.queryUnitByGroup('payment_status').then((vals) => this.paymentStatusSels = vals);
+        api.queryUnitByGroup('material_category').then((cates) => this.categorySel = cates);
     },
     methods: {
         handleCurrentChange(val) {
@@ -102,32 +77,30 @@ export default {
         loadParam() {
             Object.assign(this.queryCond, this.$store.state.queryCond)
         },
+        formatStartTime(row) {
+            return util.formatDateTime(row.startTime)
+        },
+        formatEndTime(row) {
+            return util.formatDateTime(row.endTime)
+        },
         formatStatus(row) {
             switch (row.status) {
                 case "0":
-                    return "暂存";
+                    return "未开始";
                 case "1":
-                    return "待审核";
+                    return "正在盘点";
                 case "2":
-                    return "审核通过";
-                case "3":
-                    return "审核驳回";
-                case "4":
-                    return "待支付";
-                case "5":
-                    return "已支付";
-                default:
-                    return "未知";
+                    return "盘点完成";
             }
-        },
-        formatCreateTime(row) {
-            return util.formatDate(row.createdTime)
         },
         queryData() {
             this.loadingState = true;
-            this.queryCond.startDate = util.formatDateT(this.queryCond.startDateD);
-            this.queryCond.endDate = util.formatDateT(this.queryCond.endDateD);
-            api.queryPayments(this.queryCond)
+            api.queryMaterialCheckMain({
+                    pageSize: this.queryCond.pageSize,
+                    pageNo: this.queryCond.pageNo,
+                    materialCode: this.queryCond.materialCode,
+                    cabinCode: this.queryCond.cabinCode
+                })
                 .then((page) => {
                     this.queryList = page.values;
                     this.queryCond.totalRows = page.totalRows;
@@ -141,9 +114,9 @@ export default {
             this.queryList = [];
             this.queryData();
         },
-        edit(index, item) {
+        showDetail(index, item) {
             this.keepParam();
-            this.$router.push({ path: "/paymentInputDetail", query: { id: item && item.id, payno: item && item.payNo } })
+            this.$router.push({ path: "/materialCheckReportDetail", query: { id: item && item.id } })
         },
         delMaterial(index, item) {
             let tips = "是否删除" + item.materialName + "?"

@@ -4,6 +4,10 @@
             <el-row :gutter="10">
                 <el-col :span="16">
                     <MyCabinSelect @input="(v)=>{this.queryCond.cabinCode=v;}"></MyCabinSelect>
+                    <el-select v-model="queryCond.category" style="width:80px" placeholder="分类">
+                        <el-option v-for="item in categorySel" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
+                        </el-option>
+                    </el-select>
                     <el-input v-model="queryCond.searchKey" style="width:180px" placeholder="原料名称或配音"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
                 </el-col>
@@ -14,11 +18,20 @@
             </el-table-column>
             <el-table-column prop="cabinName" label="仓库" width="200">
             </el-table-column>
-            <el-table-column prop="warningValue1" label="闲时预警">
+            <el-table-column label="最低库存">
+                <template slot-scope="scope">
+                    {{scope.row.warningValue1.toFixed(0)}}
+                </template>
             </el-table-column>
-            <el-table-column prop="warningValue2" label="忙时预警">
+            <el-table-column prop="warningValue2" label="最高库存">
+                <template slot-scope="scope">
+                    {{scope.row.warningValue2.toFixed(0)}}
+                </template>
             </el-table-column>
-            <el-table-column prop="warningStock" label="预警(计算值)">
+            <el-table-column prop="warningStock" label="最近日均">
+                <template slot-scope="scope">
+                    {{scope.row.warningStock.toFixed(0)}}
+                </template>
             </el-table-column>
             <el-table-column prop="stockUnit" label="库存单位">
             </el-table-column>
@@ -76,20 +89,24 @@ export default {
                 pageNo: 1,
                 pageSize: 10,
                 totalRows: 0,
+                status: 1,
                 materialCode: '',
                 cabinCode: '',
-                searchKey: ''
+                searchKey: '',
+                category: ''
             },
             queryList: [],
             userRole: this.$store.state.userRole,
             dialogWaringSetShow: false,
             dialogTitle: '预警设置',
-            material: {}
+            material: {},
+            categorySel: []
         }
     },
     mounted() {
         this.loadParam();
         this.queryData();
+        api.queryUnitByGroup('material_category').then((cates) => this.categorySel = cates)
     },
     methods: {
         handleCurrentChange(val) {
@@ -97,13 +114,7 @@ export default {
             this.queryData();
         },
         keepParam() {
-            let p = {
-                pageNo: this.queryCond.pageNo,
-                pageSize: this.queryCond.pageSize,
-                totalRows: this.queryCond.totalRows,
-                materialCode: this.queryCond.materialCode
-            }
-            this.$store.commit("setQueryCond", p)
+            this.$store.commit("setQueryCond", this.queryCond)
         },
         loadParam() {
             Object.assign(this.queryCond, this.$store.state.queryCond)
@@ -133,14 +144,7 @@ export default {
         },
         queryData() {
             this.loadingState = true;
-            api.queryMaterialsStockPage({
-                    pageSize: this.queryCond.pageSize,
-                    pageNo: this.queryCond.pageNo,
-                    materialCode: this.queryCond.materialCode,
-                    cabinCode: this.queryCond.cabinCode,
-                    searchKey: this.queryCond.searchKey,
-                    status: '1'
-                })
+            api.queryMaterialsStockPage(this.queryCond)
                 .then((page) => {
                     this.queryList = page.values;
                     this.queryCond.totalRows = page.totalRows;
