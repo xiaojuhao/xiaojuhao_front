@@ -13,7 +13,7 @@
             </el-table-column>
             <el-table-column prop="supplierName" label="供应商" width="150">
             </el-table-column>
-            <el-table-column label="采购时间" width="120" :formatter="formatGmtCreated">
+            <el-table-column label="创建日期" width="120" :formatter="formatGmtCreated">
             </el-table-column>
             <el-table-column prop="proposer" label="申请人" width="120">
             </el-table-column>

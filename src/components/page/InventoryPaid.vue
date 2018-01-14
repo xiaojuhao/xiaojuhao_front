@@ -13,6 +13,8 @@
             </el-table-column>  
             <el-table-column prop="supplierName" label="供应商" width="120">
             </el-table-column>
+            <el-table-column label="创建日期" width="120" :formatter="formatGmtCreated">
+            </el-table-column>
             <el-table-column prop="proposer" label="申请人" width="120">
             </el-table-column>
             <el-table-column prop="payables" label="应付/已付" width="160" :formatter="formatPay">
@@ -68,6 +70,9 @@ export default {
         }
     },
     methods: {
+        formatGmtCreated(row) {
+            return util.formatDate(row.gmtCreated)
+        },
         formatStatus(row) {
             switch (row.status) {
                 case "4":

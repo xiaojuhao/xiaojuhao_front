@@ -44,6 +44,9 @@
                         {{item.supplierCode}} {{item.supplierName}}
                     </div>
                 </el-form-item>
+                <el-form-item label="搜索字符" style="width:60%">
+                    <el-input v-model="form.searchKey"></el-input>
+                </el-form-item>
                 <el-form-item label="采购规格">
                     <el-button type="primary" size="mini" icon="plus" @click="addSpec">添加规格</el-button>
                     备注：入库数量在采购入库的时用来计算入库的原料数量，谨慎填写
@@ -110,19 +113,6 @@
                             </el-col>
                         </el-row>
                     </div>
-                </el-form-item>
-                <el-form-item v-show="false " label="子原料 ">
-                    <el-button type="primary " size="mini " icon="plus ">添加子原料</el-button>
-                    <el-row v-for="sub in subList ">
-                        <el-input size="small " style="width:160px " v-model="sub.name " placeholder="子原料名称 ">
-                        </el-input>
-                        <el-input v-model="sub.splitNum " size="small " style="width:160px " placeholder="拆分数量 ">
-                            <el-select v-model="sub.stockUnit " slot="append " style="width:80px " placeholder="单位 ">
-                                <el-option label="天 " value="D "></el-option>
-                                <el-option label="月 " value="M "></el-option>
-                            </el-select>
-                        </el-input>
-                    </el-row>
                 </el-form-item>
                 <el-row>
                     <el-col>

@@ -16,6 +16,7 @@
                     </el-select>
                     <el-input v-model="queryCond.searchKey" style="width:180px" placeholder="搜索条件"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                    <el-button type="primary" icon="search" @click="downloadExcel">下载EXCEL</el-button>
                 </el-col>
             </el-row>
         </div>
@@ -47,7 +48,7 @@
     </div>
 </template>
 <script>
-import { api, util } from '../common/bus'
+import { api, util, config } from '../common/bus'
 import MyCabinSelect from '../common/MyCabinSelect'
 
 export default {
@@ -133,6 +134,9 @@ export default {
         search() {
             this.queryList = [];
             this.queryData();
+        },
+        downloadExcel() {
+            window.open(config.server + "/check/downloadCheckDetail?mainId=" + this.$route.query.id)
         },
         edit(index, item) {
             this.keepParam();

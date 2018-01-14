@@ -39,7 +39,7 @@
             <el-table-column label="规格单位" width="160">
                 <template slot-scope="scope">
                     <el-select size="small" v-model="scope.row.specCode" slot="append" style="width:140px" @change="onSelectSpec(scope.row, scope.row.specCode)">
-                        <el-option v-for="item in scope.row.specCodeSel" :key="item.specCode" :label="item.specName" :value="item.specCode">
+                        <el-option v-for="item in scope.row.specSelection" :key="item.specCode" :label="item.specName" :value="item.specCode">
                         </el-option>
                     </el-select>
                 </template>
@@ -74,7 +74,7 @@
             <el-table-column label="供应商/仓库" width="150">
                 <template slot-scope="scope">
                     <el-select v-show="scope.row.purchaseType == '1'" v-model="scope.row.supplierCode" style="width:140px" @change="onSelectSupplier(scope.row)">
-                        <el-option v-for="item in scope.row.supplierSel" :key="item.supplierCode" :label="item.supplierName" :value="item.supplierCode">
+                        <el-option v-for="item in scope.row.supplierSelection" :key="item.supplierCode" :label="item.supplierName" :value="item.supplierCode">
                         </el-option>
                     </el-select>
                     <el-select v-show="scope.row.purchaseType == '2'" v-model="scope.row.fromCabinCode" style="width:140px" @change="onSelectCabin(scope.row)">
@@ -201,7 +201,7 @@ export default {
             return util.formatDate(row.requireDate)
         },
         onSelectSpec(item) {
-            item.specCodeSel && item.specCodeSel.forEach((it) => {
+            item.specSelection && item.specSelection.forEach((it) => {
                 if (it.specCode == item.specCode) {
                     Vue.set(item, 'specName', it.specName)
                     Vue.set(item, 'specUnit', it.specUnit)
@@ -213,20 +213,20 @@ export default {
                 }
                 //没有规则信息，将第一个规格作为默认规格
                 if (!item.specCode) {
-                    Vue.set(item, 'specCode', item.specCodeSel[0].specCode)
-                    Vue.set(item, 'specName', item.specCodeSel[0].specName)
-                    Vue.set(item, 'specUnit', item.specCodeSel[0].specUnit)
-                    Vue.set(item, 'stockUnit', item.specCodeSel[0].stockUnit)
-                    Vue.set(item, 'transRate', item.specCodeSel[0].transRate)
-                    Vue.set(item, 'brandName', item.specCodeSel[0].brandName)
-                    Vue.set(item, 'homeplace', item.specCodeSel[0].homeplace)
-                    Vue.set(item, 'selectedSpec', item.specCodeSel[0])
+                    Vue.set(item, 'specCode', item.specSelection[0].specCode)
+                    Vue.set(item, 'specName', item.specSelection[0].specName)
+                    Vue.set(item, 'specUnit', item.specSelection[0].specUnit)
+                    Vue.set(item, 'stockUnit', item.specSelection[0].stockUnit)
+                    Vue.set(item, 'transRate', item.specSelection[0].transRate)
+                    Vue.set(item, 'brandName', item.specSelection[0].brandName)
+                    Vue.set(item, 'homeplace', item.specSelection[0].homeplace)
+                    Vue.set(item, 'selectedSpec', item.specSelection[0])
                 }
             })
             this.calcSpecAmt(item);
         },
         onSelectSupplier(item) {
-            item.supplierSel && item.supplierSel.forEach((it) => {
+            item.supplierSelection && item.supplierSelection.forEach((it) => {
                 if (it.supplierCode == item.supplierCode) {
                     Vue.set(item, 'supplierName', it.supplierName)
                 }
@@ -254,79 +254,91 @@ export default {
                 })
         },
         initTableData(tableData) {
-            tableData.forEach((it) => Vue.set(it, 'specCodeSel', []));
-            tableData.forEach((it) => Vue.set(it, 'supplierSel', []));
-            let codes = [];
-            this.tableData.forEach((it) => {
-                codes.push(it.materialCode)
-            })
-            //------初始化当前库存----------
-            api.queryStockByMaterialCodes({
-                materialCodes: codes.join(',')
-            }).then((list) => {
-                let map = new Map();
-                list.forEach((it) => {
-                    map.set(it.cabinCode + "_" + it.materialCode, it);
-                })
-                tableData.forEach((it) => {
-                    let stock = map.get(it.cabinCode + "_" + it.materialCode);
-                    if (stock) {
-                        Vue.set(it, 'currStock', stock.currStock);
-                    } else {
-                        Vue.set(it, 'currStock', 0);
+            try {
+                let start = new Date().getTime();
+                this.tableData.forEach((it) => {
+                    let spSel = it.supplierSelection || []
+                    if (!it.supplierCode && !it.fromCabinCode && spSel.length > 0) {
+                        Vue.set(it, 'supplierCode', spSel[0].supplierCode)
+                        Vue.set(it, 'supplierName', spSel[0].supplierName)
                     }
                 })
-            }).fail((resp) => {
-                //console.log(resp)
-            })
-            //-------初始化原料规格---------
-            api.querySpecsByMaterialCodes({
-                materialCodes: codes.join(',')
-            }).then((list) => {
-                //将list按mateiralCode分组
-                let map = new Map();
-                list.forEach((it) => {
-                    let mc = it.materialCode;
-                    if (!map.get(mc)) {
-                        map.set(mc, [])
-                    }
-                    map.get(mc).push(it);
-                })
-                //遍历每条记录，设置规则
-                tableData.forEach((it) => {
-                    if (map.get(it.materialCode)) {
-                        Vue.set(it, 'specCodeSel', map.get(it.materialCode))
-                        this.onSelectSpec(it)
-                    }
-                })
-            })
-            //-----初始化原料供应商---------
-            api.querySuppliersByMaterialCodes({
-                materialCodes: codes.join(',')
-            }).then((list) => {
-                //将list按mateiralCode分组
-                let map = new Map();
-                list.forEach((it) => {
-                    let mc = it.materialCode;
-                    if (!map.get(mc)) {
-                        map.set(mc, [])
-                    }
-                    map.get(mc).push(it);
-                })
-                //遍历每条记录，设置规则
-                tableData.forEach((it) => {
-                    if (map.get(it.materialCode)) {
-                        Vue.set(it, 'supplierSel', map.get(it.materialCode))
-                    }
-                    //如果记录本身没有供应商信息，就将第一个设置为供应商
-                    if (!it.supplierCode && it.supplierSel.length > 0) {
-                        Vue.set(it, 'supplierCode', it.supplierSel[0].supplierCode)
-                        Vue.set(it, 'supplierName', it.supplierSel[0].supplierName)
-                    }
-                })
-            })
+                console.log("cost", new Date().getTime() - start)
+                //计算推荐采购数量
+                setTimeout(() => {
+                    this.tableData.forEach((it) => this.onSelectSpec(it))
+                }, 0)
+            } catch (e) {
+                console.log(e)
+                this.$message.error("初始化记录异常")
+            }
+            // //------初始化当前库存----------
+            // api.queryStockByMaterialCodes({
+            //     materialCodes: codes.join(',')
+            // }).then((list) => {
+            //     let map = new Map();
+            //     list.forEach((it) => {
+            //         map.set(it.cabinCode + "_" + it.materialCode, it);
+            //     })
+            //     tableData.forEach((it) => {
+            //         let stock = map.get(it.cabinCode + "_" + it.materialCode);
+            //         if (stock) {
+            //             Vue.set(it, 'currStock', stock.currStock);
+            //         } else {
+            //             Vue.set(it, 'currStock', 0);
+            //         }
+            //     })
+            // }).fail((resp) => {
+            //     //console.log(resp)
+            // })
+            // //-------初始化原料规格---------
+            // api.querySpecsByMaterialCodes({
+            //     materialCodes: codes.join(',')
+            // }).then((list) => {
+            //     //将list按mateiralCode分组
+            //     let map = new Map();
+            //     list.forEach((it) => {
+            //         let mc = it.materialCode;
+            //         if (!map.get(mc)) {
+            //             map.set(mc, [])
+            //         }
+            //         map.get(mc).push(it);
+            //     })
+            //     //遍历每条记录，设置规则
+            //     tableData.forEach((it) => {
+            //         if (map.get(it.materialCode)) {
+            //             Vue.set(it, 'specCodeSel', map.get(it.materialCode))
+            //             this.onSelectSpec(it)
+            //         }
+            //     })
+            // })
+            // //-----初始化原料供应商---------
+            // api.querySuppliersByMaterialCodes({
+            //     materialCodes: codes.join(',')
+            // }).then((list) => {
+            //     //将list按mateiralCode分组
+            //     let map = new Map();
+            //     list.forEach((it) => {
+            //         let mc = it.materialCode;
+            //         if (!map.get(mc)) {
+            //             map.set(mc, [])
+            //         }
+            //         map.get(mc).push(it);
+            //     })
+            //     //遍历每条记录，设置规则
+            //     tableData.forEach((it) => {
+            //         if (map.get(it.materialCode)) {
+            //             Vue.set(it, 'supplierSel', map.get(it.materialCode))
+            //         }
+            //         //如果记录本身没有供应商信息，就将第一个设置为供应商
+            //         if (!it.supplierCode && it.supplierSel.length > 0) {
+            //             Vue.set(it, 'supplierCode', it.supplierSel[0].supplierCode)
+            //             Vue.set(it, 'supplierName', it.supplierSel[0].supplierName)
+            //         }
+            //     })
+            // })
             //计算推荐采购量
-            tableData.forEach((it) => this.calcSpecAmt(it))
+            // tableData.forEach((it) => this.calcSpecAmt(it))
         },
         search() {
             this.tableData = [];
@@ -337,17 +349,13 @@ export default {
                 return 'background:#E0E0E0'
         },
         calcSpecAmt(item) {
-            console.log(item)
             if (!item.transRate) {
                 Vue.set(item, 'transRate', 1)
             }
             let specAmt = item.requireAmt / item.transRate;
             if (specAmt) {
-                specAmt = specAmt.toFixed(2);
+                specAmt = Math.ceil(specAmt);
             }
-            // if (!item.specAmt || item.specAmt < specAmt) {
-            //     Vue.set(item, 'specAmt', specAmt);
-            // }
             Vue.set(item, 'specAmt', specAmt);
             this.initSpecPrice(item);
         },

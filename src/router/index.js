@@ -32,6 +32,10 @@ export default new Router({
                     component: resolve => require(['../components/page/UserManage.vue'], resolve)
                 },
                 {
+                    path: '/userProfile',
+                    component: resolve => require(['../components/page/UserProfile.vue'], resolve)
+                },
+                {
                     path: '/userManagePage',
                     component: resolve => require(['../components/page/UserManagePage.vue'], resolve)
                 },
@@ -199,6 +203,10 @@ export default new Router({
                 {
                     path: '/reportOfStock',
                     component: resolve => require(['../components/page/ReportOfStock.vue'], resolve)
+                },
+                {
+                    path: '/reportStatistics',
+                    component: resolve => require(['../components/page/ReportStatistics.vue'], resolve)
                 },
                 {
                     path: '/materialCheckReport',

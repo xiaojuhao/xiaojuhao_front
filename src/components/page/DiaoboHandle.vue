@@ -13,6 +13,8 @@
             </el-table-column>
             <el-table-column prop="cabinName" label="单位名称" width="150">
             </el-table-column>
+            <el-table-column label="创建日期" width="120" :formatter="formatGmtCreated">
+            </el-table-column>
             <el-table-column prop="proposer" label="申请人" width="120">
             </el-table-column>
             <el-table-column prop="status" label="状态" width="80" :formatter="formatStatus">
@@ -37,7 +39,7 @@
     </div>
 </template>
 <script>
-import { api, config } from '../common/bus'
+import { api, config, util } from '../common/bus'
 export default {
     data() {
         return {
@@ -64,6 +66,9 @@ export default {
         }
     },
     methods: {
+        formatGmtCreated(row) {
+            return util.formatDate(row.gmtCreated)
+        },
         formatStatus(row) {
             switch (row.status) {
                 case "4":

@@ -106,10 +106,10 @@ export default {
         },
         addNewFormula(val, ctx) {
             let item = this.$store.getters.allMaterialsMap.get(val)
-            Object.keys(item).forEach((key) => {
-                ctx[key] = item[key]
-            })
-            ctx.materialUnit = item.stockUnit;
+            if (item) {
+                Object.assign(ctx, item)
+                ctx.materialUnit = item.stockUnit;
+            }
         }
     },
     mounted() {

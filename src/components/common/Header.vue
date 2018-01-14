@@ -8,6 +8,7 @@
                     {{username}}
                 </span>
                 <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="profile">个人信息</el-dropdown-item>
                     <el-dropdown-item command="loginout">退出</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
@@ -15,71 +16,78 @@
     </div>
 </template>
 <script>
-    import config from '../common/config.vue'
-    export default {
-        data() {
-            return {
-                name: 'unknown',
-                sideBarOppened:false
-            }
-        },
-        computed:{
-            username(){
-                let username = localStorage.getItem('ms_username');
-                return username ? username : this.name;
-            }
-        },
-        methods:{
-            handleCommand(command) {
-                if(command == 'loginout'){
-                    var jsonp = require('jsonp')
-                        var url = config.server+'/user/logout';
-                        jsonp(url,null,function(err,resp){});
-                    localStorage.removeItem('ms_username')
-                    this.$router.push('/login');
-                }
+import config from '../common/config.vue'
+export default {
+    data() {
+        return {
+            name: 'unknown',
+            sideBarOppened: false
+        }
+    },
+    computed: {
+        username() {
+            let username = localStorage.getItem('ms_username');
+            return username ? username : this.name;
+        }
+    },
+    methods: {
+        handleCommand(command) {
+            if (command == 'loginout') {
+                var jsonp = require('jsonp')
+                var url = config.server + '/user/logout';
+                jsonp(url, null, function(err, resp) {});
+                localStorage.removeItem('ms_username')
+                this.$router.push('/login');
+            } else if (command == 'profile') {
+                this.$router.push('/userProfile');
             }
         }
     }
+}
 </script>
 <style scoped>
-    .header {
-        position: relative;
-        box-sizing: border-box;
-        width: 100%;
-        height: 70px;
-        font-size: 22px;
-        line-height: 70px;
-        color: #fff;
-    }
-    .header .logo{
-        float: left;
-        width:250px;
-        text-align: center;
-    }
-    .user-info {
-        float: right;
-        padding-right: 50px;
-        font-size: 16px;
-        color: #fff;
-    }
-    .user-info .el-dropdown-link{
-        position: relative;
-        display: inline-block;
-        padding-left: 50px;
-        color: #fff;
-        cursor: pointer;
-        vertical-align: middle;
-    }
-    .user-info .user-logo{
-        position: absolute;
-        left:0;
-        top:15px;
-        width:40px;
-        height:40px;
-        border-radius: 50%;
-    }
-    .el-dropdown-menu__item{
-        text-align: center;
-    }
+.header {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 70px;
+    font-size: 22px;
+    line-height: 70px;
+    color: #fff;
+}
+
+.header .logo {
+    float: left;
+    width: 250px;
+    text-align: center;
+}
+
+.user-info {
+    float: right;
+    padding-right: 50px;
+    font-size: 16px;
+    color: #fff;
+}
+
+.user-info .el-dropdown-link {
+    position: relative;
+    display: inline-block;
+    padding-left: 50px;
+    color: #fff;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.user-info .user-logo {
+    position: absolute;
+    left: 0;
+    top: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.el-dropdown-menu__item {
+    text-align: center;
+}
 </style>

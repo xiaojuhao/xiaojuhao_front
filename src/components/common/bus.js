@@ -179,6 +179,9 @@ export const api = {
     saveUser(data) {
         return http.post("/user/saveUser", data);
     },
+    modifyMyProfile(data) {
+        return http.post("/user/modifyMyProfile", data);
+    },
     resetPassword(userCode) {
         return http.post("/user/resetPassword", { userCode: userCode })
     },
@@ -187,6 +190,9 @@ export const api = {
     },
     queryUsersPage(data) {
         return http.post("/user/queryUsers", data)
+    },
+    loginInfo() {
+        return http.post("/user/loginInfo")
     },
     getAllStoreList() {
         return http.post("/store/getAllStore", { pageSize: 1000 })
@@ -462,5 +468,8 @@ export const api = {
     },
     queryMaterialCheckDetail(data) {
         return http.post("/check/queryCheckDetail", data)
+    },
+    stockReport(data) {
+        return http.post("/report/stockReport", data)
     }
 }
