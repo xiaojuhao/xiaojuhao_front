@@ -7,7 +7,7 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form" label-width="90px" v-loading="loadingState">
+            <el-form ref="form" label-width="100px" v-loading="loadingState">
                 <el-form-item label="原料名称" style="width:60%">
                     <el-input v-model="form.materialName"></el-input>
                 </el-form-item>
@@ -38,6 +38,15 @@
                         <el-option v-for="item in stockUnits" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
                         </el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="预警下限系数">
+                    <el-input size="small" v-model="form.warningCoeffient1" style="width:150px">
+                    </el-input>
+                    <span class="span-title" style="text-align:right;margin-right:10px; width:120px;">
+                        预警上限系数
+                    </span>
+                    <el-input size="small" v-model="form.warningCoeffient2" style="width:150px">
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="供应商">
                     <div v-for="item in form.suppliers">
@@ -146,7 +155,9 @@ export default {
                 storageLifeNum: '',
                 specDetail: '',
                 category: '',
-                suppliers: []
+                suppliers: [],
+                warningCoeffient2: 0,
+                warningCoeffient1: 0
             },
             rules: {
 
@@ -195,6 +206,8 @@ export default {
                 this.form.specUnit = v.specUnit;
                 this.form.specQty = v.specQty || 0;
                 this.form.utilizationRatio = v.utilizationRatio;
+                this.form.warningCoeffient1 = v.warningCoeffient1;
+                this.form.warningCoeffient2 = v.warningCoeffient2;
                 this.form.category = v.category;
                 let r = re.exec(v.storageLife)
                 if (r) {

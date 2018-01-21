@@ -4,7 +4,7 @@
             <el-row :gutter="10">
                 <el-col :span="16">
                     <MyCabinSelect @input="(v)=>{queryCond.cabinCode=v;}"></MyCabinSelect>
-                    <el-select v-model="queryCond.category" style="width:80px" placeholder="分类">
+                    <el-select v-model="queryCond.category" clearable style="width:80px" placeholder="分类">
                         <el-option v-for="item in categorySel" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
                         </el-option>
                     </el-select>
@@ -29,7 +29,12 @@
             </el-table-column> -->
             <el-table-column label="申请日期" width="120" :formatter="formatRequireDate">
             </el-table-column>
-            <el-table-column prop="currStock" label="当前库存" width="120">
+            <el-table-column label="当前库存" width="120">
+                <template slot-scope="scope">
+                    <a :href="'#/stockHistory?cabin='+scope.row.cabinCode+'&mcode='+scope.row.materialCode">
+                    {{scope.row.currStock}}
+                    </a>
+                </template>
             </el-table-column>
             <el-table-column label="需求量" width="100">
                 <template slot-scope="scope">
@@ -268,77 +273,20 @@ export default {
                 setTimeout(() => {
                     this.tableData.forEach((it) => this.onSelectSpec(it))
                 }, 0)
+                //初始化最近记录的供应商信息
+                this.tableData.forEach((it) => {
+                    setTimeout(() => {
+                        api.getRecentSupplier(it.cabinCode, it.materialCode)
+                            .then((val) => {
+                                Vue.set(it, 'supplierCode', val)
+                                this.onSelectSupplier(it)
+                            })
+                    }, 0)
+                })
             } catch (e) {
                 console.log(e)
                 this.$message.error("初始化记录异常")
             }
-            // //------初始化当前库存----------
-            // api.queryStockByMaterialCodes({
-            //     materialCodes: codes.join(',')
-            // }).then((list) => {
-            //     let map = new Map();
-            //     list.forEach((it) => {
-            //         map.set(it.cabinCode + "_" + it.materialCode, it);
-            //     })
-            //     tableData.forEach((it) => {
-            //         let stock = map.get(it.cabinCode + "_" + it.materialCode);
-            //         if (stock) {
-            //             Vue.set(it, 'currStock', stock.currStock);
-            //         } else {
-            //             Vue.set(it, 'currStock', 0);
-            //         }
-            //     })
-            // }).fail((resp) => {
-            //     //console.log(resp)
-            // })
-            // //-------初始化原料规格---------
-            // api.querySpecsByMaterialCodes({
-            //     materialCodes: codes.join(',')
-            // }).then((list) => {
-            //     //将list按mateiralCode分组
-            //     let map = new Map();
-            //     list.forEach((it) => {
-            //         let mc = it.materialCode;
-            //         if (!map.get(mc)) {
-            //             map.set(mc, [])
-            //         }
-            //         map.get(mc).push(it);
-            //     })
-            //     //遍历每条记录，设置规则
-            //     tableData.forEach((it) => {
-            //         if (map.get(it.materialCode)) {
-            //             Vue.set(it, 'specCodeSel', map.get(it.materialCode))
-            //             this.onSelectSpec(it)
-            //         }
-            //     })
-            // })
-            // //-----初始化原料供应商---------
-            // api.querySuppliersByMaterialCodes({
-            //     materialCodes: codes.join(',')
-            // }).then((list) => {
-            //     //将list按mateiralCode分组
-            //     let map = new Map();
-            //     list.forEach((it) => {
-            //         let mc = it.materialCode;
-            //         if (!map.get(mc)) {
-            //             map.set(mc, [])
-            //         }
-            //         map.get(mc).push(it);
-            //     })
-            //     //遍历每条记录，设置规则
-            //     tableData.forEach((it) => {
-            //         if (map.get(it.materialCode)) {
-            //             Vue.set(it, 'supplierSel', map.get(it.materialCode))
-            //         }
-            //         //如果记录本身没有供应商信息，就将第一个设置为供应商
-            //         if (!it.supplierCode && it.supplierSel.length > 0) {
-            //             Vue.set(it, 'supplierCode', it.supplierSel[0].supplierCode)
-            //             Vue.set(it, 'supplierName', it.supplierSel[0].supplierName)
-            //         }
-            //     })
-            // })
-            //计算推荐采购量
-            // tableData.forEach((it) => this.calcSpecAmt(it))
         },
         search() {
             this.tableData = [];

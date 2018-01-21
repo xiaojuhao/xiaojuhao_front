@@ -215,7 +215,7 @@ export default {
 
         },
         addAltsToList() {
-            if (this.materialList.length > 10) {
+            if (this.materialList.length > 20) {
                 this.$message.error("添加记录太多,请先提交")
                 return
             }

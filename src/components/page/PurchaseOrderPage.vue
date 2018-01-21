@@ -189,7 +189,7 @@ export default {
         addAltsToList() {
             let date = new Date();
             let today = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-            if (this.materialList.length > 10) {
+            if (this.materialList.length > 20) {
                 this.$message.error("添加记录太多,请先入库")
                 return
             }

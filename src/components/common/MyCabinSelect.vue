@@ -1,6 +1,6 @@
 <template>
     <div style="display:inline;">
-        <el-select v-model="selectedCode" placeholder="选择仓库或门店" filterable clearable :filter-method="filterMethod" @keyup.enter.native="enterkey" @change="setValue" @visible-change="visualChange">
+        <el-select v-model="selectedCode" placeholder="仓库或门店" filterable clearable :filter-method="filterMethod" @keyup.enter.native="enterkey" @change="setValue" @visible-change="visualChange" style="width:130px;">
             <el-option v-for="item in valuesShow" :key="item.code" :label="item.name" :value="item.code">
                 <span style="float: left">{{ item.name }}</span>
                 <span style="float: right; color: #8492a6; font-size: 13px">{{ item.type }}</span>

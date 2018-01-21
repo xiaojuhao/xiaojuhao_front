@@ -16,6 +16,10 @@ const config = {
     }()
 }
 export const util = {
+    today() {
+        let now = new Date();
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    },
     formatDate(ms) {
         if (!ms) {
             return "";
@@ -358,8 +362,14 @@ export const api = {
     confirmInventory(data) {
         return http.post("/inventoryApply/confirmInventory", data)
     },
+    confirmInventoryDetail(data) {
+        return http.post("/inventoryApply/confirmInventoryDetail", data)
+    },
     paidInventory(data) {
         return http.post("/inventoryApply/paidInventory", data)
+    },
+    queryInventoryDetailPage(data) {
+        return http.post("/inventoryApply/queryInventoryDetailPage", data)
     },
     commitDiaobo(data) {
         return http.post("/diaobo/commit", data)
@@ -471,5 +481,11 @@ export const api = {
     },
     stockReport(data) {
         return http.post("/report/stockReport", data)
+    },
+    getRecentSupplier(cabinCode, materialCode) {
+        return http.post("/recent/getRecent", { group: cabinCode, code: materialCode })
+    },
+    paidInventoryDetail(data) {
+        return http.post("/inventoryApply/paidInventoryDetail", data)
     }
 }
