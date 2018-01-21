@@ -9,7 +9,10 @@
                 <el-input v-model="queryCond.fromSrc" placeholder="供应商或拨出仓库" style="width:130px"></el-input>
                 <MyCabinSelect @input="(val)=>{this.queryCond.inCabinCode=val;}"></MyCabinSelect>
                 <el-input v-model="queryCond.searchKey" placeholder="原料名称搜索" style="width:120px"></el-input>
-                <el-date-picker v-model="queryCond.timerange" type="datetimerange" range-separator=" ~ " placeholder="选择时间范围">
+                <el-date-picker v-model="startDate" type="date" placeholder="起始日期" style="width:130px">
+                </el-date-picker>
+                -
+                <el-date-picker v-model="endDate" type="date" placeholder="结束日期" style="width:130px">
                 </el-date-picker>
                 <br/>
                 <el-input v-model="queryCond.applyNum" placeholder="采购单号" style="width:200px"></el-input>
@@ -123,13 +126,14 @@ export default {
                 applyNum: '',
                 applyType: 'purchase', //只有采购单才会支付
                 status: '2', //已入库
-                paidStatus: '0', //默认查询出待支付的数据
-                timerange: [util.today(), new Date()]
+                paidStatus: '0' //默认查询出待支付的数据
             },
             details: [],
             loadingState: false,
             isShowMessage: false,
-            selectedItems: []
+            selectedItems: [],
+            startDate: null,
+            endDate: null
         }
     },
     methods: {
@@ -266,14 +270,8 @@ export default {
                 return 'background:#E0E0E0'
         },
         getData() {
-            this.queryCond.startCreatedTime = '';
-            this.queryCond.endCreatedTime = '';
-            if (this.queryCond.timerange && this.queryCond.timerange[0]) {
-                this.queryCond.startCreatedTime = util.formatDateTimeT(this.queryCond.timerange[0])
-            }
-            if (this.queryCond.timerange && this.queryCond.timerange[1]) {
-                this.queryCond.endCreatedTime = util.formatDateTimeT(this.queryCond.timerange[1])
-            }
+            this.queryCond.startCreatedTime = util.formatDateT(this.startDate)
+            this.queryCond.endCreatedTime = util.formatDateT(this.endDate)
             api.queryInventoryDetailPage(this.queryCond)
                 .then((page) => {
                     this.details = page.values;

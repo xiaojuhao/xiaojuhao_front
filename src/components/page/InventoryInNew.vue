@@ -13,7 +13,10 @@
                 <el-input v-model="queryCond.fromSrc" placeholder="供应商或拨出仓库" style="width:130px"></el-input>
                 <MyCabinSelect @input="(val)=>{this.queryCond.inCabinCode=val;}"></MyCabinSelect>
                 <el-input v-model="queryCond.searchKey" placeholder="原料名称搜索" style="width:120px"></el-input>
-                <el-date-picker v-model="queryCond.timerange" type="datetimerange" range-separator=" ~ " placeholder="选择时间范围">
+                <el-date-picker v-model="startDate" type="date" placeholder="起始日期" style="width:130px">
+                </el-date-picker>
+                -
+                <el-date-picker v-model="endDate" type="date" placeholder="结束日期" style="width:130px">
                 </el-date-picker>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
@@ -29,7 +32,7 @@
                 </el-table-column>
                 <el-table-column label="门店/仓库" width="150">
                     <template slot-scope="scope">
-                         {{scope.row.cabinName}}
+                        {{scope.row.cabinName}}
                     </template>
                 </el-table-column>
                 <el-table-column prop="realSpecAmt" label="采购数量" width="150">
@@ -76,7 +79,6 @@
             <div style="margin-top: 10px; margin-left: 300px;">
                 <el-button type="primary" @click="showMessage">确认入库</el-button>
                 <span style="margin-right:20px"></span>
-                
             </div>
         </div>
         <el-dialog :visible.sync="isShowMessage" title="确认入库信息">
@@ -121,12 +123,15 @@ export default {
                 fromSrc: '',
                 applyType: 'purchase',
                 status: '1',
-                timerange: [util.today(), new Date()]
+                startCreatedTime: null,
+                endCreatedTime: null
             },
             details: [],
             loadingState: false,
             isShowMessage: false,
-            selectedItems: []
+            selectedItems: [],
+            startDate: null,
+            endDate: null
         }
     },
     methods: {
@@ -242,14 +247,8 @@ export default {
             Vue.set(row, 'realStockAmt', realStockAmt)
         },
         getData() {
-            this.queryCond.startCreatedTime = '';
-            this.queryCond.endCreatedTime = '';
-            if (this.queryCond.timerange && this.queryCond.timerange[0]) {
-                this.queryCond.startCreatedTime = util.formatDateTimeT(this.queryCond.timerange[0])
-            }
-            if (this.queryCond.timerange && this.queryCond.timerange[1]) {
-                this.queryCond.endCreatedTime = util.formatDateTimeT(this.queryCond.timerange[1])
-            }
+            this.queryCond.startCreatedTime = util.formatDateT(this.startDate)
+            this.queryCond.endCreatedTime = util.formatDateT(this.endDate)
             api.queryInventoryDetailPage(this.queryCond)
                 .then((page) => {
                     this.details = page.values;

@@ -101,7 +101,10 @@ export default {
                 .then((resp) => {
                     this.$message.success("操作成功");
                     this.$router.go(-1)
-                }).always(() => {
+                }).fail((resp) => {
+                    this.$message.error(resp.message)
+                })
+                .always(() => {
                     this.loadingState = false;
                 })
         },
@@ -132,7 +135,7 @@ export default {
             this.form.calcFormula = '';
             if (this.form.specAmt && this.form.transRate && this.form.utilizationRatio) {
                 this.form.lossAmt = this.form.specAmt * this.form.transRate * this.form.utilizationRatio / 100;
-                this.form.calcFormula = "计算公式:"+this.form.specAmt + '*' + this.form.transRate +
+                this.form.calcFormula = "计算公式:" + this.form.specAmt + '*' + this.form.transRate +
                     '*' +
                     this.form.utilizationRatio + '/100 =' + this.form.lossAmt;
             }
