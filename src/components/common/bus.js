@@ -482,6 +482,9 @@ export const api = {
     stockReport(data) {
         return http.post("/report/stockReport", data)
     },
+    inventoryReport(data) {
+        return http.post("/report/inventoryReport", data);
+    },
     getRecentSupplier(cabinCode, materialCode) {
         return http.post("/recent/getRecent", { group: cabinCode, code: materialCode })
     },
