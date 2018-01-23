@@ -13,7 +13,7 @@
             </el-table-column>
             <el-table-column prop="cabinName" label="门店名称" width="150">
             </el-table-column>
-            <el-table-column prop="checker" label="盘点人员" width="130">
+            <el-table-column prop="checkerName" label="盘点人员" width="130">
             </el-table-column>
             <el-table-column label="状态" width="130" :formatter="formatStatus">
             </el-table-column>

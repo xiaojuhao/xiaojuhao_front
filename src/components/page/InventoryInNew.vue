@@ -10,6 +10,10 @@
                     <el-option label="待入库" value="1"></el-option>
                     <el-option label="已入库" value="2"></el-option>
                 </el-select>
+                <el-select v-model="queryCond.category" style="width:100px" clearable placeholder="分类">
+                    <el-option v-for="item in categorySel" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
+                    </el-option>
+                </el-select>
                 <el-input v-model="queryCond.fromSrc" placeholder="供应商或拨出仓库" style="width:130px"></el-input>
                 <MyCabinSelect @input="(val)=>{this.queryCond.inCabinCode=val;}"></MyCabinSelect>
                 <el-input v-model="queryCond.searchKey" placeholder="原料名称搜索" style="width:120px"></el-input>
@@ -69,6 +73,10 @@
                 </el-table-column>
                 <el-table-column prop="creatorName" label="录入人" width="100">
                 </el-table-column>
+                <el-table-column prop="confirmUserName" label="入库人" width="100">
+                </el-table-column>
+                <el-table-column label="入库时间" width="180" :formatter="formateConfirmTime">
+                </el-table-column>
                 <el-table-column prop="applyNum" label="单号" width="180">
                 </el-table-column>
             </el-table>
@@ -124,14 +132,16 @@ export default {
                 applyType: 'purchase',
                 status: '1',
                 startCreatedTime: null,
-                endCreatedTime: null
+                endCreatedTime: null,
+                category: ''
             },
             details: [],
             loadingState: false,
             isShowMessage: false,
             selectedItems: [],
             startDate: null,
-            endDate: null
+            endDate: null,
+            categorySel: []
         }
     },
     methods: {
@@ -144,6 +154,9 @@ export default {
         },
         formateCreatedTime(row) {
             return util.formatDateTime(row.gmtCreated)
+        },
+        formateConfirmTime(row) {
+            return util.formatDateTime(row.confirmTime)
         },
         formatStatus(row) {
             switch (row.status) {
@@ -268,6 +281,7 @@ export default {
     },
     mounted() {
         this.getData();
+        api.queryUnitByGroup('material_category').then((cates) => this.categorySel = cates);
     },
     computed: {
         sumTotalPrice() {

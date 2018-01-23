@@ -15,30 +15,29 @@
                 <el-date-picker v-model="endDate" type="date" placeholder="结束日期" style="width:130px">
                 </el-date-picker>
                 <br/>
+                <el-select v-model="queryCond.category" style="width:100px" clearable placeholder="分类">
+                    <el-option v-for="item in categorySel" :key="item.unitCode" :label="item.unitName" :value="item.unitCode">
+                    </el-option>
+                </el-select>
                 <el-input v-model="queryCond.applyNum" placeholder="采购单号" style="width:200px"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
             </div>
             <el-table :data="details" ref="tableRef" border style="width: 150%" :row-style="rowStyle" v-loading="loadingState" @select-all="handleSelectAll" @select="handleSelect" show-summary :summary-method="getSummaries">
                 <el-table-column width="65" type="selection" :selectable="checkSelectable">
                 </el-table-column>
-                <el-table-column prop="materialName" label="原料名称" width="120">
+                <el-table-column label="门店/仓库" width="150">
+                    <template slot-scope="scope">
+                        {{scope.row.cabinName}}
+                    </template>
                 </el-table-column>
                 <el-table-column label="供应商/仓库" width="120">
                     <template slot-scope="scope">
                         {{scope.row.applyType=='purchase'?scope.row.supplierName:scope.row.fromCabinName}}
                     </template>
                 </el-table-column>
-                <el-table-column label="门店/仓库" width="150">
-                    <template slot-scope="scope">
-                        {{scope.row.cabinName}}
-                    </template>
+                <el-table-column prop="materialName" label="原料名称" width="120">
                 </el-table-column>
-                <el-table-column prop="totalPrice" label="总价" width="120">
-                    <template slot-scope="scope">
-                        {{scope.row.totalPrice}} 元
-                    </template>
-                </el-table-column>
-                <el-table-column prop="realSpecAmt" label="采购数量" width="120">
+                <el-table-column prop="realSpecAmt" label="数量" width="100">
                     <template slot-scope="scope">
                         {{scope.row.realSpecAmt}} {{scope.row.specUnit}}
                     </template>
@@ -53,24 +52,29 @@
                         {{scope.row.specPrice}}元
                     </template>
                 </el-table-column>
-                <el-table-column label="类型" width="100" :formatter="formatApplyType">
+                <el-table-column prop="totalPrice" label="总价" width="100">
+                    <template slot-scope="scope">
+                        {{scope.row.totalPrice}} 元
+                    </template>
                 </el-table-column>
+                <!-- <el-table-column label="类型" width="100" :formatter="formatApplyType">
+                </el-table-column> -->
                 <el-table-column label="支付状态" width="100">
                     <template slot-scope="scope">
                         <el-tag :type="formatPaidStatusType(scope.row)">{{formatPaidStatus(scope.row)}}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="paidOperatorName" label="支付人员" width="100">
+                <el-table-column prop="paidOperatorName" label="支付" width="100">
+                </el-table-column>
+                <!-- <el-table-column label="状态" width="100" :formatter="formatStatus">
+                </el-table-column> -->
+                <el-table-column prop="creatorName" label="录入" width="100">
+                </el-table-column>
+                <el-table-column prop="applyNum" label="单号" width="180">
                 </el-table-column>
                 <el-table-column label="支付时间" width="180" :formatter="formatePaidTime">
                 </el-table-column>
-                <el-table-column label="状态" width="100" :formatter="formatStatus">
-                </el-table-column>
                 <el-table-column label="录入时间" width="180" :formatter="formateCreatedTime">
-                </el-table-column>
-                <el-table-column prop="creatorName" label="录入人" width="100">
-                </el-table-column>
-                <el-table-column prop="applyNum" label="单号" width="180">
                 </el-table-column>
             </el-table>
             <div class="pagination">
@@ -126,14 +130,16 @@ export default {
                 applyNum: '',
                 applyType: 'purchase', //只有采购单才会支付
                 status: '2', //已入库
-                paidStatus: '0' //默认查询出待支付的数据
+                paidStatus: '0', //默认查询出待支付的数据,
+                category: ''
             },
             details: [],
             loadingState: false,
             isShowMessage: false,
             selectedItems: [],
             startDate: null,
-            endDate: null
+            endDate: null,
+            categorySel: []
         }
     },
     methods: {
@@ -228,7 +234,7 @@ export default {
                 }
                 if (col.property == 'totalPrice') {
                     //计算统计值
-                    sums[idx] = this.sumTotalPrice;
+                    sums[idx] = this.sumTotalPrice + "元";
                     return;
                 }
                 //sums[idx] = "N/A";
@@ -291,6 +297,7 @@ export default {
     },
     mounted() {
         this.getData();
+        api.queryUnitByGroup('material_category').then((cates) => this.categorySel = cates);
     },
     computed: {
         sumTotalPrice() {
