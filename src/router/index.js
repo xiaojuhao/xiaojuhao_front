@@ -121,6 +121,10 @@ export default new Router({
                     component: resolve => require(['../components/page/inventoryInNew.vue'], resolve) // 
                 },
                 {
+                    path: '/inventoryInModify',
+                    component: resolve => require(['../components/page/inventoryInModify.vue'], resolve) // 
+                },
+                {
                     path: '/inventoryInConfirm',
                     component: resolve => require(['../components/page/inventoryInConfirm.vue'], resolve) // 
                 },

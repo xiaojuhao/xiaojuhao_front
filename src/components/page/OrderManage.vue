@@ -24,13 +24,16 @@
         <el-table :data="tableData" border style="width: 100%" v-loading="loadingState" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgb(0, 0, 0, 0.8)">
             <el-table-column prop="storeName" label="门店" width="160">
             </el-table-column>
-            <el-table-column prop="recipesName" label="菜品" width="160">
+            <el-table-column prop="recipesName" label="菜品" width="200">
             </el-table-column>
             <el-table-column prop="saleDate" label="销售时间" width="120" :formatter="formatSaleDate">
             </el-table-column>
             <el-table-column prop="saleNum" label="销售数量" width="100">
             </el-table-column>
-            <el-table-column prop="totalPrice" label="总价" width="200">
+            <el-table-column prop="totalPrice" label="总价" width="100">
+                <template slot-scope="scope">
+                    {{scope.row.totalPrice}} 元
+                </template>
             </el-table-column>
             <el-table-column prop="remark" label="备注" width="100">
             </el-table-column>

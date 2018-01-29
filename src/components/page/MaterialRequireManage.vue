@@ -25,9 +25,7 @@
             </el-table-column>
             <el-table-column prop="materialName" label="原料名称" width="150">
             </el-table-column>
-            <!-- <el-table-column prop="materialCate" label="分类" width="100">
-            </el-table-column> -->
-            <el-table-column label="申请日期" width="120" :formatter="formatRequireDate">
+            <el-table-column prop="requireDateStr" label="申请日期" width="120">
             </el-table-column>
             <el-table-column label="当前库存" width="120">
                 <template slot-scope="scope">
@@ -36,10 +34,7 @@
                     </a>
                 </template>
             </el-table-column>
-            <el-table-column label="需求量" width="100">
-                <template slot-scope="scope">
-                    {{scope.row.requireAmt}}{{scope.row.stockUnit}}
-                </template>
+            <el-table-column prop="requireAmtAndUnit" label="需求量" width="100">
             </el-table-column>
             <el-table-column label="规格单位" width="160">
                 <template slot-scope="scope">
@@ -164,7 +159,7 @@ export default {
         return {
             queryCond: {
                 pageNo: 1,
-                pageSize: 60,
+                pageSize: 40,
                 totalRows: 0,
                 materialCode: '',
                 cabinCode: '',
@@ -179,17 +174,20 @@ export default {
             isShowMessage: false,
             selectItems: [],
             categorySel: [],
-            cabinSels: [
-                { cabinCode: 'WH0001', cabinName: '上海仓库' },
-                { cabinCode: 'WH0002', cabinName: '常州魏村仓库' },
-                { cabinCode: 'WH0003', cabinName: '常州小句号管理有限公司' }
-            ]
+            cabinSels: []
         }
     },
     mounted() {
         this.loadParam();
-        this.queryData();
         api.queryUnitByGroup('material_category').then((cates) => this.categorySel = cates)
+        api.getAllWarehouseList().then((list) => {
+            list.forEach((it) => {
+                this.cabinSels.push({
+                    "cabinCode": it.warehouseCode,
+                    "cabinName": it.warehouseName
+                })
+            })
+        })
     },
     methods: {
         handleCurrentChange(val) {
@@ -251,43 +249,43 @@ export default {
                 .then((page) => {
                     this.tableData = page.values;
                     this.queryCond.totalRows = page.totalRows;
-                    this.initTableData(this.tableData);
+                    //this.initTableData(this.tableData);
                 }).fail((resp) => {
                     this.$message.error("请求出错")
                 }).always((resp) => {
                     this.loadingState = false;
                 })
         },
-        initTableData(tableData) {
-            try {
-                let start = new Date().getTime();
-                this.tableData.forEach((it) => {
-                    let spSel = it.supplierSelection || []
-                    if (!it.supplierCode && !it.fromCabinCode && spSel.length > 0) {
-                        Vue.set(it, 'supplierCode', spSel[0].supplierCode)
-                        Vue.set(it, 'supplierName', spSel[0].supplierName)
-                    }
-                })
-                console.log("cost", new Date().getTime() - start)
-                //计算推荐采购数量
-                setTimeout(() => {
-                    this.tableData.forEach((it) => this.onSelectSpec(it))
-                }, 0)
-                //初始化最近记录的供应商信息
-                this.tableData.forEach((it) => {
-                    setTimeout(() => {
-                        api.getRecentSupplier(it.cabinCode, it.materialCode)
-                            .then((val) => {
-                                Vue.set(it, 'supplierCode', val)
-                                this.onSelectSupplier(it)
-                            })
-                    }, 0)
-                })
-            } catch (e) {
-                console.log(e)
-                this.$message.error("初始化记录异常")
-            }
-        },
+        // initTableData(tableData) {
+        //     try {
+        // let start = new Date().getTime();
+        // this.tableData.forEach((it) => {
+        //     let spSel = it.supplierSelection || []
+        //     if (!it.supplierCode && !it.fromCabinCode && spSel.length > 0) {
+        //         Vue.set(it, 'supplierCode', spSel[0].supplierCode)
+        //         Vue.set(it, 'supplierName', spSel[0].supplierName)
+        //     }
+        // })
+        // console.log("cost", new Date().getTime() - start)
+        //计算推荐采购数量
+        // setTimeout(() => {
+        //     this.tableData.forEach((it) => this.onSelectSpec(it))
+        // }, 0)
+        //初始化最近记录的供应商信息
+        // this.tableData.forEach((it) => {
+        //     setTimeout(() => {
+        //         api.getRecentSupplier(it.cabinCode, it.materialCode)
+        //             .then((val) => {
+        //                 Vue.set(it, 'supplierCode', val)
+        //                 this.onSelectSupplier(it)
+        //             })
+        //     }, 0)
+        // })
+        // } catch (e) {
+        //     console.log(e)
+        //     this.$message.error("初始化记录异常")
+        // }
+        // },
         search() {
             this.tableData = [];
             this.queryData();

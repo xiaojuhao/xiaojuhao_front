@@ -115,6 +115,12 @@
                                 <el-input v-model="spec.homeplace" size="small" style="width:160px" placeholder="产地">
                                 </el-input>
                                 </span>
+                                <span class="span-title ">基础价格</span>
+                                <span class="span-content">
+                                <el-input v-model="spec.basePrice" size="small" style="width:100px" placeholder="基础价格">
+                                    <template slot="append">元</template>
+                                </el-input>
+                                </span>
                                 <span class="span-title "></span>
                                 <span class="span-content">
                                 <el-button type="danger " size="mini " icon="delete " @click="removeSpec(index) ">删除</el-button>

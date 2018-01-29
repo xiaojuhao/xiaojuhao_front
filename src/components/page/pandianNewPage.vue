@@ -54,7 +54,8 @@
                             <el-col :span="5">库存记录</el-col>
                             <el-col :span="5">盘点数量</el-col>
                             <el-col :span="4">差额</el-col>
-                            <el-col :span="5">库存单位</el-col>
+                            <el-col :span="2">单位</el-col>
+                            <el-col :span="3"></el-col>
                         </el-row>
                         <transition-group name="list" tag="p">
                             <el-row v-for="(item, index) in doneList" :key="item.id" class="list-item row-item">
@@ -62,7 +63,10 @@
                                 <el-col :span="5">{{item.oriStockAmt}}</el-col>
                                 <el-col :span="5">{{item.stockAmt}}</el-col>
                                 <el-col :span="4">{{item.stockAmt-item.oriStockAmt}}</el-col>
-                                <el-col :span="5">{{item.stockUnit}}</el-col>
+                                <el-col :span="2">{{item.stockUnit}}</el-col>
+                                <el-col :span="3">
+                                    <el-button size="mini" @click="recover(item,index)">撤销</el-button>
+                                </el-col>
                             </el-row>
                         </transition-group>
                     </div>
@@ -199,6 +203,24 @@ export default {
                 }).then((value) => {
                     //将盘点好的记录添加到已盘点队列中
                     this.doneList.unshift(item)
+                }).fail((resp) => {
+                    this.$message.error(resp.message)
+                }).always(() => {
+                    this.loadingShow = false;
+                })
+            })
+        },
+        recover(row, index) {
+            this.loadingShow = true;
+            this.doneList.splice(index, 1).forEach((item) => {
+                api.cancelCheckDetail({
+                    id: item.id,
+                    mainId: item.mainId,
+                    cabinCode: item.cabinCode,
+                    materialCode: item.materialCode
+                }).then((value) => {
+                    //将盘点好的记录添加到已盘点队列中
+                    this.waitingList.unshift(item)
                 }).fail((resp) => {
                     this.$message.error(resp.message)
                 }).always(() => {

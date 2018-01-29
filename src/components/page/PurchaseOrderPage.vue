@@ -43,6 +43,10 @@
                         </el-input>
                     </template>
                 </el-table-column>
+                <el-table-column label="基价" :formatter="formatBasePrice" width="100">
+                </el-table-column>
+                <el-table-column prop="totalPrice" label="总价" width="120" :formatter="calcTotalPrice">
+                </el-table-column>
                 <el-table-column label="规格" :formatter="formatSpec" width="100">
                 </el-table-column>
                 <el-table-column label="采购入库" :formatter="formatStockAmt" width="100">
@@ -56,8 +60,6 @@
                         <el-date-picker v-model="scope.row.prodDate" class="data-picker" size="small" type="date" placeholder="选择日期">
                         </el-date-picker>
                     </template>
-                </el-table-column>
-                <el-table-column prop="totalPrice" label="总金额" width="120" :formatter="calcTotalPrice">
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="100">
                     <template slot-scope="scope">
@@ -93,6 +95,9 @@ export default {
         }
     },
     methods: {
+        formatBasePrice(row) {
+            return row.selectedSpec && row.selectedSpec.basePrice + "元"
+        },
         formatSpec(row) {
             if (row.transRate && row.stockUnit && row.specUnit) {
                 if (row.stockUnit != row.specUnit)
@@ -274,9 +279,9 @@ export default {
             var total = 0.00;
             if (row.specAmt && row.specPrice) {
                 total = row.specAmt * row.specPrice;
-                return total.toFixed(2);
+                return total.toFixed(2) + "元";
             }
-            return total;
+            return total + "元";
         },
         initSpecPrice(item) {
             Vue.set(item, 'specPrice', 0);

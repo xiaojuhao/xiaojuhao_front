@@ -20,7 +20,11 @@
                     </el-option>
                 </el-select>
                 <el-input v-model="queryCond.applyNum" placeholder="采购单号" style="width:200px"></el-input>
+                <el-input v-model="queryCond.creatorSearch" placeholder="录入人" style="width:200px"></el-input>
                 <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                <el-button type="primary" @click="download">
+                    导出EXCEL
+                </el-button>
             </div>
             <el-table :data="details" ref="tableRef" border style="width: 150%" :row-style="rowStyle" v-loading="loadingState" @select-all="handleSelectAll" @select="handleSelect" show-summary :summary-method="getSummaries">
                 <el-table-column width="65" type="selection" :selectable="checkSelectable">
@@ -42,14 +46,19 @@
                         {{scope.row.realSpecAmt}} {{scope.row.specUnit}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="realStockAmt" label="食材库存" width="120">
+                <!-- <el-table-column prop="realStockAmt" label="食材库存" width="120">
                     <template slot-scope="scope">
                         {{scope.row.realStockAmt}} {{scope.row.stockUnit}}
                     </template>
-                </el-table-column>
+                </el-table-column> -->
                 <el-table-column prop="specPrice" label="单价" width="80">
                     <template slot-scope="scope">
                         {{scope.row.specPrice}}元
+                    </template>
+                </el-table-column>
+                <el-table-column prop="basePrice" label="基价" width="80">
+                    <template slot-scope="scope">
+                        <font color="blue">{{scope.row.basePrice}}元</font>
                     </template>
                 </el-table-column>
                 <el-table-column prop="totalPrice" label="总价" width="100">
@@ -84,9 +93,6 @@
             <div style="margin-top: 10px; margin-left: 300px;">
                 <el-button type="primary" @click="showMessage">确认支付</el-button>
                 <span style="margin-right:20px"></span>
-                <el-button type="primary" @click="download">
-                    导出EXCEL
-                </el-button>
             </div>
         </div>
         <el-dialog :visible.sync="isShowMessage" title="确认入库信息">
@@ -258,10 +264,6 @@ export default {
                     this.loadingState = false;
                 })
         },
-        download() {
-            let ids = [] = this.selectedItems.map((it) => it.id)
-            window.open(config.server + "/inventoryApply/downloadInventoryDetail?ids=" + ids.join(','))
-        },
         onBack() {
             this.$router.go(-1)
         },
@@ -274,6 +276,12 @@ export default {
         rowStyle(row) {
             if (row.isSelected == true)
                 return 'background:#E0E0E0'
+        },
+        download() {
+            this.queryCond.startCreatedTime = util.formatDateT(this.startDate)
+            this.queryCond.endCreatedTime = util.formatDateT(this.endDate)
+            let param = Object.keys(this.queryCond).map((k) => k + "=" + this.queryCond[k]).join('&')
+            window.open(config.server + "/inventoryApply/queryInventoryDetailPage?download=excel&" + param)
         },
         getData() {
             this.queryCond.startCreatedTime = util.formatDateT(this.startDate)

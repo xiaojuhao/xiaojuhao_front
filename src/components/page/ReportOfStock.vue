@@ -14,9 +14,9 @@
             </el-table-column>
             <el-table-column prop="cabinName" label="仓库" width="220">
             </el-table-column>
-            <el-table-column prop="currStock" label="当前库存" width="120">
+            <el-table-column prop="currStockAmtAndUnit" label="食材库存" width="120">
             </el-table-column>
-            <el-table-column prop="stockUnit" label="库存单位" width="100">
+            <el-table-column prop="currSpecAmtAndUnit" label="采购库存" width="120">
             </el-table-column>
             <el-table-column prop="modifier" label="修改人" width="160">
             </el-table-column>

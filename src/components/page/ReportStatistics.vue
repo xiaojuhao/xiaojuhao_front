@@ -20,9 +20,9 @@
             </el-table-column>
             <el-table-column prop="cabinName" label="仓库" width="220">
             </el-table-column>
-            <el-table-column prop="currstock" label="当前库存" width="120">
+            <el-table-column prop="currSpecAndUnit" label="采购库存" width="120">
             </el-table-column>
-            <el-table-column prop="stockUnit" label="库存单位" width="120">
+            <el-table-column prop="currStockAndUnit" label="食材库存" width="120">
             </el-table-column>
             <el-table-column prop="inStock" label="入库数量" width="120">
             </el-table-column>

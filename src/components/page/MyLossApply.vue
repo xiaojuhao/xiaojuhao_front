@@ -19,7 +19,7 @@
                 <br>
                 <br>
                 <span><strong>损失：</strong>{{item.stockAmt}}{{item.stockUnit}}</span>
-                <span><strong>报损人: </strong>{{item.creator}}</span>
+                <span><strong>报损人: </strong>{{item.creatorName}}</span>
             </div>
             <div style="position:relative;">
                 <img v-for="img in item.images" :src="server+'/file/show?image='+img" class="image">

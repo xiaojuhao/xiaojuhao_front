@@ -35,10 +35,12 @@
             </el-table-column>
             <el-table-column prop="category" label="分类" width="120">
             </el-table-column>
-            <el-table-column label="差额" width="160">
+            <el-table-column label="差额" width="120">
                 <template slot-scope="scope">
                     {{scope.row.deltaAmt}} {{scope.row.stockUnit}}
                 </template>
+            </el-table-column>
+            <el-table-column prop="status" label="状态" width="100" :formatter="formatStatus">
             </el-table-column>
         </el-table>
         <div class="pagination">
@@ -105,11 +107,9 @@ export default {
         formatStatus(row) {
             switch (row.status) {
                 case "0":
-                    return "未开始";
+                    return "未盘点";
                 case "1":
-                    return "正在盘点";
-                case "2":
-                    return "盘点完成";
+                    return "已盘点";
             }
         },
         queryData() {

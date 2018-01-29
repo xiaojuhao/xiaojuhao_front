@@ -365,6 +365,12 @@ export const api = {
     confirmInventoryDetail(data) {
         return http.post("/inventoryApply/confirmInventoryDetail", data)
     },
+    modifyInventoryDetail(data) {
+        return http.post("/inventoryApply/modifyInventoryDetail", data)
+    },
+    deleteInventoryDetail(data) {
+        return http.post("/inventoryApply/deleteInventoryDetail", data)
+    },
     paidInventory(data) {
         return http.post("/inventoryApply/paidInventory", data)
     },
@@ -466,6 +472,9 @@ export const api = {
     },
     doCheckStock(data) {
         return http.post("/check/checkDetail", data)
+    },
+    cancelCheckDetail(data) {
+        return http.post("/check/cancelCheckDetail", data);
     },
     queryPayments(data) {
         return http.post("/payment/queryPayments", data)

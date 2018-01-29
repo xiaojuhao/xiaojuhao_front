@@ -11,7 +11,7 @@
             <el-row>
                 <el-col :span="7">
                     拨入单位：
-                    <MyCabinSelect @input="(val)=>{this.inCabinCode=val;}"></MyCabinSelect>
+                    <CabinSelect @input="(val)=>{this.inCabinCode=val;}"></CabinSelect>
                 </el-col>
                 <el-col :span="16">
                     添加原料：
@@ -87,7 +87,7 @@
 </template>
 <script>
 import { api, http } from '../common/bus'
-import MyCabinSelect from '../common/MyCabinSelect'
+import CabinSelect from '../common/CabinSelect'
 import jquery from 'jquery'
 import Vue from 'vue'
 export default {
@@ -369,7 +369,7 @@ export default {
         }
     },
     components: {
-        MyCabinSelect
+        CabinSelect
     }
 }
 </script>
