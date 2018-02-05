@@ -6,7 +6,12 @@
                     <el-option label="待支付" value="0"></el-option>
                     <el-option label="已支付" value="1"></el-option>
                 </el-select>
-                <el-input v-model="queryCond.fromSrc" placeholder="供应商或拨出仓库" style="width:130px"></el-input>
+                <el-select v-model="queryCond.payMode" style="width:100px" clearable placeholder="结账模式">
+                    <el-option label="现结" value="ByInTime"></el-option>
+                    <el-option label="周结" value="ByWeek"></el-option>
+                    <el-option label="月结" value="ByMonth"></el-option>
+                </el-select>
+                <el-input v-model="queryCond.fromSrc" placeholder="供应商" style="width:130px"></el-input>
                 <MyCabinSelect @input="(val)=>{this.queryCond.inCabinCode=val;}"></MyCabinSelect>
                 <el-input v-model="queryCond.searchKey" placeholder="原料名称搜索" style="width:120px"></el-input>
                 <el-date-picker v-model="startDate" type="date" placeholder="起始日期" style="width:130px">
@@ -137,7 +142,8 @@ export default {
                 applyType: 'purchase', //只有采购单才会支付
                 status: '2', //已入库
                 paidStatus: '0', //默认查询出待支付的数据,
-                category: ''
+                category: '',
+                payMode: ''
             },
             details: [],
             loadingState: false,

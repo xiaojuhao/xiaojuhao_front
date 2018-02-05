@@ -19,8 +19,8 @@
                     <div>
                         <el-row style="margin-bottom:10px;">
                             <el-col :span="5">原料名称</el-col>
-                            <el-col :span="5">库存记录</el-col>
-                            <el-col :span="5">盘点数量</el-col>
+                            <el-col :span="5">食材库存</el-col>
+                            <el-col :span="5">食材盘点</el-col>
                             <el-col :span="6" :offset="1">操作</el-col>
                         </el-row>
                         <transition-group name="list" tag="p">
@@ -51,8 +51,8 @@
                     <div>
                         <el-row style="margin-bottom:10px;">
                             <el-col :span="5">原料名称</el-col>
-                            <el-col :span="5">库存记录</el-col>
-                            <el-col :span="5">盘点数量</el-col>
+                            <el-col :span="5">食材库存</el-col>
+                            <el-col :span="5">食材盘点</el-col>
                             <el-col :span="4">差额</el-col>
                             <el-col :span="2">单位</el-col>
                             <el-col :span="3"></el-col>

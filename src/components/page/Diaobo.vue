@@ -22,7 +22,7 @@
             </router-link>
             <router-link v-for="item in myStores" :key="item.id" :to="'diaoboPage?CODE='+item.storeCode">
                 <el-card :body-style="{ padding: '0px' }" class="card">
-                    <img src="../../assets/store.png" class="image">
+                    <img :src="item.storeImg" class="image">
                     <div style="padding: 14px;">
                         <div class="bottom clearfix align-center">
                             <span>{{item.storeName}}</span>
