@@ -72,6 +72,10 @@ export default new Router({
                     component: resolve => require(['../components/page/RecipesManage.vue'], resolve) //
                 },
                 {
+                    path: '/recipesSync',
+                    component: resolve => require(['../components/page/RecipesSync.vue'], resolve) //
+                },
+                {
                     path: '/recipesManagePage',
                     component: resolve => require(['../components/page/RecipesManagePage.vue'], resolve) // 
                 },

@@ -10,6 +10,7 @@
                     </el-select>
                     <el-input v-model="queryCond.searchKey" style="width:180px" placeholder="原料名称或配音"></el-input>
                     <el-button type="primary" icon="search" @click="search">搜索</el-button>
+                    <el-button type="primary" icon="search" @click="download">导出EXCEL</el-button>
                 </el-col>
             </el-row>
         </div>
@@ -20,20 +21,33 @@
             </el-table-column>
             <el-table-column label="最低库存">
                 <template slot-scope="scope">
-                    {{scope.row.warningValue1.toFixed(0)}}
+                    {{scope.row.warningValue1.toFixed(0)}}{{scope.row.stockUnit}}
                 </template>
             </el-table-column>
             <el-table-column prop="warningValue2" label="最高库存">
                 <template slot-scope="scope">
-                    {{scope.row.warningValue2.toFixed(0)}}
+                    {{scope.row.warningValue2.toFixed(0)}}{{scope.row.stockUnit}}
                 </template>
             </el-table-column>
-            <el-table-column prop="warningStock" label="最近日均">
+            <el-table-column prop="warningStock" label="日均消耗">
                 <template slot-scope="scope">
-                    {{scope.row.warningStock.toFixed(0)}}
+                    {{scope.row.warningStock.toFixed(0)}}{{scope.row.stockUnit}}
                 </template>
             </el-table-column>
-            <el-table-column prop="stockUnit" label="库存单位">
+            <el-table-column prop="warningStock" label="日均">
+                <template slot-scope="scope">
+                    {{scope.row.dailySpecAvg}}{{scope.row.firstSpecUnit}}
+                </template>
+            </el-table-column>
+            <el-table-column label="周均">
+                <template slot-scope="scope">
+                    {{scope.row.weekSpecAvg }}{{scope.row.firstSpecUnit}}
+                </template>
+            </el-table-column>
+            <el-table-column label="月均">
+                <template slot-scope="scope">
+                    {{scope.row.monthSpecAvg}}{{scope.row.firstSpecUnit}}
+                </template>
             </el-table-column>
             <el-table-column label="操作" fixed="right" width="150">
                 <template slot-scope="scope">
@@ -72,7 +86,7 @@
     </div>
 </template>
 <script>
-import { api } from '../common/bus'
+import { api, config  } from '../common/bus'
 import MaterialSelection from '../common/MaterialSelection'
 import MyCabinSelect from '../common/MyCabinSelect'
 import Vue from 'vue'
@@ -157,6 +171,10 @@ export default {
         search() {
             this.queryList = [];
             this.queryData();
+        },
+        download(){
+            let param = Object.keys(this.queryCond).map((k) => k + "=" + this.queryCond[k]).join('&')
+            window.open(config.server + "/busi/queryMaterialsStock?download=excel&" + param)
         },
         showWarningSetPage(index, item) {
             this.dialogWaringSetShow = true;

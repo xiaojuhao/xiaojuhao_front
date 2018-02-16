@@ -77,7 +77,6 @@ export default {
             this.$router.go(-1)
         },
         handleAvatarSuccess(res, file) {
-            console.log(res)
             this.form.storeImg = config.server+'/file/show?image='+res.value.filename;
         },
         beforeAvatarUpload(file) {

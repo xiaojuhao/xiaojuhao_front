@@ -46,6 +46,11 @@
                     {{-1 * scope.row.correctDelta}}
                 </template>
             </el-table-column>
+            <el-table-column label="销售占比" width="160">
+                <template slot-scope="scope">
+                    {{scope.row.saleAmtRatio}}%
+                </template>
+            </el-table-column>
         </el-table>
     </div>
 </template>

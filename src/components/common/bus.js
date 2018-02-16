@@ -416,8 +416,8 @@ export const api = {
     menuTree() {
         return http.post("/menuTree", {})
     },
-    syncRecipes() {
-        return http.post("/remote/syncRecipes", {})
+    syncRecipes(data) {
+        return http.post("/remote/syncRecipes", data)
     },
     syncOrders(data) {
         return http.post("/remote/syncOrders", data)
@@ -499,5 +499,8 @@ export const api = {
     },
     paidInventoryDetail(data) {
         return http.post("/inventoryApply/paidInventoryDetail", data)
+    },
+    getRecipesFromRemote(data) {
+        return http.post("/remote/getRecipes", data)
     }
 }

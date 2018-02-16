@@ -54,6 +54,8 @@
                         </el-input>
                     </template>
                 </el-table-column>
+                <el-table-column label="基价" :formatter="formatBasePrice" width="100">
+                </el-table-column>
                 <el-table-column label="总价" width="160" :formatter="calcTotalPrice">
                 </el-table-column>
                 <el-table-column label="采购库存" width="160" :formatter="calcStockAmt">
@@ -118,6 +120,11 @@ export default {
             }).then(() => {
                 self.materialList = [];
             })
+        },
+        formatBasePrice(row) {
+            let basePrice = row.selectedSpec && row.selectedSpec.basePrice;
+            if(!basePrice) basePrice = 0;
+            return basePrice + "元"
         },
         onSubmit() {
             if (!this.inCabinCode) {

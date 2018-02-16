@@ -28,6 +28,12 @@
                         <el-checkbox v-for="item in allStores" :key=item.storeCode :label="item.storeCode" :checked="item.checked">{{item.storeName}}</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
+                <el-form-item label="门店图像">
+                    <el-upload class="avatar-uploader" :action="actionUrl" :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+                        <img v-if="form.headImg" :src="form.headImg" class="avatar">
+                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">提交</el-button>
                     <el-button @click="onCancel">取消</el-button>
@@ -51,8 +57,10 @@ export default {
                 warehouseManager: '',
                 managerPhone: '',
                 managerEmail: '',
-                relatedStoresStr: ''
+                relatedStoresStr: '',
+                headImg: ''
             },
+            actionUrl: config.server + '/file/upload',
             relatedStores: []
 
         }
@@ -70,6 +78,16 @@ export default {
         },
         onCancel() {
             this.$router.go(-1)
+        },
+        handleAvatarSuccess(res, file) {
+            this.form.headImg = config.server + '/file/show?image=' + res.value.filename;
+        },
+        beforeAvatarUpload(file) {
+            const isLt2M = file.size / 1024 / 1024 < 2;
+            if (!isLt2M) {
+                this.$message.error('上传头像图片大小不能超过 2MB!');
+            }
+            return isLt2M;
         }
     },
     mounted() {
@@ -107,3 +125,32 @@ export default {
     }
 }
 </script>
+<style>
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    width: 178px;
+    height: 178px;
+}
+
+.avatar-uploader .el-upload:hover {
+    border-color: #20a0ff;
+}
+
+.avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+}
+
+.avatar .el-upload {
+    width: 178px;
+    height: 178px;
+}
+</style>

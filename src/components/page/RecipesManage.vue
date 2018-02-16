@@ -135,14 +135,8 @@ export default {
             this.$router.push({ path: "/recipesManagePage", query: { code: item && item.recipesCode } })
         },
         syncMenu() {
-            this.loadingState = true;
-            api.syncRecipes()
-                .then(() => {
-                    this.$message("同步菜单成功")
-                }).always(() => {
-                    this.loadingState = false;
-                    this.queryData();
-                })
+            this.$router.push({ path: "/recipesSync"});
+
         },
         expand(row, expanded) {
             if (expanded) {

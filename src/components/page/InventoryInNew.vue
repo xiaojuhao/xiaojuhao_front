@@ -45,7 +45,7 @@
                 </el-table-column>
                 <el-table-column prop="realSpecAmt" label="数量" width="130">
                     <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.realSpecAmt" @change="onSpecAmtChange(scope.row)">
+                        <el-input :disabled="!isSu" size="mini" v-model="scope.row.realSpecAmt" @change="onSpecAmtChange(scope.row)">
                             <template slot="append">{{scope.row.specUnit}}</template>
                         </el-input>
                     </template>
@@ -57,14 +57,14 @@
                 </el-table-column>
                 <el-table-column prop="totalPrice" label="总价" width="130">
                     <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.totalPrice">
+                        <el-input  size="mini" v-model="scope.row.totalPrice">
                             <template slot="append">元</template>
                         </el-input>
                     </template>
                 </el-table-column>
                 <el-table-column prop="realStockAmt" label="食材库存" width="130">
                     <template slot-scope="scope">
-                        <el-input size="mini" v-model="scope.row.realStockAmt">
+                        <el-input :disabled="!isSu" size="mini" v-model="scope.row.realStockAmt">
                             <template slot="append">{{scope.row.stockUnit}}</template>
                         </el-input>
                     </template>
@@ -147,7 +147,8 @@ export default {
             startDate: null,
             endDate: null,
             categorySel: [],
-            loginUser: {}
+            loginUser: {},
+            isSu: false
         }
     },
     methods: {
@@ -205,7 +206,7 @@ export default {
         reCalcSelected() {
             this.details.forEach(it => Vue.set(it, 'isSelected', false))
             this.selectedItems.forEach(it => {
-                Vue.set(it, 'isSelected',  this.checkSelectable(it))
+                Vue.set(it, 'isSelected', this.checkSelectable(it))
             })
         },
         checked() {
@@ -323,7 +324,10 @@ export default {
     mounted() {
         this.getData();
         api.queryUnitByGroup('material_category').then((cates) => this.categorySel = cates);
-        api.loginInfo().then((user) => this.loginUser = user)
+        api.loginInfo().then((user) => {
+            this.loginUser = user;
+            this.isSu = this.loginUser.isSu == 1
+        })
     },
     computed: {
         sumTotalPrice() {

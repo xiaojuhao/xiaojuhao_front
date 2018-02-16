@@ -12,7 +12,7 @@
         <section>
             <router-link v-for="item in mywarehouse" :key="item.id" :to="'diaoboPage?CODE='+item.warehouseCode">
                 <el-card :body-style="{ padding: '0px' }" class="card">
-                    <img src="../../assets/warehouse.jpg" class="image">
+                    <img :src="item.headImg" class="image">
                     <div style="padding: 14px;">
                         <div class="bottom clearfix align-center">
                             <span>{{item.warehouseName}}</span>

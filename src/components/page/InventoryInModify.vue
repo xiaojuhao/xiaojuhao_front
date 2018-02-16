@@ -203,7 +203,7 @@ export default {
             this.specPriceChg(row)
         },
         specPriceChg(row) {
-            let totalPrice = Math.ceil(row.realSpecAmt * row.specPrice);
+            let totalPrice = (row.realSpecAmt * row.specPrice).toFixed(2);
             Vue.set(row, 'totalPrice', totalPrice)
         },
         getData() {
