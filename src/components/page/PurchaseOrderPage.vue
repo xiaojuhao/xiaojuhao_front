@@ -47,6 +47,12 @@
                 </el-table-column>
                 <el-table-column prop="totalPrice" label="总价" width="120" :formatter="calcTotalPrice">
                 </el-table-column>
+                <el-table-column label="备注" width="140">
+                    <template slot-scope="scope">
+                        <el-input size="small" v-model="scope.row.remark">
+                        </el-input>
+                    </template>
+                </el-table-column>
                 <el-table-column label="规格" :formatter="formatSpec" width="100">
                 </el-table-column>
                 <el-table-column label="采购入库" :formatter="formatStockAmt" width="100">

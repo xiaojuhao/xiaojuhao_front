@@ -58,6 +58,12 @@
                 </el-table-column>
                 <el-table-column label="总价" width="160" :formatter="calcTotalPrice">
                 </el-table-column>
+                <el-table-column label="备注" width="140">
+                    <template slot-scope="scope">
+                        <el-input size="small" v-model="scope.row.remark">
+                        </el-input>
+                    </template>
+                </el-table-column>
                 <el-table-column label="采购库存" width="160" :formatter="calcStockAmt">
                 </el-table-column>
                 <el-table-column label="利用率" width="100" prop="utilizationRatio">

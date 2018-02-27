@@ -18,7 +18,7 @@
                 <span><strong>报损人: </strong>{{item.creatorName}}</span>
                 <span><strong>报损时间：</strong>{{item.createTime}}</span>
                 <br>
-                <span><strong>损耗原因：</strong>{{item.remark}}</span>
+                <span><strong>损耗原因：</strong><font color="red">{{item.remark}}</font></span>
             </div>
             <div style="position:relative;">
                 <img v-for="img in item.images" :src="server+'/file/show?image='+img" class="image">

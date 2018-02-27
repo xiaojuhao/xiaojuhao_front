@@ -141,8 +141,10 @@ export default {
         },
         syncSaleData() {
             this.loadingState2 = true;
+
             api.syncOrders({
-                date: util.formatDateT(this.syncDate)
+                date: util.formatDateT(this.syncDate),
+                storeCode: this.storeCode
             }).then((val) => {
                 this.$message("同步成功")
                 this.saleDateStart = this.syncDate;
