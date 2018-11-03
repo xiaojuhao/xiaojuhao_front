@@ -11,6 +11,7 @@
                             <el-option label="未完善" value="N"></el-option>
                         </el-select>
                         <el-button type="primary" icon="search" @click="search">查询</el-button>
+                        <el-button type="primary" icon="search" @click="download">下载菜单</el-button>
                     </el-col>
                     <el-col :span="7">
                         <div style="position:relative; float:right; ">
@@ -55,7 +56,7 @@
     </div>
 </template>
 <script>
-import { api } from '../common/bus.js'
+import { api, config } from '../common/bus.js'
 import RecipesSelection from '../common/RecipesSelection'
 import Vue from 'vue'
 
@@ -121,6 +122,9 @@ export default {
                 }).always(() => {
                     this.loadingState = false;
                 })
+        },
+        download() {
+            window.open(config.server + "/recipes/downloadRecipesFormula")
         },
         search() {
             this.queryCond.pageNo = 1;
