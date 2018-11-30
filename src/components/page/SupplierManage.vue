@@ -2,7 +2,7 @@
     <div class="table">
         <div class="handle-box">
             <div style="position:relative; float:left; ">
-                <SupplierSelect @input="(v)=>{this.queryCond.supplierCode = v ;}"></SupplierSelect>
+                <el-input v-model="queryCond.supplierName" style="width:180px" placeholder="供应商名称"></el-input>
             </div>
             <el-select v-model="queryCond.status" clearable placeholder="有效性" style="width:120px;">
                 <el-option label="有效" value="1"></el-option>
@@ -45,11 +45,7 @@
 </template>
 <script>
 import { api } from '../common/bus.js'
-import SupplierSelect from '../common/SupplierSelect'
 export default {
-    components: {
-        SupplierSelect
-    },
     data() {
         return {
             pageNo: 1,
@@ -58,6 +54,7 @@ export default {
             loadingState: false,
             queryCond: {
                 supplierCode: '',
+                supplierName: '',
                 status: '1'
             },
             queryList: []
@@ -76,7 +73,8 @@ export default {
                 pageNo: this.pageNo,
                 pageSize: this.pageSize,
                 supplierCode: this.queryCond.supplierCode,
-                status: this.queryCond.status
+                status: this.queryCond.status,
+                supplierName: this.queryCond.supplierName
             }).then((page) => {
                 this.totalRows = page.totalRows;
                 this.queryList = page.values;

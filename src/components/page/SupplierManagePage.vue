@@ -92,6 +92,7 @@
                             <el-radio-group v-if="isShowMaterials" v-model="category" size="small">
                                 <el-radio-button v-for="c in categorySel" :label="c.unitCode"></el-radio-button>
                             </el-radio-group>
+                            <el-checkbox v-if="isShowMaterials" v-model="isSelectAll" :change="selectAll">全选</el-checkbox>
                         </el-col>
                     </el-row>
                     <el-row v-if="isShowMaterials">
@@ -103,7 +104,7 @@
                     </el-row>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="onSubmit">提交</el-button>
+                    <el-button type="primary" @click="onSubmit">保存</el-button>
                     <el-button @click="onCancel">返回</el-button>
                 </el-form-item>
             </el-form>
@@ -137,6 +138,7 @@ export default {
             categorySel: [],
             category: '',
             isShowMaterials: false,
+            isSelectAll:false,
             showMaterialsButton: {
                 title: '显示原料',
                 type: 'success'
@@ -154,8 +156,8 @@ export default {
             api.saveSupplierInfo(this.form)
                 .then((val) => {
                     Object.assign(this.form, val);
-                    this.$message("提交成功")
-                    this.$router.go(-1)
+                    this.$message("保存成功")
+                    //this.$router.go(-1)
                 }).fail((resp) => {
                     this.$message.error(resp.message)
                 })
@@ -190,6 +192,13 @@ export default {
                     }
                 })
             });
+        },
+        selectAll(){
+            this.filteredMaterials.forEach((it)=>{
+                if(this.isSelectAll && !it.isSelected) {
+                    Vue.set(it, 'isSelected', true)
+                }
+            })
         }
     },
     mounted() {
@@ -217,6 +226,7 @@ export default {
     computed: {
         filteredMaterials() {
             return this.allMaterials.filter((it) => {
+                this.isSelectAll = this.isSelectAll && it.isSelected; //计算全部选中状态
                 if (this.category && it.category == this.category) {
                     return true;
                 } else {

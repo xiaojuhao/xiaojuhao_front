@@ -70,6 +70,8 @@
                         </el-input>
                     </template>
                 </el-table-column>
+                <el-table-column prop="remark" label="备注" width="150">
+                </el-table-column>
                 <el-table-column label="类型" width="100" :formatter="formatApplyType">
                 </el-table-column>
                 <el-table-column label="状态" width="100" :formatter="formatStatus">
