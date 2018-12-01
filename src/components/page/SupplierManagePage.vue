@@ -81,7 +81,7 @@
                 <el-form-item label="供应原料">
                     <el-row>
                         <el-col>
-                            <span class="span-material" v-for="(item,index) in selectedMaterials" :key="item.materialCode">
+                            <span class="span-material" v-for="item in selectedMaterials" :key="item.materialCode">
                                 {{item.materialName}}
                             </span>
                         </el-col>
@@ -89,13 +89,14 @@
                     <el-row>
                         <el-col :span="24">
                             <el-button size="small" :type="showMaterialsButton.type" @click="showMaterials">{{showMaterialsButton.title}}</el-button>
-                            <el-radio-group v-if="isShowMaterials" v-model="category" size="small">
-                                <el-radio-button v-for="c in categorySel" :label="c.unitCode"></el-radio-button>
+                            <el-radio-group v-if="isShowMaterials"  v-model="category" size="small" @change="selectCatagory">
+                                <el-radio-button v-for="c in categorySel" :key="c.unitCode" :label="c.unitCode" >
+                                </el-radio-button>
                             </el-radio-group>
-                            <el-checkbox v-if="isShowMaterials" v-model="isSelectAll" :change="selectAll">全选</el-checkbox>
+                            <el-checkbox v-if="isShowMaterials"  v-model="isSelectAllChecked" @change="selectAll">全选</el-checkbox>
                         </el-col>
                     </el-row>
-                    <el-row v-if="isShowMaterials">
+                    <el-row v-if="isShowMaterials" >
                         <el-col>
                             <el-checkbox v-for="item in filteredMaterials" :key="item.id" v-model="item.isSelected">
                                 {{item.materialName}}
@@ -138,7 +139,7 @@ export default {
             categorySel: [],
             category: '',
             isShowMaterials: false,
-            isSelectAll:false,
+            isSelectAllChecked : false,
             showMaterialsButton: {
                 title: '显示原料',
                 type: 'success'
@@ -193,11 +194,13 @@ export default {
                 })
             });
         },
-        selectAll(){
-            this.filteredMaterials.forEach((it)=>{
-                if(this.isSelectAll && !it.isSelected) {
-                    Vue.set(it, 'isSelected', true)
-                }
+        selectCatagory(){
+            this.isSelectAllChecked = false;
+        },
+        selectAll(cb){
+            var checked = cb.target.checked;
+            this.filteredMaterials.forEach(it=>{
+                Vue.set(it,'isSelected', checked)
             })
         }
     },

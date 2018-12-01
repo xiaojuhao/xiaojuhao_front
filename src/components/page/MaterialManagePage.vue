@@ -7,7 +7,7 @@
             </el-breadcrumb>
         </div>
         <div class="form-box">
-            <el-form ref="form" label-width="100px" v-loading="loadingState">
+            <el-form ref="form" label-width="100px" v-loading="loadingState" element-loading-text="数据加载中。。。">
                 <el-form-item label="原料名称" style="width:60%">
                     <el-input v-model="form.materialName"></el-input>
                 </el-form-item>
@@ -48,18 +48,22 @@
                     <el-input size="small" v-model="form.warningCoeffient2" style="width:150px">
                     </el-input>
                 </el-form-item>
+                <!-- 供应商管理 -->
                 <el-form-item label="供应商">
-                    <div v-for="item in form.suppliers">
-                        {{item.supplierCode}} {{item.supplierName}}
-                    </div>
+                    <el-button type="primary" @click="showAddNewSupplierDialog">添 加</el-button>
+                    <br/>
+                    <span v-for="item in addedSuppliers" :key="item.supplierCode">
+                        {{item.supplierName}}({{item.supplierCode}}) &nbsp&nbsp
+                    </span>
                 </el-form-item>
                 <el-form-item label="搜索字符" style="width:60%">
                     <el-input v-model="form.searchKey"></el-input>
                 </el-form-item>
+                <!-- 规格管理 -->
                 <el-form-item label="采购规格">
                     <el-button type="primary" size="mini" icon="plus" @click="addSpec">添加规格</el-button>
                     备注：入库数量在采购入库的时用来计算入库的原料数量，谨慎填写
-                    <div v-for="(spec,index) in specList" style="border:dotted #D4D4D4 0px; margin-top:5px;">
+                    <div v-for="(spec,index) in specList" :key="index" style="border:dotted #D4D4D4 0px; margin-top:5px;">
                         <el-row>
                             <el-col>
                                 <span class="span-title">规格名称</span>
@@ -132,13 +136,22 @@
                 <el-row>
                     <el-col>
                         <el-form-item>
-                            <el-button type="primary " @click="onSubmit ">提交</el-button>
+                            <el-button type="primary " @click="onSubmit ">保存</el-button>
                             <el-button type="primary " @click="onCancel ">取消</el-button>
                         </el-form-item>
                     </el-col>
                 </el-row>
             </el-form>
         </div>
+        <el-dialog title="供应商信息" v-model="addNewSupplierDialogShow" class="dialog">
+            <el-row >
+                <el-col>
+                    <el-checkbox v-for="item in allSuppliers" :key="item.supplierCode" @change="supplierCheckChange(item)" v-model="item.checked">
+                        {{item.supplierName}}
+                    </el-checkbox>
+                </el-col>
+            </el-row>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -161,7 +174,7 @@ export default {
                 storageLifeNum: '',
                 specDetail: '',
                 category: '',
-                suppliers: [],
+                suppliers: '',
                 warningCoeffient2: 0,
                 warningCoeffient1: 0
             },
@@ -174,17 +187,22 @@ export default {
             subList: [],
             purchaseUnits: [],
             stockUnits: [],
-            categorySel: []
+            categorySel: [],
+            varNewSupplier:null,
+            addNewSupplierDialogShow:false,
+            allSuppliers:[],
+            addedSuppliers:[]
         }
     },
     methods: {
         onSubmit() {
             this.loadingState = true;
             this.form.specDetail = JSON.stringify(this.specList)
+            this.form.suppliers = JSON.stringify(this.addedSuppliers)
             api.addMaterials(this.form)
                 .then((resp) => {
-                    this.$message.success("操作成功 ");
-                    this.$router.go(-1)
+                    this.$message.success("保存成功 ");
+                    //this.$router.go(-1)
                 }).fail((resp) => {
                     this.$message.error(resp.message)
                 }).always(() => {
@@ -194,11 +212,65 @@ export default {
         onCancel() {
             this.$router.go(-1)
         },
+        showAddNewSupplierDialog(){
+            this.loadingState = true;
+            this.queryAllSuppliers(()=>{
+                this.loadingState = false;
+                this.addNewSupplierDialogShow = true;
+            });
+        },
         addSpec() {
             this.specList.push({ utilizationRatio: this.form.utilizationRatio })
         },
         removeSpec(index) {
             this.specList.splice(index, 1)
+        },
+        queryAllSuppliers(cb){
+            if(this.allSuppliers.length > 0){
+                this.allSuppliers.forEach(it=>{
+                    if(this.addedSuppliersCodeSet.has(it.supplierCode)){
+                        it.checked = true;
+                    }else{
+                        it.checked = false;
+                    }
+                })
+                cb && cb();
+                return;
+            }
+            api.querySupplierPage({
+                pageSize: 2000
+            }).then((page) => {
+                page.values.forEach((item) => {
+                    let ii = {};
+                    ii.supplierCode = item.supplierCode;
+                    ii.supplierName = item.supplierName;
+                    ii.type = "供应商"
+                    if(this.addedSuppliersCodeSet.has(item.supplierCode)){
+                        ii.checked = true;
+                    }else{
+                        ii.checked = false;
+                    }
+                    this.allSuppliers.push(ii);
+                })
+                cb && cb()
+            })
+        },
+        supplierCheckChange(item,e){
+            var index = this.addedSuppliers.findIndex((it)=>it.supplierCode == item.supplierCode)
+            console.log(index)
+            //添加
+            if(item.checked && index == -1){
+                this.addedSuppliers.push({
+                    supplierCode:item.supplierCode,
+                    supplierName:item.supplierName,
+                    checked:true,
+                    type:"供应商"
+                })
+            }
+            //删除
+            else if(!item.checked && index >=0){
+                this.addedSuppliers.splice(index, 1)
+            }
         }
     },
     mounted() {
@@ -228,12 +300,19 @@ export default {
                 api.querySuppliersByMaterialCodes({
                     materialCodes: this.form.materialCode
                 }).then((list) => {
-                    this.form.suppliers = list;
+                    this.addedSuppliers = list;
                 })
             })
         api.queryUnitByGroup('purchase_unit_group').then((units) => this.purchaseUnits = units)
         api.queryUnitByGroup('stock_unit_group').then((units) => this.stockUnits = units)
         api.queryUnitByGroup('material_category').then((cates) => this.categorySel = cates)
+    },
+    computed:{
+        addedSuppliersCodeSet:function(){
+            var s = new Set();
+            this.addedSuppliers.forEach((it)=>s.add(it.supplierCode))
+            return s;
+        }
     }
 }
 </script>
