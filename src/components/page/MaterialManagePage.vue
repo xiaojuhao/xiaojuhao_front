@@ -146,7 +146,11 @@
         <el-dialog title="供应商信息" v-model="addNewSupplierDialogShow" class="dialog">
             <el-row >
                 <el-col>
-                    <el-checkbox v-for="item in allSuppliers" :key="item.supplierCode" @change="supplierCheckChange(item)" v-model="item.checked">
+                    <el-input v-model="supplierNameSearchWord" placeholder="供应商名称"></el-input>
+                    <br/><br/>
+                    <el-checkbox v-for="item in filteredSupplierList" :key="item.supplierCode" 
+                        @change="supplierCheckChange(item)" 
+                        v-model="item.checked">
                         {{item.supplierName}}
                     </el-checkbox>
                 </el-col>
@@ -191,7 +195,8 @@ export default {
             varNewSupplier:null,
             addNewSupplierDialogShow:false,
             allSuppliers:[],
-            addedSuppliers:[]
+            addedSuppliers:[],
+            supplierNameSearchWord:''
         }
     },
     methods: {
@@ -312,6 +317,15 @@ export default {
             var s = new Set();
             this.addedSuppliers.forEach((it)=>s.add(it.supplierCode))
             return s;
+        },
+        filteredSupplierList:function(){
+            if(this.supplierNameSearchWord){
+                return this.allSuppliers.filter((it)=>{
+                    return it.supplierName.indexOf(this.supplierNameSearchWord) >= 0
+                })
+            }else{
+                return this.allSuppliers;
+            }
         }
     }
 }

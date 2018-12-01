@@ -155,8 +155,8 @@ export default {
             })
             this.form.materialJson = JSON.stringify(materials);
             api.saveSupplierInfo(this.form)
-                .then((val) => {
-                    Object.assign(this.form, val);
+                .then((value) => {
+                    Object.assign(this.form, value);
                     this.$message("保存成功")
                     //this.$router.go(-1)
                 }).fail((resp) => {
