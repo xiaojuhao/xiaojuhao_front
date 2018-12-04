@@ -83,15 +83,17 @@
                 </el-col>
             </el-row>
         </div>
-        <el-dialog title="供应商原料信息" v-model="isSupplierMaterialDialogShow" class="dialog">
+        <!-- <el-dialog title="供应商原料信息" v-model="isSupplierMaterialDialogShow" class="dialog">
             <el-row >
                 <el-col>
                     <el-input v-model="supplierMaterialSearchWord" placeholder="供应商名称or原料名称"></el-input>
                     <br/><br/>
-                    
+                    <span v-for="item in frontMatchedSupplierMaterialRecords" :key="item.id">
+                        {{item.supplierName}}-{{item.materialName}}
+                    </span>
                 </el-col>
             </el-row>
-        </el-dialog>
+        </el-dialog> -->
     </div>
 </template>
 <script>
@@ -104,14 +106,14 @@ export default {
         return {
             timeout: null,
             storeCode: '',
-            addedMaterialList: [],
             loadingState: false,
             cabinCode: this.$route.query.CODE,
             cabin: {},
             cabinSupplierCodes:new Set(),
-            isSupplierMaterialDialogShow:false,
-            supplierMaterialSearchWord:'',
+            //isSupplierMaterialDialogShow:false,
+            // supplierMaterialSearchWord:'',
             materialSupplierDOList: [],
+            addedMaterialList: [], //已添加的记录
             materialSupplierDOAlternatives: [], //下拉框带选项
             materialsDOList:[]
         }
@@ -187,7 +189,9 @@ export default {
             });
         },
         removeRows(index) {
-            this.$data.addedMaterialList.splice(index, 1)
+            let item = this.addedMaterialList[index];
+            Vue.set(item, 'added', false)
+            this.addedMaterialList.splice(index, 1)
         },
         querySearchAsync(queryString, cb) {
             clearTimeout(this.timeout)
@@ -245,6 +249,7 @@ export default {
             Vue.set(item, 'cabinCode', this.cabinCode)
             Vue.set(item, 'prodDate', today)
             Vue.set(item, 'materialCode', item.materialCode)
+            Vue.set(item, 'added', true)
             this.setSpecCode(item);
             this.addedMaterialList.push(item);
             this.initSpecPrice(item);
@@ -333,9 +338,9 @@ export default {
                 }
             }
         },
-        showSearchDialog(){
-            this.isSupplierMaterialDialogShow = true;
-        }
+        // showSearchDialog(){
+        //     this.isSupplierMaterialDialogShow = true;
+        // }
     },
     mounted() {
         api.queryAllMaterialSuppler()
@@ -390,7 +395,34 @@ export default {
                 set.add(it.supplierCode+"_"+it.materialCode)
             })
             return set;
-        }
+        },
+        // frontMatchedSupplierMaterialRecords(){
+        //     let r = [];
+        //     let c = 0;
+        //     let searchWords = new Set();
+        //     if(this.supplierMaterialSearchWord){
+        //         this.supplierMaterialSearchWord.split(" ").forEach(w=>{
+        //             if(jquery.trim(w)) searchWords.add(jquery.trim(w))
+        //         })
+        //     }
+        //     for(var i = 0; i < this.materialSupplierDOList.length; i++){
+        //         let o = this.materialSupplierDOList[i];
+        //         if(!o) continue;
+
+        //         if(searchWords.size == 0 //无搜索条件
+        //         || o.supplierName && searchWords.has(o.supplierName)  //匹配供应商
+        //         || o.materialName && searchWords.has(o.materialName)  //匹配原料
+        //         ){
+        //             r.push(o)
+        //             c++;
+        //         }
+        //         //超过60条，跳出
+        //         if(c > 60){
+        //             break;
+        //         }
+        //     }
+        //     return r;
+        // }
     },
     components: {
         MyCabinSelect

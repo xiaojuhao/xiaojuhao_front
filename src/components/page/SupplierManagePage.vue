@@ -78,6 +78,13 @@
                 <el-form-item label="备注">
                     <el-input v-model="form.remark" placeholder="备注信息"></el-input>
                 </el-form-item>
+                <el-form-item label="绑定门店">
+                    <el-button type="primary" @click="showBindingStoreDialog">绑定门店</el-button>
+                    <br/>
+                    <span v-for="item in bindedCabins" :key="item.cabinCode">
+                        {{item.cabinName}}({{item.cabinCode}}) &nbsp&nbsp
+                    </span>
+                </el-form-item>
                 <el-form-item label="供应原料">
                     <el-row>
                         <el-col>
@@ -110,6 +117,16 @@
                 </el-form-item>
             </el-form>
         </div>
+        <el-dialog title="门店信息" v-model="isShowBindingStoreDialog" class="dialog">
+            <el-row >
+                <el-col>
+                    <el-checkbox v-for="item in allCabinDOList" :key="item.cabinCode" 
+                        v-model="item.checked">
+                        {{item.cabinName}}
+                    </el-checkbox>
+                </el-col>
+            </el-row>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -132,7 +149,8 @@ export default {
                 payAccount: '',
                 materialJson: '',
                 remark: '',
-                status: ''
+                status: '',
+                supplyCabins:''
             },
             allMaterials: [],
             loadingState: false,
@@ -143,8 +161,9 @@ export default {
             showMaterialsButton: {
                 title: '显示原料',
                 type: 'success'
-            }
-
+            },
+            isShowBindingStoreDialog:false,
+            allCabinDOList:[]
         }
     },
     methods: {
@@ -153,7 +172,9 @@ export default {
             this.selectedMaterials.forEach((it) => {
                 materials.push({ materialCode: it.materialCode })
             })
+            let checkedCabinCodes = this.allCabinDOList.filter(it=>it.checked).map(it=>it.cabinCode).join(",")
             this.form.materialJson = JSON.stringify(materials);
+            this.form.supplyCabins = checkedCabinCodes;
             api.saveSupplierInfo(this.form)
                 .then((value) => {
                     Object.assign(this.form, value);
@@ -202,6 +223,9 @@ export default {
             this.filteredMaterials.forEach(it=>{
                 Vue.set(it,'isSelected', checked)
             })
+        },
+        showBindingStoreDialog(){
+            this.isShowBindingStoreDialog = true;
         }
     },
     mounted() {
@@ -209,6 +233,16 @@ export default {
         api.querySupplierByCode(this.form.supplierCode)
             .then((sp) => {
                 Object.assign(this.form, sp);
+                let supplyCabinsSet = new Set();
+                sp.supplyCabins && sp.supplyCabins.split(",").forEach(it=>supplyCabinsSet.add(it))
+                //加载所有的cabins
+                api.queryMycabins()
+                    .then(list=>{
+                        list && list.forEach(it=>{
+                            Vue.set(it, "checked", supplyCabinsSet.has(it.cabinCode))
+                        })
+                        this.allCabinDOList = list;
+                    });
             });
         //所有原材料信息，供用户选择
         api.queryAllMaterials()
@@ -225,6 +259,7 @@ export default {
             this.categorySel = cates;
             this.category = cates[0].unitCode;
         })
+        
     },
     computed: {
         filteredMaterials() {
@@ -241,6 +276,9 @@ export default {
             return this.allMaterials.filter((it) => {
                 return it.isSelected
             })
+        },
+        bindedCabins(){
+            return this.allCabinDOList.filter(i=>i.checked)
         }
     },
     components: {
