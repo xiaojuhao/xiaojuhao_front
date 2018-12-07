@@ -16,7 +16,6 @@
                 placeholder="搜索原料(回车或选中添加记录)" 
                 @select="handleSelect">
             </el-autocomplete>
-            <!-- <el-button type="primary" @click="showSearchDialog">高级搜索</el-button> -->
         </div>
         <div class="form-box">
             <el-table :data="addedMaterialList" border style="width: 120%">
@@ -83,17 +82,6 @@
                 </el-col>
             </el-row>
         </div>
-        <!-- <el-dialog title="供应商原料信息" v-model="isSupplierMaterialDialogShow" class="dialog">
-            <el-row >
-                <el-col>
-                    <el-input v-model="supplierMaterialSearchWord" placeholder="供应商名称or原料名称"></el-input>
-                    <br/><br/>
-                    <span v-for="item in frontMatchedSupplierMaterialRecords" :key="item.id">
-                        {{item.supplierName}}-{{item.materialName}}
-                    </span>
-                </el-col>
-            </el-row>
-        </el-dialog> -->
     </div>
 </template>
 <script>
@@ -110,9 +98,7 @@ export default {
             cabinCode: this.$route.query.CODE,
             cabin: {},
             cabinSupplierCodes:new Set(),
-            //isSupplierMaterialDialogShow:false,
-            // supplierMaterialSearchWord:'',
-            materialSupplierDOList: [],
+            materialSupplierDOList: [], //原始的原料供应商数据（从DB读取）
             addedMaterialList: [], //已添加的记录
             materialSupplierDOAlternatives: [], //下拉框带选项
             materialsDOList:[]
@@ -198,9 +184,9 @@ export default {
             this.timeout = setTimeout(() => {
                 queryString = jquery.trim(queryString)
                 let counter = 1;
-                let result = this.materialSupplierDOList.filter((item) => {
+                //先搜索绑定商户的记录
+                let result = this.specificSupplierMaterialDOList.filter((item) => {
                     if (counter <= 20 
-                        && this.matchSpecificSupplier(item)
                         && !this.hasAdded(item) 
                         && item.sk.indexOf(queryString) >= 0) {
                         counter++;
@@ -209,16 +195,24 @@ export default {
                         return false;
                     }
                 })
+                //再搜索通用的记录
+                if(result.length == 0){
+                    result = this.nonSpecificSupplierMaterialDOList.filter((item) => {
+                        if (counter <= 20 
+                            && !this.hasAdded(item) 
+                            && item.sk.indexOf(queryString) >= 0) {
+                            counter++;
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    })
+                }
                 this.materialSupplierDOAlternatives = result;
                 cb(result)
             })
         },
-        matchSpecificSupplier(materialSupplierDO){
-            if(materialSupplierDO && this.cabinSupplierCodes.size>0){
-                return this.cabinSupplierCodes.has(materialSupplierDO.supplierCode)
-            }
-            return true;
-        },
+
         hasAdded(materialSupplierDO){
             if(materialSupplierDO){
                 let key = materialSupplierDO.supplierCode+"_"+materialSupplierDO.materialCode;
@@ -337,10 +331,7 @@ export default {
                     console.log(e)
                 }
             }
-        },
-        // showSearchDialog(){
-        //     this.isSupplierMaterialDialogShow = true;
-        // }
+        }
     },
     mounted() {
         api.queryAllMaterialSuppler()
@@ -396,33 +387,16 @@ export default {
             })
             return set;
         },
-        // frontMatchedSupplierMaterialRecords(){
-        //     let r = [];
-        //     let c = 0;
-        //     let searchWords = new Set();
-        //     if(this.supplierMaterialSearchWord){
-        //         this.supplierMaterialSearchWord.split(" ").forEach(w=>{
-        //             if(jquery.trim(w)) searchWords.add(jquery.trim(w))
-        //         })
-        //     }
-        //     for(var i = 0; i < this.materialSupplierDOList.length; i++){
-        //         let o = this.materialSupplierDOList[i];
-        //         if(!o) continue;
-
-        //         if(searchWords.size == 0 //无搜索条件
-        //         || o.supplierName && searchWords.has(o.supplierName)  //匹配供应商
-        //         || o.materialName && searchWords.has(o.materialName)  //匹配原料
-        //         ){
-        //             r.push(o)
-        //             c++;
-        //         }
-        //         //超过60条，跳出
-        //         if(c > 60){
-        //             break;
-        //         }
-        //     }
-        //     return r;
-        // }
+        specificSupplierMaterialDOList(){
+            return this.materialSupplierDOList.filter(item=>{
+                return item.supplyCabins && item.supplyCabins.indexOf(this.cabinCode) >= 0
+            })
+        },
+        nonSpecificSupplierMaterialDOList(){
+            return this.materialSupplierDOList.filter(item=>{
+                return !item.supplyCabins || item.supplyCabins.indexOf(this.cabinCode) == -1
+            })
+        }
     },
     components: {
         MyCabinSelect

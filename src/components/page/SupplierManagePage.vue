@@ -117,11 +117,10 @@
                 </el-form-item>
             </el-form>
         </div>
-        <el-dialog title="门店信息" v-model="isShowBindingStoreDialog" class="dialog">
+        <el-dialog title="门店信息" v-model="isShowBindingStoreDialog" class="store-dialog" >
             <el-row >
-                <el-col>
-                    <el-checkbox v-for="item in allCabinDOList" :key="item.cabinCode" 
-                        v-model="item.checked">
+                <el-col :span="4" v-for="item in allCabinDOList" :key="item.cabinCode" >
+                    <el-checkbox v-model="item.checked">
                         {{item.cabinName}}
                     </el-checkbox>
                 </el-col>
@@ -291,6 +290,10 @@ export default {
     display: inline-block;
     width: 100%;
     font-weight: bold;
+}
+
+.store-dialog {
+    width: 120%;
 }
 
 .grid-content {
